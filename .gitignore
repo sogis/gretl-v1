@@ -4,7 +4,7 @@
 .idea
 
 # Do not add build directory.
-build
+build/
 
 # Created by https://www.gitignore.io/api/osx,java,gradle,intellij,intellij+iml
 
@@ -121,6 +121,7 @@ modules.xml
 
 # Package Files #
 *.jar
+!/lib/**.jar
 *.war
 *.ear
 *.zip
