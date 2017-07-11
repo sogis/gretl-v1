@@ -8,6 +8,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,14 +21,16 @@ public class SqlExecutorStepTask extends DefaultTask {
 
 
     @Input
-    public List<File> sqlFiles;
+    public List<String> sqlFiles;
 
 
     @TaskAction
     public void sqlExecuterStepTask() {
 
+        List<File> files = convertToValidatedFileList(sqlFiles);
+
         try {
-            new SqlExecutorStep().execute(sourceDb.getDbConnection(),sqlFiles);
+            new SqlExecutorStep().execute(sourceDb.getDbConnection(),files);
             Logger.log(Logger.INFO_LEVEL,"Task start");
             try {
                 sourceDb.dbCommit();
@@ -39,6 +42,26 @@ public class SqlExecutorStepTask extends DefaultTask {
             Logger.log(Logger.INFO_LEVEL,"Exception: "+e.getMessage());
             throw new GradleException("SqlExecutorStep: "+e.getMessage());
         }
+    }
+
+    private static List<File> convertToValidatedFileList(List<String> filePaths){
+
+        List<File> files = new ArrayList<File>();
+
+        for(String filePath : filePaths)
+        {
+            if(filePath == null || filePath.length() == 0)
+                throw new IllegalArgumentException("Filepaths must not be null or empty");
+
+            File file = new File(filePath);
+
+            if(!file.canRead())
+                throw new IllegalArgumentException("Can not read the file at path: " + filePath);
+
+            files.add(new File(filePath));
+        }
+
+        return files;
     }
 }
 

@@ -13,9 +13,19 @@ public class TransferSet {
     private String outputQualifiedSchemaAndTableName;
 
 
-    public TransferSet(boolean deleteAllRows, File inputSqlFile, String outputQualifiedSchemaAndTableName){
+    public TransferSet(boolean deleteAllRows, String inputSqlFilePath, String outputQualifiedSchemaAndTableName){
         this.deleteAllRows = deleteAllRows;
-        this.inputSqlFile = inputSqlFile;
+
+        if(inputSqlFilePath == null || inputSqlFilePath.length() == 0)
+            throw new IllegalArgumentException("inputSqlFilePath must not be null or empty");
+
+        this.inputSqlFile = new File(inputSqlFilePath);
+        if(!this.inputSqlFile.canRead())
+            throw new IllegalArgumentException("Can not read the file: " + inputSqlFilePath);
+
+        if(outputQualifiedSchemaAndTableName == null || outputQualifiedSchemaAndTableName.length() == 0)
+            throw new IllegalArgumentException("outputQualifiedSchemaAndTableName must not be null or empty");
+
         this.outputQualifiedSchemaAndTableName = outputQualifiedSchemaAndTableName;
     }
 
@@ -28,5 +38,4 @@ public class TransferSet {
     public String getOutputQualifiedSchemaAndTableName() {
         return outputQualifiedSchemaAndTableName;
     }
-
 }
