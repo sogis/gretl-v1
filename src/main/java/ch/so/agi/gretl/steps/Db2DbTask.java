@@ -1,8 +1,8 @@
 package ch.so.agi.gretl.steps;
 
+import ch.so.agi.gretl.logging.Logger;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
-import ch.so.agi.gretl.logging.Logger;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by bjsvwsch on 19.05.17.
  */
-public class Db2DbStepTask extends DefaultTask {
+public class Db2DbTask extends DefaultTask {
 
     @Input
     public TransactionContext sourceDb;
@@ -25,7 +25,7 @@ public class Db2DbStepTask extends DefaultTask {
     public List<TransferSet> transferSet;
 
     @TaskAction
-    public void db2DbStepTask() {
+    public void db2DbTask() {
 
             try {
                 new Db2DbStep(sourceDb.getDbConnection(), targetDb.getDbConnection()).processAllTransferSets(transferSet);
@@ -53,7 +53,6 @@ public class Db2DbStepTask extends DefaultTask {
                 Logger.log(Logger.INFO_LEVEL, "SQLException: " + e.getMessage());
                 dbRollback(e);
                 throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
-
             }
     }
 

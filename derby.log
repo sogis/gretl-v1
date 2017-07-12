@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
-Wed Jul 05 16:14:41 CEST 2017:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.2 - (1629631): instance a816c00e-015d-131a-5e75-00000ca30e20 
-on database directory memory:/home/bjsvwsch/ideaIC-Projects/gretl2/trunk/myInMemDB with class loader sun.misc.Launcher$AppClassLoader@73d16e93 
-Loaded from file:/home/bjsvwsch/ideaIC-Projects/gretl2/trunk/lib/derby.jar
+Tue Jul 11 15:16:01 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.2 - (1629631): instance a816c00e-015d-31ca-cfc8-00000cb6a3b0 
+on database directory memory:/home/bjsvwsch/codebasis/gretl/myInMemDB with class loader sun.misc.Launcher$AppClassLoader@73d16e93 
+Loaded from file:/home/bjsvwsch/codebasis/gretl/lib/derby.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_121-b13
-user.dir=/home/bjsvwsch/ideaIC-Projects/gretl2/trunk
+user.dir=/home/bjsvwsch/codebasis/gretl
 os.name=Linux
 os.arch=amd64
 os.version=4.4.0-83-generic
