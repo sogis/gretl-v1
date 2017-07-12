@@ -28,24 +28,21 @@ public class SqlExecutorStepTest {
     @Test
     public void executeWithoutFiles() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
         List<File> sqlListe = new ArrayList<File>();
 
         try {
-            x.execute(con,sqlListe);
+            x.execute(sourceDb,sqlListe);
             Assert.fail();
         } catch (Exception e) {
 
-        } finally {
-            con.close();
         }
     }
 
     @Test
     public void executeWithoutDb() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        Connection con = null;
+        TransactionContext sourceDb = null;
 
         File sqlFile =  folder.newFile("query.sql");
         BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
@@ -64,7 +61,7 @@ public class SqlExecutorStepTest {
         sqlListe.add(sqlFile);
 
         try {
-            x.execute(con,sqlListe);
+            x.execute(sourceDb,sqlListe);
             Assert.fail();
         } catch (Exception e) {
 
@@ -76,8 +73,7 @@ public class SqlExecutorStepTest {
     public void executeDifferentExtensions() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
 
-        DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
         File sqlFile =  folder.newFile("query.sql");
         BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
@@ -111,12 +107,10 @@ public class SqlExecutorStepTest {
         sqlListe.add(sqlFile1);
 
         try {
-            x.execute(con,sqlListe);
+            x.execute(sourceDb,sqlListe);
             Assert.fail();
         } catch (Exception e) {
 
-        } finally {
-            con.close();
         }
     }
 
@@ -124,8 +118,8 @@ public class SqlExecutorStepTest {
     @Test
     public void executeEmptyFile() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connection con = sourceDb.getDbConnection();
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors2 ( " +
@@ -155,16 +149,15 @@ public class SqlExecutorStepTest {
         sqlListe.add(sqlFile);
         sqlListe.add(sqlFile1);
 
-        x.execute(con,sqlListe);
-        con.close();
+        x.execute(sourceDb,sqlListe);
     }
 
 
     @Test
     public void executeWrongQuery() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connection con = sourceDb.getDbConnection();
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors1 ( " +
@@ -189,22 +182,20 @@ public class SqlExecutorStepTest {
         sqlListe.add(sqlFile);
 
         try {
-            x.execute(con, sqlListe);
+            x.execute(sourceDb, sqlListe);
             Assert.fail();
         } catch (Exception e) {
 
-        } finally {
-            con.close();
         }
 
     }
 
 
     @Test
-    public void execute() throws Exception {
+    public void executePositiveTest() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connection con = sourceDb.getDbConnection();
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -239,8 +230,7 @@ public class SqlExecutorStepTest {
         sqlListe.add(sqlFile);
         sqlListe.add(sqlFile1);
 
-        x.execute(con,sqlListe);
-        con.close();
+        x.execute(sourceDb,sqlListe);
     }
 
 

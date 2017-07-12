@@ -14,14 +14,14 @@ import java.util.List;
 /**
  * This Class represents the SqlExecutorStep-Task
  */
-public class SqlExecutorStepTask extends DefaultTask {
+public class SqlExecutorTask extends DefaultTask {
 
     @Input
-    public TransactionContext sourceDb;
+    private TransactionContext sourceDb;
 
 
     @Input
-    public List<String> sqlFiles;
+    private List<String> sqlFiles;
 
 
     @TaskAction
@@ -30,7 +30,7 @@ public class SqlExecutorStepTask extends DefaultTask {
         List<File> files = convertToValidatedFileList(sqlFiles);
 
         try {
-            new SqlExecutorStep().execute(sourceDb.getDbConnection(),files);
+            new SqlExecutorStep().execute(sourceDb, files);
             Logger.log(Logger.INFO_LEVEL,"Task start");
             try {
                 sourceDb.dbCommit();

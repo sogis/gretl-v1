@@ -12,7 +12,8 @@ import java.util.List;
 
 
 /**
- * The SqlExecutorStep Class is used as a Step and does Transformations on geodata based on sql-Scripts
+ * The SqlExecutorStep Class is used as a Step and does Transformations on data within a database based on queries in
+ * sql-Scripts
  */
 public class SqlExecutorStep {
 
@@ -20,41 +21,83 @@ public class SqlExecutorStep {
     /**
      * Executes the queries within the .sql-files in the specified database. But does not commit SQL-Statements
      *
-     * @param db            Database connection
+     * @param trans         Database properties to generate database connection
      * @param sqlfiles      Files with .sql-extension which contain queries
-     * @throws Exception
+     * @throws Exception    if File is missing, no correct extension, no connection to database, could not read file or
+     *                      problems while executing sql-queries
      */
-    public void execute(Connection db, List<File> sqlfiles) throws Exception {
-
-        String CompleteQuery = "";
+    public static void execute(TransactionContext trans, List<File> sqlfiles)
+            throws Exception {
 
         Logger.log(Logger.INFO_LEVEL,"Start SqlExecutorStep");
 
-        //Check for files in list
-        if (sqlfiles.size()<1){
-            throw new Exception("Missing input files");
-        }
+        checkIfAtLeastOneSqlFileIsGiven(sqlfiles);
 
-        //Log all input files
+        logPathToInputSqlFiles(sqlfiles);
+
+
+        try{
+            Connection db = trans.getDbConnection();
+
+            checkFileExtensionsForSqlExtension(sqlfiles);
+
+            readSqlFiles(sqlfiles, db);
+
+            db.commit();
+            db.close();
+
+        } catch (Exception e){
+            throw new Exception ("Could not connect to Database: " + e);
+        }
+    }
+
+
+    /**
+     * @param sqlfiles      Files with .sql-extension which contain queries
+     * @throws Exception    if File is missing
+     */
+    private static void checkIfAtLeastOneSqlFileIsGiven(List<File> sqlfiles)
+            throws Exception {
+
+        if (sqlfiles==null || sqlfiles.size()<1){
+            throw new IllegalAccessException("Missing input files");
+        }
+    }
+
+    /**
+     * @param sqlfiles      Files with .sql-extension which contain queries
+     */
+    private static void logPathToInputSqlFiles(List<File> sqlfiles) {
+
         for (File inputfile: sqlfiles){
             Logger.log(Logger.INFO_LEVEL, inputfile.getAbsolutePath());
         }
+    }
 
-        //Check for db-connection
-        if (db==null){
-            throw new Exception("Missing database connection");
-        }
+    /**
+     * @param sqlfiles      Files with .sql-extension which contain queries
+     * @throws Exception    if no correct file extension
+     */
+    private static void checkFileExtensionsForSqlExtension(List<File> sqlfiles)
+            throws Exception {
 
-
-        //Check Files for correct file extension
         for (File file: sqlfiles) {
             String fileExtension = FileExtension.getFileExtension(file);
             if (!fileExtension.equalsIgnoreCase("sql")){
                 throw new Exception("incorrect file extension at file: " + file.getAbsolutePath());
             }
         }
+    }
 
-        // Read Files
+
+    /**
+     * @param sqlfiles      Files with .sql-extension which contain queries
+     * @param db            connection to database
+     * @throws Exception    if problems with reading file
+     */
+    private static void readSqlFiles(List<File> sqlfiles, Connection db)
+            throws Exception {
+
         for (File sqlfile: sqlfiles){
 
             try {
@@ -72,53 +115,78 @@ public class SqlExecutorStep {
     }
 
 
-
-
-
     /**
      * Gets the sqlqueries out of the given file and executes the statements on the given database
      * @param conn              Database connection
      * @param inputStreamReader inputStream of a specific file
+     * @throws Exception        SQL-Exception while executing sqlstatement
      */
-    private static void executeSqlScript(Connection conn, InputStreamReader inputStreamReader) {
+    private static void executeSqlScript(Connection conn, InputStreamReader inputStreamReader)
+            throws Exception{
+
         PushbackReader reader = null;
         reader = new PushbackReader(inputStreamReader);
-        try {
-            String line = SqlReader.readSqlStmt(reader);
-            while (line != null) {
-                // exec sql
-                line = line.trim();
-                if (line.length() > 0) {
-                    Statement dbstmt = null;
-                    try {
-                        try {
-                            dbstmt = conn.createStatement();
-                            Logger.log(Logger.DEBUG_LEVEL, line);
-                            dbstmt.execute(line);
-                        } finally {
-                            dbstmt.close();
-                        }
-                    } catch (SQLException ex) {
-                        throw new IllegalStateException(ex);
-                    }
 
-                }
-                // read next line
-                line = SqlReader.readSqlStmt(reader);
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        }
+        executeAllSqlStatements(conn, reader);
+
+
+        reader.close();
+
     }
 
 
+    /**
+     * @param conn             Database connection
+     * @param reader           Filereader
+     * @throws Exception       SQL-Exception while executing sqlstatement
+     */
+    private static void executeAllSqlStatements (Connection conn, PushbackReader reader)
+            throws Exception {
 
+        String statement = SqlReader.readSqlStmt(reader);
 
+        while (statement != null) {
+
+            prepareSqlStatement(conn,statement);
+            statement = SqlReader.readSqlStmt(reader);
+        }
+    }
+
+    /**
+     * @param conn          Connection to database
+     * @param statement     sql-Statement
+     * @throws Exception    SQL-Exception while executing sqlstatement
+     */
+    private static void prepareSqlStatement(Connection conn, String statement)
+            throws Exception {
+
+        statement = statement.trim();
+
+        if (statement.length() > 0) {
+            Logger.log(Logger.DEBUG_LEVEL, statement);
+
+            Statement dbstmt = null;
+            dbstmt = conn.createStatement();
+
+            executeSqlStatement(dbstmt, statement);
+        }
+    }
+
+    /**
+     * @param dbstmt        Database sql-Statement
+     * @param statement     sql-Statement
+     * @throws Exception    SQL-Exception while executing sqlstatement
+     */
+    private static void executeSqlStatement (Statement dbstmt, String statement)
+            throws Exception {
+
+        try {
+            dbstmt.execute(statement);
+        } catch (SQLException ex) {
+            throw new Exception("Error while executing the sqlstatement. " + ex);
+        } finally {
+            dbstmt.close();
+        }
+    }
 
 }
