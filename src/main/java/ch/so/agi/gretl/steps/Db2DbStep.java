@@ -1,5 +1,7 @@
 package ch.so.agi.gretl.steps;
 
+import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
 import ch.so.agi.gretl.util.SqlReader;
@@ -20,10 +22,15 @@ public class Db2DbStep {
 
     private Connection sourceDb;
     private Connection targetDb;
+    private GretlLogger log;
+
+
     /** KONSTRUKTOR **/
     public Db2DbStep(Connection sourceDb, Connection targetDb) {
         this.sourceDb = sourceDb;
         this.targetDb = targetDb;
+
+        this.log = LogEnvironment.getLogger(this.getClass());
     }
 
     /**
@@ -31,7 +38,8 @@ public class Db2DbStep {
      * durch und schliesst die Transaktion ab.
      */
     public void processAllTransferSets(List<TransferSet> transferSets) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
-        Logger.log(Logger.INFO_LEVEL, "Found "+transferSets.size()+" transferSets");
+        //Logger.log(Logger.INFO_LEVEL, "Found "+transferSets.size()+" transferSets");
+        log.info("New logging is actually working");
         for(TransferSet transferSet : transferSets){
             processTransferSet(sourceDb, targetDb, transferSet);
         }
