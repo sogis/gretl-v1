@@ -19,7 +19,6 @@ public class SqlReader {
             return null;
         }
 
-        System.out.println(stmt);
         return stmt.toString();
 
     }
