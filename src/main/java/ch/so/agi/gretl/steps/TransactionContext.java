@@ -1,8 +1,6 @@
 package ch.so.agi.gretl.steps;
 
 
-//import org.gradle.api.ProjectEvaluationListener;
-
 import ch.so.agi.gretl.util.DbConnector;
 
 import java.sql.Connection;
@@ -11,15 +9,14 @@ import java.sql.SQLException;
 /**
  * Class which is used for different tasks on the database
  */
-public class TransactionContext  { //implements org.gradle.api.ProjectEvaluationListener
+public class TransactionContext  {
 
     private String dbUri;
     private String dbUser;
     private String dbPassword;
-    //final ProjectEvaluationListener projectListener;
 
     //KONSTRUKTOR
-    public TransactionContext(String dbUri, String dbUser, String dbPassword/*, ProjectEvaluationListener projectListener*/) {
+    public TransactionContext(String dbUri, String dbUser, String dbPassword) {
         this.dbUri = dbUri;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
