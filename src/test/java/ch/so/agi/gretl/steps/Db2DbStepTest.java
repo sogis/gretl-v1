@@ -1,9 +1,9 @@
 package ch.so.agi.gretl.steps;
 
+import ch.so.agi.gretl.logging.Logger;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
-import ch.so.agi.gretl.logging.Logger;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+//import java.util.logging.Logger;
 
 /**
  * Created by bjsvwsch on 03.05.17.
@@ -30,7 +31,7 @@ public class Db2DbStepTest {
 
 
     @Test
-    public void PositiveTest() throws Exception {
+    public void FaultFreeExecutionTest() throws Exception {
         //unittest
 
         ////////////////////////////////////////
@@ -60,7 +61,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(true),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -90,6 +91,7 @@ public class Db2DbStepTest {
             if (!rs.getObject("rot").equals(0)) throw new Exception(e);
             if (!rs.getObject("farbname").equals("blau")) throw new Exception(e);
         }
+        Logger.log(Logger.INFO_LEVEL, "Message BLAAAAAAAAAAA");
         stmt.execute("DROP TABLE colors");
         stmt.execute("DROP TABLE colors_copy");
         con.close();
@@ -120,7 +122,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(false),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -170,7 +172,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(false),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -223,7 +225,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(false),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -281,7 +283,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(false),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -339,7 +341,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(false),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -393,7 +395,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(false),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -450,7 +452,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(false),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -507,7 +509,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(true),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -577,7 +579,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(true),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -639,7 +641,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(true),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
@@ -699,7 +701,7 @@ public class Db2DbStepTest {
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
                 new Boolean(true),
-                new File(sqlFile.getAbsolutePath().toString()),
+                sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
 
