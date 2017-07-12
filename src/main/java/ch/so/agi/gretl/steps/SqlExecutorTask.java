@@ -17,11 +17,11 @@ import java.util.List;
 public class SqlExecutorTask extends DefaultTask {
 
     @Input
-    public TransactionContext sourceDb;
+    private TransactionContext sourceDb;
 
 
     @Input
-    public List<String> sqlFiles;
+    private List<String> sqlFiles;
 
 
     @TaskAction

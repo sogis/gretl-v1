@@ -150,7 +150,6 @@ public class SqlExecutorStepTest {
         sqlListe.add(sqlFile1);
 
         x.execute(sourceDb,sqlListe);
-        con.close();
     }
 
 
@@ -193,7 +192,7 @@ public class SqlExecutorStepTest {
 
 
     @Test
-    public void execute() throws Exception {
+    public void executePositiveTest() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
         Connection con = sourceDb.getDbConnection();
