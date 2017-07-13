@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.steps;
 
-import ch.so.agi.gretl.logging.Logger;
+import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
@@ -18,16 +19,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-//import java.util.logging.Logger;
 
 /**
  * Created by bjsvwsch on 03.05.17.
  */
 public class Db2DbStepTest {
 
+    //Konstruktor//
+    public Db2DbStepTest () {
+        LogEnvironment.initStandalone();
+        this.log = LogEnvironment.getLogger(this.getClass());
+    }
+
+
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     private String e;
+    private GretlLogger log;
 
 
     @Test
@@ -39,7 +47,7 @@ public class Db2DbStepTest {
         ////////////////////////////////////////
 
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -67,11 +75,11 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         ////////////////////////////
@@ -91,7 +99,7 @@ public class Db2DbStepTest {
             if (!rs.getObject("rot").equals(0)) throw new Exception(e);
             if (!rs.getObject("farbname").equals("blau")) throw new Exception(e);
         }
-        Logger.log(Logger.INFO_LEVEL, "Message BLAAAAAAAAAAA");
+        log.info("YEA. Ich hab's geschaaaaft");
         stmt.execute("DROP TABLE colors");
         stmt.execute("DROP TABLE colors_copy");
         con.close();
@@ -101,7 +109,7 @@ public class Db2DbStepTest {
     public void NotAllowedSqlExpressionInScriptTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -128,11 +136,11 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         Db2DbStep db2db = new Db2DbStep(xcon, ycon);
@@ -155,7 +163,7 @@ public class Db2DbStepTest {
     public void Db2DbEmptyFileTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -178,11 +186,11 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         Db2DbStep db2db = new Db2DbStep(xcon, ycon);
@@ -205,7 +213,7 @@ public class Db2DbStepTest {
     public void SQLExceptionTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -231,11 +239,11 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         Db2DbStep db2db = new Db2DbStep(xcon, ycon);
@@ -243,11 +251,11 @@ public class Db2DbStepTest {
         try {
             db2db.processAllTransferSets(mylist);
             Assert.fail("EmptyFileException müsste geworfen werden");
-            Logger.log(Logger.INFO_LEVEL, "You should not be here!");
+            log.info("You should not be here!");
         } catch (SQLException e) {
-            Logger.log(Logger.INFO_LEVEL,"Got SQLException. YEA!"+e.getMessage());
+            log.info("Got SQLException. YEA!"+e.getMessage());
         } finally {
-            Logger.log(Logger.INFO_LEVEL,"Finally, Ufff.... ");
+            log.info("Finally, Ufff.... ");
             xcon.close();
             ycon.close();
             stmt.execute("DROP TABLE colors");
@@ -261,7 +269,7 @@ public class Db2DbStepTest {
     public void ColumnNumberTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -289,11 +297,11 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         Db2DbStep db2db = new Db2DbStep(xcon, ycon);
@@ -301,11 +309,11 @@ public class Db2DbStepTest {
         try {
             db2db.processAllTransferSets(mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
-            Logger.log(Logger.INFO_LEVEL, "You should not be here!");
+            log.info("You should not be here!");
         } catch (SQLException e) {
-            Logger.log(Logger.INFO_LEVEL,"Got SQLException. YEA!"+e.getMessage());
+            log.info("Got SQLException. YEA!"+e.getMessage());
         } finally {
-            Logger.log(Logger.INFO_LEVEL,"Finally, Ufff.... ");
+            log.info("Finally, Ufff.... ");
             xcon.close();
             ycon.close();
             stmt.execute("DROP TABLE colors");
@@ -319,7 +327,7 @@ public class Db2DbStepTest {
     public void IncompatibleDataTypeTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -347,11 +355,11 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         Db2DbStep db2db = new Db2DbStep(xcon, ycon);
@@ -359,11 +367,11 @@ public class Db2DbStepTest {
         try {
             db2db.processAllTransferSets(mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
-            Logger.log(Logger.INFO_LEVEL, "You should not be here!");
+            log.info("You should not be here!");
         } catch (SQLException e) {
-            Logger.log(Logger.INFO_LEVEL,"Got SQLException. YEA!"+e.getMessage());
+            log.info("Got SQLException. YEA!"+e.getMessage());
         } finally {
-            Logger.log(Logger.INFO_LEVEL,"Finally, Ufff.... ");
+            log.info("Finally, Ufff.... ");
             xcon.close();
             ycon.close();
             stmt.execute("DROP TABLE colors");
@@ -376,7 +384,7 @@ public class Db2DbStepTest {
     public void EmptyTableTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -401,23 +409,23 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
             db2db.processAllTransferSets(mylist);
-            Logger.log(Logger.INFO_LEVEL, "EmptyTableTest is fine");
+            log.info("EmptyTableTest is fine");
         } catch (SQLException e) {
-            Logger.log(Logger.INFO_LEVEL,"Got SQLException. "+e.getMessage());
+            log.info("Got SQLException. "+e.getMessage());
             throw new Exception(e);
         } finally {
-            Logger.log(Logger.INFO_LEVEL,"Finally, Ufff.... ");
+            log.info("Finally, Ufff.... ");
             xcon.close();
             ycon.close();
             stmt.execute("DROP TABLE colors");
@@ -430,7 +438,7 @@ public class Db2DbStepTest {
     public void NullSourceValueTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -458,23 +466,23 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
             db2db.processAllTransferSets(mylist);
-            Logger.log(Logger.INFO_LEVEL, "NULL-Value Test succeeded");
+            log.info("NULL-Value Test succeeded");
         } catch (SQLException e) {
-            Logger.log(Logger.INFO_LEVEL,"Got SQLException. "+e.getMessage());
+            log.info("Got SQLException. "+e.getMessage());
             throw new Exception(e);
         } finally {
-            Logger.log(Logger.INFO_LEVEL,"Finally, Ufff.... ");
+            log.info("Finally, Ufff.... ");
             xcon.close();
             ycon.close();
             stmt.execute("DROP TABLE colors");
@@ -487,7 +495,7 @@ public class Db2DbStepTest {
     public void DeleteTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -515,11 +523,11 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         Db2DbStep db2db = new Db2DbStep(xcon, ycon);
@@ -538,7 +546,7 @@ public class Db2DbStepTest {
                 throw new Exception();
             }
         } finally {
-            Logger.log(Logger.INFO_LEVEL,"Finally, Ufff.... ");
+            log.info("Finally, Ufff.... ");
             xcon.close();
             ycon.close();
             stmt.execute("DROP TABLE colors");
@@ -553,7 +561,7 @@ public class Db2DbStepTest {
     public void PostgresqlDerbyTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -565,7 +573,7 @@ public class Db2DbStepTest {
         stmt.execute("INSERT INTO colors  VALUES (251,0,0,'rot')");
         stmt.execute("INSERT INTO colors  VALUES (0,0,255,NULL)");
 
-        Connection con2 = dbConn.connect("jdbc:postgresql://10.36.54.200:54321/sogis", "bjsvwsch", null);
+        Connection con2 = DbConnector.connect("jdbc:postgresql://10.36.54.200:54321/sogis", "bjsvwsch", null);
         con2.setAutoCommit(true);
         Statement stmt2 = con2.createStatement();
 
@@ -585,23 +593,23 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:postgresql://10.36.54.200:54321/sogis", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:postgresql://10.36.54.200:54321/sogis", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
         Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
             db2db.processAllTransferSets(mylist);
-            Logger.log(Logger.INFO_LEVEL, "DerbyToPostgreSQL succeeded");
+            log.info("DerbyToPostgreSQL succeeded");
         } catch (SQLException e) {
-            Logger.log(Logger.INFO_LEVEL,"Got SQLException. "+e.getMessage());
+            log.info("Got SQLException. "+e.getMessage());
             throw new Exception(e);
         } finally {
-            Logger.log(Logger.INFO_LEVEL,"Finally, Ufff.... ");
+            log.info("Finally, Ufff.... ");
             xcon.close();
             ycon.close();
             stmt.execute("DROP TABLE colors");
@@ -619,7 +627,7 @@ public class Db2DbStepTest {
         ////////////////////////////////////////
 
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -647,11 +655,11 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
 
@@ -679,7 +687,7 @@ public class Db2DbStepTest {
         ////////////////////////////////////////
 
         DbConnector dbConn = new DbConnector();
-        Connection con = dbConn.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("CREATE TABLE colors ( " +
@@ -707,11 +715,11 @@ public class Db2DbStepTest {
 
 
         DbConnector x = new DbConnector();
-        Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         xcon.setAutoCommit(true);
 
         DbConnector y = new DbConnector();
-        Connection ycon = y.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         ycon.setAutoCommit(true);
 
 
@@ -719,7 +727,7 @@ public class Db2DbStepTest {
         try {
             db2db.processAllTransferSets(mylist);
         } catch (SQLException e) {
-            Logger.log(Logger.INFO_LEVEL,"Got a SQL Exception as expected");
+            log.info("Got a SQL Exception as expected");
             //System.out.println("Got a SQL Exception s expected");
         }
 
