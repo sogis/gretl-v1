@@ -1,6 +1,9 @@
 package ch.so.agi.gretl.steps;
 
-import ch.so.agi.gretl.logging.Logger;
+
+import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
@@ -15,6 +18,14 @@ import java.util.List;
  * This Class represents the SqlExecutorStep-Task
  */
 public class SqlExecutorTask extends DefaultTask {
+
+    private GretlLogger log;
+
+    public SqlExecutorTask () {
+        LogEnvironment.initGradleIntegrated();
+        this.log = LogEnvironment.getLogger(this.getClass());
+    }
+
 
     @Input
     private TransactionContext sourceDb;
@@ -31,15 +42,15 @@ public class SqlExecutorTask extends DefaultTask {
 
         try {
             new SqlExecutorStep().execute(sourceDb, files);
-            Logger.log(Logger.INFO_LEVEL,"Task start");
+            log.info("Task start");
             try {
                 sourceDb.dbCommit();
             } catch (SQLException e) {
-                Logger.log(Logger.INFO_LEVEL, "SQLException: " + e.getMessage());
+                log.info("SQLException: " + e.getMessage());
                 throw new GradleException("SQLException: " + e.getMessage());
             }
         } catch (Exception e) {
-            Logger.log(Logger.INFO_LEVEL,"Exception: "+e.getMessage());
+            log.info("Exception: "+e.getMessage());
             throw new GradleException("SqlExecutorStep: "+e.getMessage());
         }
     }
