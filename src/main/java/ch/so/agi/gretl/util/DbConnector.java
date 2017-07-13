@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.util;
 
-import ch.so.agi.gretl.logging.Logger;
+
+import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,6 +12,12 @@ import java.sql.SQLException;
 
 public class DbConnector {
     private static Connection con=null;
+    private static GretlLogger log;
+
+
+    public DbConnector() {
+        this.log = LogEnvironment.getLogger(this.getClass());
+    }
 
     /**
      * Returns the connection to a specific database. The database is specified by the arguments ConnectionUrl,
@@ -26,7 +34,7 @@ public class DbConnector {
             con = DriverManager.getConnection(
                     ConnectionUrl,UserName,Password);
             con.setAutoCommit(false);
-            Logger.log(Logger.DEBUG_LEVEL, "DB connected with these Parameters:  ConnectionURL:" + ConnectionUrl
+            log.debug("DB connected with these Parameters:  ConnectionURL:" + ConnectionUrl
                         + " Username: " + UserName + " Password: " + Password);
         } catch (SQLException e) {
             if (con!=null) {
@@ -35,7 +43,7 @@ public class DbConnector {
                     con.close();
                     con = null;
                 } catch (SQLException f) {
-                    Logger.log(Logger.INFO_LEVEL, f);
+                    log.info(f.toString());
                 }
             }
             throw new RuntimeException("Could not connect with database: ", e);
