@@ -19,16 +19,13 @@ import java.util.List;
 
 public class Db2DbStep {
 
-    private Connection sourceDb;
-    private Connection targetDb;
+    private Connection sourceDbConnection;
+    private Connection targetDbConnection;
     private GretlLogger log;
 
 
     /** KONSTRUKTOR **/
-    public Db2DbStep(Connection sourceDb, Connection targetDb) {
-        this.sourceDb = sourceDb;
-        this.targetDb = targetDb;
-
+    public Db2DbStep() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
@@ -36,11 +33,12 @@ public class Db2DbStep {
      * Führt für alle Transfersets die Transfers von der Quell- in die Zieldatenbank
      * durch und schliesst die Transaktion ab.
      */
-    public void processAllTransferSets(List<TransferSet> transferSets) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
-        //log.info( "Found "+transferSets.size()+" transferSets");
-        log.info("New logging is actually working");
+    public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
+        log.info( "Found "+transferSets.size()+" transferSets");
+        sourceDbConnection = sourceDb.getDbConnection();
+        targetDbConnection = targetDb.getDbConnection();
         for(TransferSet transferSet : transferSets){
-            processTransferSet(sourceDb, targetDb, transferSet);
+            processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
         }
 
     }
@@ -97,7 +95,7 @@ public class Db2DbStep {
         String sqltruncate = "DELETE FROM "+destTableName;
         log.info("Try to delete all rows in Table "+destTableName);
         try {
-            PreparedStatement truncatestmt = targetDb.prepareStatement(sqltruncate);
+            PreparedStatement truncatestmt = targetDbConnection.prepareStatement(sqltruncate);
             truncatestmt.execute();
             log.info( "DELETE succesfull!");
         } catch (SQLException e1) {
@@ -113,7 +111,7 @@ public class Db2DbStep {
      * Erstellt mittels Quell-SelectStatement auf die Quelldatenbank das ResultSet.
      */
     private ResultSet createResultSet(Connection srcCon, String sqlSelectStatement) throws SQLException {
-        Statement SQLStatement = sourceDb.createStatement();
+        Statement SQLStatement = sourceDbConnection.createStatement();
         ResultSet rs = SQLStatement.executeQuery(sqlSelectStatement);
 
         return rs;
@@ -163,7 +161,7 @@ public class Db2DbStep {
         log.debug("INSERT STATEMENT RAW = "+sql);
         //System.out.print("INSERT STATEMENT RAW = "+sql);
 
-        PreparedStatement insertRowStatement = targetDb.prepareStatement(sql);
+        PreparedStatement insertRowStatement = targetDbConnection.prepareStatement(sql);
 
         return insertRowStatement;
     }
