@@ -35,7 +35,7 @@ public class Db2DbTask extends DefaultTask {
     public void db2DbTask() {
 
             try {
-                new Db2DbStep(sourceDb.getDbConnection(), targetDb.getDbConnection()).processAllTransferSets(transferSet);
+                new Db2DbStep().processAllTransferSets(sourceDb, targetDb,transferSet);
                 log.info( "Task start");
             } catch (SQLException e) {
                 dbRollback(e);
