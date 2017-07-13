@@ -3,6 +3,10 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.util.DbConnector;
 
+
+import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -14,12 +18,15 @@ public class TransactionContext  {
     private String dbUri;
     private String dbUser;
     private String dbPassword;
+    private static GretlLogger log;
+
 
     //KONSTRUKTOR
     public TransactionContext(String dbUri, String dbUser, String dbPassword) {
         this.dbUri = dbUri;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
+        this.log = LogEnvironment.getLogger(this.getClass());
     }
     //KONSTRUKTOR ENDE
 

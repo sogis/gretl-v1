@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.steps;
 
-import ch.so.agi.gretl.util.DbConnector;
+import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +21,13 @@ import java.util.List;
  * Tests for the SqlExecutorStep
  */
 public class SqlExecutorStepTest {
+
+    private GretlLogger log;
+
+    public SqlExecutorStepTest() {
+        LogEnvironment.initStandalone();
+        this.log = LogEnvironment.getLogger(this.getClass());
+    }
 
     //Create temporary folder for saving sqlfiles
     @Rule
