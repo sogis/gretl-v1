@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Thu Jul 13 11:21:23 CEST 2017:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.2 - (1629631): instance a816c00e-015d-3b40-b665-00000cb6a2c0 
+Thu Jul 13 14:27:52 CEST 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.2 - (1629631): instance a816c00e-015d-3beb-72c5-00000ca23a68 
 on database directory memory:/home/bjsvwsch/codebasis/gretl/myInMemDB with class loader sun.misc.Launcher$AppClassLoader@73d16e93 
 Loaded from file:/home/bjsvwsch/codebasis/gretl/lib/derby.jar
 java.vendor=Oracle Corporation
