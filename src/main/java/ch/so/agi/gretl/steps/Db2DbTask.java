@@ -1,7 +1,6 @@
 package ch.so.agi.gretl.steps;
 
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.logging.Logger;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
 import org.gradle.api.DefaultTask;
@@ -18,12 +17,6 @@ import java.util.List;
  */
 public class Db2DbTask extends DefaultTask {
 
-    private GretlLogger log;
-    public Db2DbTask () {
-        LogEnvironment.initGradleIntegrated();
-        this.log = LogEnvironment.getLogger(this.getClass());
-    }
-
     @Input
     public TransactionContext sourceDb;
     @Input
@@ -35,15 +28,15 @@ public class Db2DbTask extends DefaultTask {
     public void db2DbTask() {
 
             try {
-                new Db2DbStep().processAllTransferSets(sourceDb, targetDb,transferSet);
-                log.info( "Task start");
+                new Db2DbStep(sourceDb.getDbConnection(), targetDb.getDbConnection()).processAllTransferSets(transferSet);
+                Logger.log(Logger.INFO_LEVEL, "Task start");
             } catch (SQLException e) {
                 dbRollback(e);
-                log.info( "SQLException: " + e.getMessage());
+                Logger.log(Logger.INFO_LEVEL, "SQLException: " + e.getMessage());
                 throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
             } catch (FileNotFoundException e) {
                 dbRollback(e);
-                log.info( "FileNotFoundException: " + e.getMessage());
+                Logger.log(Logger.INFO_LEVEL, "FileNotFoundException: " + e.getMessage());
                 throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
             } catch (EmptyFileException e) {
                 dbRollback(e);
@@ -55,9 +48,9 @@ public class Db2DbTask extends DefaultTask {
             try {
                 sourceDb.dbCommit();
                 targetDb.dbCommit();
-                log.info( "Transaction successful!");
+                Logger.log(Logger.INFO_LEVEL, "Transaction successful!");
             } catch (SQLException e) {
-                log.info( "SQLException: " + e.getMessage());
+                Logger.log(Logger.INFO_LEVEL, "SQLException: " + e.getMessage());
                 dbRollback(e);
                 throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
             }
@@ -67,7 +60,7 @@ public class Db2DbTask extends DefaultTask {
         try {
             sourceDb.dbRollback();
         } catch (SQLException e1) {
-            log.debug("Failed to rollback "+e.getMessage());
+            Logger.log(Logger.DEBUG_LEVEL, "Failed to rollback "+e.getMessage());
         }
     }
 }

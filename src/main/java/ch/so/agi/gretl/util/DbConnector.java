@@ -2,7 +2,11 @@ package ch.so.agi.gretl.util;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.logging.Logger;
+
+
+
+
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,7 +16,8 @@ import java.sql.SQLException;
 
 public class DbConnector {
     private static Connection con=null;
-    private static GretlLogger log;
+    private GretlLogger log;
+
     public DbConnector() {
         this.log= LogEnvironment.getLogger(this.getClass());
     }
@@ -28,12 +33,12 @@ public class DbConnector {
      */
 
     public static Connection connect(String ConnectionUrl, String UserName, String Password) {
+        DbConnector dbConnector =new DbConnector();
         try {
             con = DriverManager.getConnection(
                     ConnectionUrl,UserName,Password);
             con.setAutoCommit(false);
-            log.info("Blaaaa");
-            Logger.log(Logger.DEBUG_LEVEL, "DB connected with these Parameters:  ConnectionURL:" + ConnectionUrl
+            dbConnector.log.debug("DB connected with these Parameters:  ConnectionURL:" + ConnectionUrl
                         + " Username: " + UserName + " Password: " + Password);
         } catch (SQLException e) {
             if (con!=null) {
@@ -42,7 +47,7 @@ public class DbConnector {
                     con.close();
                     con = null;
                 } catch (SQLException f) {
-                    Logger.log(Logger.INFO_LEVEL, f);
+                    dbConnector.log.info(f.toString());
                 }
             }
             throw new RuntimeException("Could not connect with database: ", e);

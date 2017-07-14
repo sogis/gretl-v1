@@ -74,14 +74,20 @@ public class Db2DbStepTest {
         ));
 
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
+
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
         ////////////////////////////
         // Test-Subjekt ////////////
         ////////////////////////////
 
-        Db2DbStep db2db = new Db2DbStep();
-        db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
+        db2db.processAllTransferSets(mylist);
 
 
         //////////////////////////////
@@ -129,17 +135,24 @@ public class Db2DbStepTest {
         ));
 
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
 
-        Db2DbStep db2db = new Db2DbStep();
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            db2db.processAllTransferSets(mylist);
             Assert.fail();
         } catch (NotAllowedSqlExpressionException e) {
 
         } finally {
+            xcon.close();
+            ycon.close();
             stmt.execute("DROP TABLE colors");
             con.close();
         }
@@ -172,17 +185,24 @@ public class Db2DbStepTest {
         ));
 
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
 
-        Db2DbStep db2db = new Db2DbStep();
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            db2db.processAllTransferSets(mylist);
             Assert.fail("EmptyFileException müsste geworfen werden");
         } catch (EmptyFileException e) {
 
         } finally {
+            xcon.close();
+            ycon.close();
             stmt.execute("DROP TABLE colors");
             con.close();
         }
@@ -218,19 +238,26 @@ public class Db2DbStepTest {
         ));
 
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
 
-        Db2DbStep db2db = new Db2DbStep();
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            db2db.processAllTransferSets(mylist);
             Assert.fail("EmptyFileException müsste geworfen werden");
             log.info("You should not be here!");
         } catch (SQLException e) {
             log.info("Got SQLException. YEA!"+e.getMessage());
         } finally {
             log.info("Finally, Ufff.... ");
+            xcon.close();
+            ycon.close();
             stmt.execute("DROP TABLE colors");
             con.close();
         }
@@ -269,19 +296,26 @@ public class Db2DbStepTest {
         ));
 
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
 
-        Db2DbStep db2db = new Db2DbStep();
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            db2db.processAllTransferSets(mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
             log.info("You should not be here!");
         } catch (SQLException e) {
             log.info("Got SQLException. YEA!"+e.getMessage());
         } finally {
             log.info("Finally, Ufff.... ");
+            xcon.close();
+            ycon.close();
             stmt.execute("DROP TABLE colors");
             con.close();
         }
@@ -319,19 +353,27 @@ public class Db2DbStepTest {
                 "colors_copy"
         ));
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
-        Db2DbStep db2db = new Db2DbStep();
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
+
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            db2db.processAllTransferSets(mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
             log.info("You should not be here!");
         } catch (SQLException e) {
             log.info("Got SQLException. YEA!"+e.getMessage());
         } finally {
             log.info("Finally, Ufff.... ");
+            xcon.close();
+            ycon.close();
             stmt.execute("DROP TABLE colors");
             con.close();
         }
@@ -366,19 +408,26 @@ public class Db2DbStepTest {
         ));
 
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
 
-        Db2DbStep db2db = new Db2DbStep();
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            db2db.processAllTransferSets(mylist);
             log.info("EmptyTableTest is fine");
         } catch (SQLException e) {
             log.info("Got SQLException. "+e.getMessage());
             throw new Exception(e);
         } finally {
             log.info("Finally, Ufff.... ");
+            xcon.close();
+            ycon.close();
             stmt.execute("DROP TABLE colors");
             con.close();
         }
@@ -415,19 +464,27 @@ public class Db2DbStepTest {
                 "colors_copy"
         ));
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
-        Db2DbStep db2db = new Db2DbStep();
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
+
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            db2db.processAllTransferSets(mylist);
             log.info("NULL-Value Test succeeded");
         } catch (SQLException e) {
             log.info("Got SQLException. "+e.getMessage());
             throw new Exception(e);
         } finally {
             log.info("Finally, Ufff.... ");
+            xcon.close();
+            ycon.close();
             stmt.execute("DROP TABLE colors");
             con.close();
         }
@@ -465,13 +522,18 @@ public class Db2DbStepTest {
         ));
 
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
 
-        Db2DbStep db2db = new Db2DbStep();
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
 
         try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            db2db.processAllTransferSets(mylist);
             ResultSet rs = stmt.executeQuery("SELECT * FROM colors_copy");
             //////////////////////////////
             // Verifikation /////////////
@@ -485,13 +547,75 @@ public class Db2DbStepTest {
             }
         } finally {
             log.info("Finally, Ufff.... ");
+            xcon.close();
+            ycon.close();
             stmt.execute("DROP TABLE colors");
             con.close();
         }
     }
     //TEST with ORACLE and PostgreSQL ////////////////////////////////
 
-    //MUSS NOCH ÜBERDACHT WERDEN. SOLLTE JA AUTOMATISCH DURCHLAUFEN!
+    //ACHTUNG: Dieser Test läuft nicht ohne weiteres! Es braucht manuelle Anpassungen in der DB-Konfiguration!
+
+    @Test
+    public void PostgresqlDerbyTest() throws Exception {
+        //unittest
+        DbConnector dbConn = new DbConnector();
+        Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        con.setAutoCommit(true);
+        Statement stmt = con.createStatement();
+        stmt.execute("CREATE TABLE colors ( " +
+                "  rot integer, " +
+                "  gruen integer, " +
+                "  blau integer, " +
+                "  farbname VARCHAR(200))");
+        stmt.execute("INSERT INTO colors  VALUES (342,123,222,'blau')");
+        stmt.execute("INSERT INTO colors  VALUES (251,0,0,'rot')");
+        stmt.execute("INSERT INTO colors  VALUES (0,0,255,NULL)");
+
+        Connection con2 = DbConnector.connect("jdbc:postgresql://10.36.54.200:54321/sogis", "bjsvwsch", null);
+        con2.setAutoCommit(true);
+        Statement stmt2 = con2.createStatement();
+
+        stmt2.execute("CREATE TABLE IF NOT EXISTS colors_copy (rot integer, gruen integer, blau integer, farbname VARCHAR(200))");
+
+        File sqlFile = folder.newFile("query.sql");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
+        writer.write("SELECT * FROM colors");
+        writer.close();
+
+        ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
+        mylist.add(new TransferSet(
+                new Boolean(true),
+                sqlFile.getAbsolutePath(),
+                "colors_copy"
+        ));
+
+
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
+
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:postgresql://10.36.54.200:54321/sogis", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
+
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
+
+        try {
+            db2db.processAllTransferSets(mylist);
+            log.info("DerbyToPostgreSQL succeeded");
+        } catch (SQLException e) {
+            log.info("Got SQLException. "+e.getMessage());
+            throw new Exception(e);
+        } finally {
+            log.info("Finally, Ufff.... ");
+            xcon.close();
+            ycon.close();
+            stmt.execute("DROP TABLE colors");
+            con.close();
+        }
+    }
 
     //TEST if Connections close at the end of the process
 
@@ -530,19 +654,24 @@ public class Db2DbStepTest {
         ));
 
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
+
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
 
 
-        Db2DbStep db2db = new Db2DbStep();
-        db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
+        db2db.processAllTransferSets(mylist);
 
 
         //////////////////////////////
         // Verifikation /////////////
         /////////////////////////////
 
-        if ((!sourceDb.getDbConnection().isClosed())||(!targetDb.getDbConnection().isClosed())) {
+        if ((!xcon.isClosed())||(!ycon.isClosed())) {
             throw new ConnectException(e) {
             };
         }
@@ -585,13 +714,18 @@ public class Db2DbStepTest {
         ));
 
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        DbConnector x = new DbConnector();
+        Connection xcon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        xcon.setAutoCommit(true);
+
+        DbConnector y = new DbConnector();
+        Connection ycon = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        ycon.setAutoCommit(true);
 
 
-        Db2DbStep db2db = new Db2DbStep();
+        Db2DbStep db2db = new Db2DbStep(xcon, ycon);
         try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            db2db.processAllTransferSets(mylist);
         } catch (SQLException e) {
             log.info("Got a SQL Exception as expected");
             //System.out.println("Got a SQL Exception s expected");
@@ -601,7 +735,7 @@ public class Db2DbStepTest {
         // Verifikation /////////////
         /////////////////////////////
 
-        if ((!sourceDb.getDbConnection().isClosed())||(!targetDb.getDbConnection().isClosed())) {
+        if ((!xcon.isClosed())||(!ycon.isClosed())) {
             throw new ConnectException(e) {
             };
         }
