@@ -18,7 +18,7 @@ public class TransactionContext  {
     private String dbUri;
     private String dbUser;
     private String dbPassword;
-    private static GretlLogger log;
+    private GretlLogger log;
 
 
     //KONSTRUKTOR
