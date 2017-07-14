@@ -19,16 +19,16 @@ public class TransactionContext  {
     private String dbUser;
     private String dbPassword;
     private GretlLogger log;
+    private Connection dbConnection = null;
 
 
-    //KONSTRUKTOR
     public TransactionContext(String dbUri, String dbUser, String dbPassword) {
         this.dbUri = dbUri;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-    //KONSTRUKTOR ENDE
+
 
     public Connection getDbConnection() {
         if (dbConnection == null) {
@@ -36,8 +36,6 @@ public class TransactionContext  {
         }
         return dbConnection;
     }
-
-    private Connection dbConnection = null;
 
     public void dbConnectionClose() {
         try {
@@ -47,15 +45,16 @@ public class TransactionContext  {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-
         }
     }
+
 
     public void dbCommit() throws SQLException {
             if (dbConnection != null) {
                 dbConnection.commit();
             }
     }
+
 
     public void dbRollback() throws SQLException {
         if (dbConnection != null) {
