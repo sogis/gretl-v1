@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.sql.Connection;
 
 /**
- * Created by bjsvwsch on 03.05.17.
+ * Test for the Class DbConnector
  */
 public class DbConnectorTest {
 

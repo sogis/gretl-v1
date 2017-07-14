@@ -19,12 +19,21 @@ public class FileExtension {
     public static String getFileExtension(File inputFile)
             throws Exception {
 
+        String [] splittedFilePath = splitFilePathAtPoint(inputFile);
+        return getFileExtensionFromArray(splittedFilePath);
+
+    }
+
+    private static String[] splitFilePathAtPoint (File inputFile)
+            throws Exception {
         String filePath =inputFile.getAbsolutePath();
-        String[] splittedFilePath = filePath.split("\\.");
+        return filePath.split("\\.");
+    }
+
+    private static String getFileExtensionFromArray(String[] splittedFilePath) throws Exception{
         Integer arrayLength=splittedFilePath.length;
         if (arrayLength >=2) {
-            String FileExtension = splittedFilePath[arrayLength - 1];
-            return FileExtension;
+            return splittedFilePath[arrayLength - 1];
         } else  {
             throw new Exception("Error: File without Fileextension");
         }

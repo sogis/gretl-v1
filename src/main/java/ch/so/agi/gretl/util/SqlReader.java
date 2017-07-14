@@ -13,7 +13,7 @@ public class SqlReader {
         StringBuffer stmt=new StringBuffer();
         int c=reader.read();
 
-        createStatement(c,reader,stmt);
+        stmt = createStatement(c,reader,stmt);
 
         if(stmt.length()==0){
             return null;
@@ -27,7 +27,7 @@ public class SqlReader {
             throws IOException{
 
         while(c!=-1) {
-            handlingGivenCharacters(c,reader,stmt);
+            stmt = handlingGivenCharacters(c,reader,stmt);
             c=reader.read();
         }
         return stmt;
@@ -38,19 +38,19 @@ public class SqlReader {
             throws IOException{
         switch (c) {
             case '-':
-                checkCharacterAfterHyphen(reader,stmt);
+                stmt = checkCharacterAfterHyphen(reader,stmt);
                 break;
             case '\'':
-                addingQuotedString(c, reader, stmt);
+                stmt = addingQuotedString(c, reader, stmt);
                 break;
             case ';':
-                splitStatement(c, reader, stmt);
+                stmt = splitStatement(c, reader, stmt);
                 break;
             case '\n':
-                replaceLineBreakCharacter(c, reader, stmt);
+                stmt = replaceLineBreakCharacter(c, reader, stmt);
                 break;
             case '\r':
-                replaceLineBreakCharacter(c, reader, stmt);
+                stmt = replaceLineBreakCharacter(c, reader, stmt);
                 break;
             default:
                 stmt.append((char) c);

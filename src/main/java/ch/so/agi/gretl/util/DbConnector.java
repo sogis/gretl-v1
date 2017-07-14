@@ -3,11 +3,6 @@ package ch.so.agi.gretl.util;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
-
-
-
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
