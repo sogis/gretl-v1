@@ -38,7 +38,7 @@ public class SqlExecutorStepTest {
     }
 
     @After
-    public void delete() throws Exception {
+    public void finalise() throws Exception {
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
         clearTestDb(sourceDb);
     }
