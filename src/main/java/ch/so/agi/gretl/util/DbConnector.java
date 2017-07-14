@@ -1,9 +1,12 @@
 package ch.so.agi.gretl.util;
 
-
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import org.sqlite.core.DB;
+
+
+
+
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,9 +18,8 @@ public class DbConnector {
     private static Connection con=null;
     private GretlLogger log;
 
-
     public DbConnector() {
-        this.log = LogEnvironment.getLogger(this.getClass());
+        this.log= LogEnvironment.getLogger(this.getClass());
     }
 
     /**
