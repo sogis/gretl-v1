@@ -13,7 +13,8 @@ import java.util.List;
 
 
 /**
- * Created by bjsvwsch on 03.05.17.
+ * The Db2DbStep Class is used as a Step for transfer of data from one to anoter (or the same) database.
+ * In the input SQL-File there could be a more or less complex Select Statement.
  */
 
 
@@ -23,16 +24,16 @@ public class Db2DbStep {
     private Connection targetDbConnection;
     private GretlLogger log;
 
-
-    /** KONSTRUKTOR **/
+    /** Constructor **/
     public Db2DbStep() {
-
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
     /**
-     * Führt für alle Transfersets die Transfers von der Quell- in die Zieldatenbank
-     * durch und schliesst die Transaktion ab.
+     * Main Methode.Calls for each transferSet methode processTransferSet
+     * @param sourceDb
+     * @param targetDb
+     * @param transferSets
      */
     public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
         log.info( "Found "+transferSets.size()+" transferSets");
@@ -45,11 +46,14 @@ public class Db2DbStep {
     }
 
     /**
-     * Führt für das Transferset den Transfer vom Quell-Resultset in die entsprechende Tabelle
-     * der Zieldatenbank durch.
+     * Controls the execution of a TransferSet
      * @param srcCon
      * @param targetCon
      * @param transferSet
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws EmptyFileException
+     * @throws NotAllowedSqlExpressionException
      */
     private void processTransferSet(Connection srcCon, Connection targetCon, TransferSet transferSet) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
         try {
@@ -78,13 +82,13 @@ public class Db2DbStep {
     }
 
     /**
-     * Kopiert eine Zeile des Quell-ResultSet in die Zieltabelle
+     * Copies a row of the source ResultSet to the target table
      * @param rs
      * @param insertRowStatement
      * @param columncount
+     * @throws SQLException
      */
     private void transferRow(ResultSet rs, PreparedStatement insertRowStatement, int columncount) throws SQLException {
-        // insert
         // assign column wise values
         for (int j = 1; j <= columncount; j++) {
             insertRowStatement.setObject(j,rs.getObject(j));
@@ -92,6 +96,12 @@ public class Db2DbStep {
         insertRowStatement.execute();
     }
 
+    /**
+     * Delete the content of the target table
+     * @param targetCon
+     * @param destTableName
+     * @throws SQLException
+     */
     private void deleteDestTableContents(Connection targetCon, String destTableName) throws SQLException {
         String sqltruncate = "DELETE FROM "+destTableName;
         log.info("Try to delete all rows in Table "+destTableName);
@@ -106,10 +116,12 @@ public class Db2DbStep {
         }
     }
 
-
-
     /**
-     * Erstellt mittels Quell-SelectStatement auf die Quelldatenbank das ResultSet.
+     * Creates the ResultSet with the SelectStatement from the InputFile
+     * @param srcCon
+     * @param sqlSelectStatement
+     * @return
+     * @throws SQLException
      */
     private ResultSet createResultSet(Connection srcCon, String sqlSelectStatement) throws SQLException {
         Statement SQLStatement = sourceDbConnection.createStatement();
@@ -119,12 +131,11 @@ public class Db2DbStep {
     }
 
     /**
-     * Erstellt aufgrund der Metadaten des Quell-SelectStatements das Statement für den Insert einer
-     * Zeile in die Zieltabelle
+     * Creates woth the meta-data from the SelectStatement the Insert-Statement
      * @param srcCon
      * @param rs
      * @param destTableName
-     * * @return
+     * @throws SQLException
      */
 
     private PreparedStatement createInsertRowStatement(Connection srcCon, ResultSet rs, String destTableName) throws SQLException {
@@ -166,6 +177,15 @@ public class Db2DbStep {
 
         return insertRowStatement;
     }
+
+    /**
+     * Extracts a single statement out of the SQL-file and checks if it fits the conditions.
+     * @param targetFile
+     * @return
+     * @throws FileNotFoundException
+     * @throws EmptyFileException
+     * @throws NotAllowedSqlExpressionException
+     */
 
     private String extractSingleStatement(File targetFile) throws FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
         if(!targetFile.canRead()) {throw new FileNotFoundException();}
@@ -222,13 +242,19 @@ public class Db2DbStep {
         return firstline;
     }
 
+    /**
+     * Checks if a String contains a keyword from a List
+     * @param myString
+     * @param keywords
+     */
+
     private boolean containsAKeyword(String myString, List<String> keywords){
         for(String keyword : keywords){
             if(myString.contains(keyword)){
                 return true;
             }
         }
-        return false; // Never found match.
+        return false;
     }
 
 
