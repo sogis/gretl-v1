@@ -3,9 +3,7 @@ package ch.so.agi.gretl.steps;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedWriter;
@@ -33,12 +31,24 @@ public class SqlExecutorStepTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    @Before
+    public void initialize() throws Exception {
+        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        createTestDb(sourceDb);
+    }
+
+    @After
+    public void delete() throws Exception {
+        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        clearTestDb(sourceDb);
+    }
+
 
     @Test
     public void executeWithoutFiles() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-        createTestDb(sourceDb);
+        //createTestDb(sourceDb);
         List<File> sqlListe = new ArrayList<>();
 
         try {
@@ -89,7 +99,7 @@ public class SqlExecutorStepTest {
         SqlExecutorStep x = new SqlExecutorStep();
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
-        createTestDb(sourceDb);
+        //createTestDb(sourceDb);
 
         List<File>sqlListe = createCorrectSqlFiles();
         sqlListe.add(createEmptySqlFile());
@@ -103,7 +113,7 @@ public class SqlExecutorStepTest {
         SqlExecutorStep x = new SqlExecutorStep();
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
-        createTestDb(sourceDb);
+        //createTestDb(sourceDb);
 
         List<File> sqlListe = createWrongSqlFiles();
 
@@ -122,19 +132,26 @@ public class SqlExecutorStepTest {
         SqlExecutorStep x = new SqlExecutorStep();
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
-        createTestDb(sourceDb);
+        //createTestDb(sourceDb);
 
         List<File> sqlListe = createCorrectSqlFiles();
 
         x.execute(sourceDb,sqlListe);
     }
 
+    private void clearTestDb(TransactionContext sourceDb) throws Exception {
+        Connection con = sourceDb.getDbConnection();
+        con.setAutoCommit(true);
+        Statement stmt = con.createStatement();
+        stmt.execute("DROP TABLE colors");
+    }
 
     private void createTestDb(TransactionContext sourceDb )
             throws Exception{
         Connection con = sourceDb.getDbConnection();
         con.setAutoCommit(true);
         createTableInTestDb(con);
+        con.close();
 
     }
 
