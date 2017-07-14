@@ -48,7 +48,7 @@ public class SqlExecutorStepTest {
     public void executeWithoutFiles() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-        //createTestDb(sourceDb);
+
         List<File> sqlListe = new ArrayList<>();
 
         try {
@@ -99,8 +99,6 @@ public class SqlExecutorStepTest {
         SqlExecutorStep x = new SqlExecutorStep();
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
-        //createTestDb(sourceDb);
-
         List<File>sqlListe = createCorrectSqlFiles();
         sqlListe.add(createEmptySqlFile());
 
@@ -112,8 +110,6 @@ public class SqlExecutorStepTest {
     public void executeWrongQuery() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
-        //createTestDb(sourceDb);
 
         List<File> sqlListe = createWrongSqlFiles();
 
@@ -131,8 +127,6 @@ public class SqlExecutorStepTest {
     public void executePositiveTest() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
-        //createTestDb(sourceDb);
 
         List<File> sqlListe = createCorrectSqlFiles();
 
