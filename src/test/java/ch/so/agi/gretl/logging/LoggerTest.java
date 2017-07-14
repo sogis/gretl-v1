@@ -25,6 +25,7 @@ public class LoggerTest {
     }
 
 
+    /*Not working with ./gradlew test : The question is where will the Infolog be written? It seems not on System.err*/
     @Test
     public void logInfoTest() throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
