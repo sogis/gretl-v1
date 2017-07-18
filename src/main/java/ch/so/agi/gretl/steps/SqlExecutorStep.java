@@ -4,6 +4,7 @@ import ch.so.agi.gretl.util.FileExtension;
 import ch.so.agi.gretl.util.SqlReader;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import com.microsoft.sqlserver.jdbc.SQLServerConnectionPoolProxy;
 
 import java.io.*;
 import java.sql.Connection;
@@ -39,11 +40,14 @@ public class SqlExecutorStep {
     public  void execute(TransactionContext trans, List<File> sqlfiles)
             throws Exception {
 
+        Connection db = null;
+
         log.info("Start SqlExecutorStep");
 
         checkIfAtLeastOneSqlFileIsGiven(sqlfiles);
 
         logPathToInputSqlFiles(sqlfiles);
+
 
 
         try{
@@ -54,12 +58,18 @@ public class SqlExecutorStep {
             readSqlFiles(sqlfiles, db);
 
             db.commit();
-            db.close();
-
-            //todo wie wird sichergestellt dass die connection in jedem fall geschlossen ist?
 
         } catch (Exception e){
+            if (db!=null) {
+                db.rollback();
+            }
             throw new Exception ("Could not connect to Database: " + e);
+
+        } finally {
+            if (db!=null){
+                db.close();
+            }
+
         }
     }
 
