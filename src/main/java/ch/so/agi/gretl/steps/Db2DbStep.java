@@ -9,24 +9,18 @@ import ch.so.agi.gretl.util.SqlReader;
 
 import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
-
-//todo kein Abstand zwischen klassenkommentar und klasse selbst
 //todo doku der klasse: Was macht sie genau? Was ist ein Transferset?
 
 /**
- * The Db2DbStep Class is used as a Step for transfer of data from one to anoter (or the same) database.
- * In the input SQL-File there could be a more or less complex Select Statement.
+ * The Db2DbStep Class is used as a step for transfer of tabulated data from one to anoter database.
+ * It needs a sourceDb (TransactionContext), a targetDb (TransactionContext) and a list of transferSet, containing 1. a
+ * boolean paramterer concerning the emptying of the Targettable, 2. a SQL-file containing a SELECT-statement and
+ * 3. a qualified target schema and table name (schema.table).
  */
-
-
 public class Db2DbStep {
 
-    //todo wieso nicht gleich den TransactionContext verwenden? Oder wofür sind dessen Methoden
-    private Connection sourceDbConnection;
-    private Connection targetDbConnection;
     private GretlLogger log;
 
     /** Constructor **/
@@ -45,13 +39,33 @@ public class Db2DbStep {
      * @throws NotAllowedSqlExpressionException
      * @throws EmptyListException
      */
-    public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException, EmptyListException {
+    public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws Exception {
         checkIfListNotEmpty(transferSets);
         log.info( "Found "+transferSets.size()+" transferSets");
-        sourceDbConnection = sourceDb.getDbConnection();
-        targetDbConnection = targetDb.getDbConnection();
-        for(TransferSet transferSet : transferSets){
-            processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
+        try {
+            Connection sourceDbConnection = sourceDb.getDbConnection();
+            Connection targetDbConnection = targetDb.getDbConnection();
+            for(TransferSet transferSet : transferSets){
+                if(!transferSet.getInputSqlFile().canRead()) {
+                    throw new IllegalArgumentException("File"+transferSet.getInputSqlFile().getName()+" not found or not readable");
+                }
+                processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
+            }
+        } catch (Exception e) {
+            if (sourceDb.getDbConnection()!=null) {
+                sourceDb.getDbConnection().rollback();
+            }
+            if (targetDb.getDbConnection() != null) {
+                targetDb.getDbConnection().rollback();
+            }
+            throw new Exception("Could not connect to Database: "+e);
+        } finally {
+            if (sourceDb.getDbConnection() != null) {
+                sourceDb.getDbConnection().close();
+            }
+            if (targetDb.getDbConnection() != null) {
+                targetDb.getDbConnection().close();
+            }
         }
 
     }
@@ -67,28 +81,20 @@ public class Db2DbStep {
      * @throws NotAllowedSqlExpressionException
      */
     private void processTransferSet(Connection srcCon, Connection targetCon, TransferSet transferSet) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
-        try {
-            if (transferSet.getDeleteAllRows() == true) {
-                deleteDestTableContents(targetCon, transferSet.getOutputQualifiedSchemaAndTableName());
-            }
-            String selectStatement = extractSingleStatement(transferSet.getInputSqlFile());
+        if (transferSet.getDeleteAllRows() == true) {
+            deleteDestTableContents(targetCon, transferSet.getOutputQualifiedSchemaAndTableName());
+        }
+        String selectStatement = extractSingleStatement(transferSet.getInputSqlFile());
+        ResultSet rs = createResultSet(srcCon, selectStatement);
+        PreparedStatement insertRowStatement = createInsertRowStatement(
+                srcCon,
+                targetCon,
+                rs,
+                transferSet.getOutputQualifiedSchemaAndTableName());
 
-            ResultSet rs = createResultSet(srcCon, selectStatement);
-
-            PreparedStatement insertRowStatement = createInsertRowStatement(
-                    srcCon,
-                    rs,
-                    transferSet.getOutputQualifiedSchemaAndTableName());
-
-            int columncount = rs.getMetaData().getColumnCount();
-            while (rs.next()) {
-                transferRow(rs, insertRowStatement, columncount);
-            }
-        } finally { //todo ist am falschen ort; eine Transaktion über alle transfersets....
-            srcCon.rollback(); //todo wieso rollback im finally?!
-            srcCon.close();
-            targetCon.rollback();
-            targetCon.close();
+        int columncount = rs.getMetaData().getColumnCount();
+        while (rs.next()) {
+            transferRow(rs, insertRowStatement, columncount);
         }
     }
 
@@ -117,7 +123,7 @@ public class Db2DbStep {
         String sqltruncate = "DELETE FROM "+destTableName;
         log.info("Try to delete all rows in Table "+destTableName);
         try {
-            PreparedStatement truncatestmt = targetDbConnection.prepareStatement(sqltruncate);
+            PreparedStatement truncatestmt = targetCon.prepareStatement(sqltruncate);
             truncatestmt.execute();
             log.info( "DELETE succesfull!");
         } catch (SQLException e1) {
@@ -135,7 +141,7 @@ public class Db2DbStep {
      * @throws SQLException
      */
     private ResultSet createResultSet(Connection srcCon, String sqlSelectStatement) throws SQLException {
-        Statement SQLStatement = sourceDbConnection.createStatement();
+        Statement SQLStatement = srcCon.createStatement();
         ResultSet rs = SQLStatement.executeQuery(sqlSelectStatement);
 
         return rs;
@@ -144,12 +150,11 @@ public class Db2DbStep {
     /**
      * Creates woth the meta-data from the SelectStatement the Insert-Statement
      * @param srcCon
+     * @param targetCon
      * @param rs
-     * @param destTableName
-     * @throws SQLException
+     * @param destTableName   @throws SQLException
      */
-
-    private PreparedStatement createInsertRowStatement(Connection srcCon, ResultSet rs, String destTableName) throws SQLException {
+    private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, String destTableName) throws SQLException {
         ResultSetMetaData meta = null;
         Statement dbstmt = null;
         StringBuilder columnNames = null;
@@ -174,18 +179,14 @@ public class Db2DbStep {
             columnNames.append(meta.getColumnName(j));
             bindVariables.append("?");
         }
-        //todo finales logging ist unpersönlich - hier besser z.B: "Transfering x rows with y columns to table z"
-        log.info( "I got "+j+" columns");
-        // prepare destination sql
+        log.debug("Transfering table with "+rs.getFetchSize()+" rows and "+meta.getColumnCount()+" columns to table "+destTableName);
+
         String sql = "INSERT INTO " + destTableName + " ("
                 + columnNames
                 + ") VALUES ("
                 + bindVariables
                 + ")";
-        log.debug("INSERT STATEMENT RAW = "+sql);
-        //System.out.print("INSERT STATEMENT RAW = "+sql);
-
-        PreparedStatement insertRowStatement = targetDbConnection.prepareStatement(sql);
+        PreparedStatement insertRowStatement = targetCon.prepareStatement(sql);
 
         return insertRowStatement;
     }
@@ -198,29 +199,13 @@ public class Db2DbStep {
      * @throws EmptyFileException
      * @throws NotAllowedSqlExpressionException
      */
-
-    private String extractSingleStatement(File targetFile) throws FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
-        //todo check ist gut, hier aber am falschen ort. Gleich eingangs in der Toplevel methode prüfen
-        //todo FileNotFoundException kann irreführend sein -  die Datei kann vorhanden sein, aber für den Benutzer nicht lesbar. Besser IllegalArgumentException mit treffender eigener Fehlermeldung
-        if(!targetFile.canRead()) {throw new FileNotFoundException();}
+    private String extractSingleStatement(File targetFile) throws EmptyFileException, NotAllowedSqlExpressionException, FileNotFoundException {
 
         //todo untenstehender block gehört in den SqlReader - seid pingelig bezüglich codeverdoppelungen
         FileReader read = new FileReader(targetFile);
         PushbackReader reader = null;
         reader = new PushbackReader(read);
         String line = null;
-
-        /*todo bist du wirklich 100% sicher dass es kein korrektes statement geben kann in welchem eines dieser keywords vorkommt?
-            Es liegt in der Verantwortung der Benutzer ihre skripte richtig zu schreiben - diesbezüglich vieleicht Andi als Auftraggeber fragen
-         */
-
-        /** LIST of forbidden words **/
-        List<String> keywords = new ArrayList<>();
-        keywords.add("INSERT");
-        keywords.add("DELETE");
-        keywords.add("UPDATE");
-        keywords.add("DROP");
-        keywords.add("CREATE");
 
         String firstline = null;
         try {
@@ -233,11 +218,6 @@ public class Db2DbStep {
                 firstline = line.trim();
                 if (firstline.length() > 0) {
                     log.info( "Statement found. Length: " + firstline.length()+" caracters");
-                    //Check if there are no bad words in the Statement
-                    if (containsAKeyword(firstline, keywords) == true) {
-                        log.info( "FOUND NOT ALLOWED WORDS IN SQL STATEMENT!");
-                        throw new NotAllowedSqlExpressionException();
-                    }
                 } else {
                     log.info( "NO STATEMENT IN FILE!");
                     throw new FileNotFoundException();
@@ -260,21 +240,6 @@ public class Db2DbStep {
             }
         }
         return firstline;
-    }
-
-    /**
-     * Checks if a String contains a keyword from a List
-     * @param myString
-     * @param keywords
-     */
-
-    private boolean containsAKeyword(String myString, List<String> keywords){
-        for(String keyword : keywords){
-            if(myString.contains(keyword)){//todo was ist wenn jemand insert klein schreibt? - Wird nicht funktionieren
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
