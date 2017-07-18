@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 
 /**
- * Test-Class for OldLogger-Class
+ * Test-Class for Logger-Class
  */
 public class LoggerTest {
 
@@ -39,7 +39,7 @@ public class LoggerTest {
         // Tell Java to use your special stream
         System.setErr(ps);
 
-        log.info("Info-OldLogger-Test");
+        log.info("Info-Logger-Test");
 
         // Put things back
         System.err.flush();
@@ -50,10 +50,10 @@ public class LoggerTest {
         String[] ArrayLogMessage = LogMessage.split("\\\n");
 
 
-        if (ArrayLogMessage[1].equals("INFO: Info-OldLogger-Test")) {
+        if (ArrayLogMessage[1].equals("INFO: Info-Logger-Test")) {
 
         } else {
-            assertFalse("OldLogger is not working properly: " + baos.toString(), true);
+            assertFalse("Logger is not working properly: " + baos.toString(), true);
         }
     }
 
@@ -74,7 +74,7 @@ public class LoggerTest {
         // Tell Java to use your special stream
         System.setErr(ps);
 
-        log.error("Error-OldLogger-Test");
+        log.error("Error-Logger-Test");
 
         // Put things back
         System.err.flush();
@@ -85,10 +85,10 @@ public class LoggerTest {
         String[] ArrayLogMessage = LogMessage.split("\\\n");
 
 
-        if (ArrayLogMessage[1].equals("SEVERE: Error-OldLogger-Test")) {
+        if (ArrayLogMessage[1].equals("SEVERE: Error-Logger-Test")) {
 
         } else {
-            assertFalse("OldLogger is not working properly: " + baos.toString(), true);
+            assertFalse("Logger is not working properly: " + baos.toString(), true);
         }
 
     }
@@ -104,7 +104,7 @@ public class LoggerTest {
         // Tell Java to use your special stream
         System.setErr(ps);
 
-        log.debug("Debug-OldLogger-Test");
+        log.debug("Debug-Logger-Test");
 
         // Put things back
         System.err.flush();
@@ -115,10 +115,10 @@ public class LoggerTest {
         String[] ArrayLogMessage = LogMessage.split("\\\n");
 
 
-        if (ArrayLogMessage[0].equals("DEBUG: Debug-OldLogger-Test")) {
+        if (ArrayLogMessage[0].equals("DEBUG: Debug-Logger-Test")) {
 
         } else {
-            assertFalse("OldLogger is not working properly: " + baos.toString(), true);
+            assertFalse("Logger is not working properly: " + baos.toString(), true);
         }
 
     }
