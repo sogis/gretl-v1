@@ -1,14 +1,49 @@
 package ch.so.agi.gretl.util;
 
-import java.io.IOException;
+import ch.so.agi.gretl.logging.GretlLogger;
+import ch.so.agi.gretl.logging.LogEnvironment;
+
+import java.io.*;
 
 /**
  * Class which reads the given sql-statements
  */
 public class SqlReader {
+    private static FileInputStream sqlFileInputStream;
+    private static InputStreamReader sqlFileReader;
+    private static PushbackReader reader;
 
-    public static String readSqlStmt(java.io.PushbackReader reader)
+
+    private static GretlLogger log = LogEnvironment.getLogger(SqlReader.class);
+
+    public static void createPushbackReader(File sqlfile) throws FileNotFoundException {
+        sqlFileInputStream = new FileInputStream(sqlfile);
+        sqlFileReader = new InputStreamReader(sqlFileInputStream);
+
+        reader = new PushbackReader(sqlFileReader);
+    }
+
+    public static String nextSqlStmt() throws IOException{
+
+        StringBuffer stmt=new StringBuffer();
+        int c=reader.read();
+
+
+        stmt = createStatement(c,reader,stmt);
+
+        if(stmt.length()==0){
+            closePushbackReader();
+            return null;
+        }
+
+        return stmt.toString();
+    };
+
+
+    public static String readSqlStmt(File sqlfile)
             throws IOException {
+
+        createPushbackReader(sqlfile);
 
         StringBuffer stmt=new StringBuffer();
         int c=reader.read();
@@ -29,13 +64,16 @@ public class SqlReader {
         while(c!=-1) {
             stmt = handlingGivenCharacters(c,reader,stmt);
             c=reader.read();
+            log.info("**"+c +"***");
         }
+        log.info(stmt.toString());
         return stmt;
     }
 
 
     private static StringBuffer handlingGivenCharacters(int c, java.io.PushbackReader reader, StringBuffer stmt)
             throws IOException{
+
         switch (c) {
             case '-':
                 stmt = checkCharacterAfterHyphen(reader,stmt);
@@ -147,6 +185,7 @@ private static StringBuffer checkCharacterAfterHyphen(java.io.PushbackReader rea
                 reader.unread(c);
             }
         }else{
+
             if(c!=-1){
                 reader.unread(c);
             }
@@ -171,6 +210,13 @@ private static StringBuffer checkCharacterAfterHyphen(java.io.PushbackReader rea
             }
         }
         return stmt;
+    }
+
+
+    public static void closePushbackReader()
+            throws IOException {
+        sqlFileReader.close();
+        sqlFileInputStream.close();
     }
 
 

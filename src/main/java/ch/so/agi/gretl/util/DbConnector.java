@@ -8,7 +8,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /** Utility-Class to open connections **/
-
 public class DbConnector {
     private static Connection con=null;
     private GretlLogger log;
@@ -26,7 +25,6 @@ public class DbConnector {
      * @param Password      password of given database user
      * @return              the connection to the specific database
      */
-
     public static Connection connect(String ConnectionUrl, String UserName, String Password) {
         DbConnector dbConnector =new DbConnector();
         try {

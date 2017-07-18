@@ -14,10 +14,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-//todo weiss ich aufgrund des kommentars mehr wie wenn ich die "nackte" klasse ohne kommentar sehe?
-// -> Wie ist die beziehung zwischen step und task und wieso?
+
 /**
- * This Class represents the SqlExecutorStep-Task
+ * This Class represents the the Task which executes the SQLExecutorStep
+ * Only this Class should execute the SQLExecutorStep. Users must use this Class to access SQLExecutorStep
  */
 public class SqlExecutorTask extends DefaultTask {
 
@@ -26,32 +26,25 @@ public class SqlExecutorTask extends DefaultTask {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
-//todo wieso sourceDB? Es gibt keine targetdb -> besser einfach database
+
     @Input
-    private TransactionContext sourceDb;
+    private TransactionContext database;
 
 
     @Input
     private List<String> sqlFiles;
 
-    private GretlLogger log;//todo kontrollieren und static machen - hab ich (oliver) ergänzt da es nichht kompiliert hat...
+    private static GretlLogger log;//todo kontrollieren und static machen - hab ich (oliver) ergänzt da es nichht kompiliert hat...
 
 
     @TaskAction
-    public void sqlExecuterStepTask() { //todo hier gibt's sicher noch einen sprechenderen namen für die methode
+    public void executeSQLExecutor() {
 
         List<File> files = convertToValidatedFileList(sqlFiles);
 
         try {
-            new SqlExecutorStep().execute(sourceDb, files);
+            new SqlExecutorStep().execute(database, files);
             log.info("Task start");
-            try {
-                sourceDb.dbCommit(); //todo kein connectionhandling im Task
-                //todo wo wird sichergestellt dass in jedem Fall die Connection geschlossen wird?
-            } catch (SQLException e) {
-                log.info("SQLException: " + e.getMessage());
-                throw new GradleException("SQLException: " + e.getMessage());
-            }
         } catch (Exception e) {
             log.info("Exception: "+e.getMessage());
             throw new GradleException("SqlExecutorStep: "+e.getMessage());
@@ -60,7 +53,7 @@ public class SqlExecutorTask extends DefaultTask {
 
     private static List<File> convertToValidatedFileList(List<String> filePaths){
 
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
 
         for(String filePath : filePaths)
         {
