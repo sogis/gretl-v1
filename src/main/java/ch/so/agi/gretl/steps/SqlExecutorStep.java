@@ -39,6 +39,8 @@ public class SqlExecutorStep {
     public  void execute(TransactionContext trans, List<File> sqlfiles)
             throws Exception {
 
+        Connection db = null;
+
         log.info("Start SqlExecutorStep");
 
         checkIfAtLeastOneSqlFileIsGiven(sqlfiles);
@@ -46,18 +48,27 @@ public class SqlExecutorStep {
         logPathToInputSqlFiles(sqlfiles);
 
 
+
         try{
-            Connection db = trans.getDbConnection();
+            db = trans.getDbConnection();
 
             checkFileExtensionsForSqlExtension(sqlfiles);
 
             readSqlFiles(sqlfiles, db);
 
             db.commit();
-            db.close();
 
         } catch (Exception e){
+            if (db!=null) {
+                db.rollback();
+            }
             throw new Exception ("Could not connect to Database: " + e);
+
+        } finally {
+            if (db!=null){
+                db.close();
+            }
+
         }
     }
 

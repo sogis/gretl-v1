@@ -8,8 +8,11 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -20,7 +23,7 @@ public class LoggerTest {
     private GretlLogger log;
 
     public LoggerTest() {
-        LogEnvironment.initStandalone();
+        LogEnvironment.initStandalone(Level.ALL);
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
@@ -52,7 +55,13 @@ public class LoggerTest {
         } else {
             assertFalse("Logger is not working properly: " + baos.toString(), true);
         }
+    }
 
+    @Test
+    public void testOutputsLogSource() throws Exception
+    {
+        Logger jlog = ((CoreJavaLogAdaptor)log).getInnerLogger();
+        assertEquals("The logSource must be equal to the name of this test class", jlog.getName(), this.getClass().getName());
     }
 
     @Test

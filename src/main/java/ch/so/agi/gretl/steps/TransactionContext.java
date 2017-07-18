@@ -29,7 +29,7 @@ public class TransactionContext  {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
-
+//todo autocommit eintstellungen nicht notwendig?
     public Connection getDbConnection() {
         if (dbConnection == null) {
             dbConnection = DbConnector.connect(dbUri, dbUser, dbPassword);
@@ -37,6 +37,7 @@ public class TransactionContext  {
         return dbConnection;
     }
 
+    //todo was ist der Mehrwert dieser Methode gegenüber einem einfachen Aufruf von dbConnection.close(); ?
     public void dbConnectionClose() {
         try {
             if (dbConnection != null) {
@@ -48,14 +49,14 @@ public class TransactionContext  {
         }
     }
 
-
+//todo mehrwert der methode?
     public void dbCommit() throws SQLException {
             if (dbConnection != null) {
                 dbConnection.commit();
             }
     }
 
-
+//todo mehrwert der methode?
     public void dbRollback() throws SQLException {
         if (dbConnection != null) {
             dbConnection.rollback();
