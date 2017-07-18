@@ -4,7 +4,6 @@ import ch.so.agi.gretl.util.FileExtension;
 import ch.so.agi.gretl.util.SqlReader;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import com.microsoft.sqlserver.jdbc.SQLServerConnectionPoolProxy;
 
 import java.io.*;
 import java.sql.Connection;
@@ -51,7 +50,7 @@ public class SqlExecutorStep {
 
 
         try{
-            Connection db = trans.getDbConnection();
+            db = trans.getDbConnection();
 
             checkFileExtensionsForSqlExtension(sqlfiles);
 
