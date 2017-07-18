@@ -56,6 +56,8 @@ public class SqlExecutorStep {
             db.commit();
             db.close();
 
+            //todo wie wird sichergestellt dass die connection in jedem fall geschlossen ist?
+
         } catch (Exception e){
             throw new Exception ("Could not connect to Database: " + e);
         }

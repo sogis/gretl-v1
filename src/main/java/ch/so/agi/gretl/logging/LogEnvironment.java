@@ -34,6 +34,9 @@ public class LogEnvironment {
         if(currentLogFactory == null)
             throw new IllegalArgumentException("The LogEnvironment must be initialized with one of the init* methods before calling getLogger");
 
+        if(logSource == null)
+            throw new IllegalArgumentException("The logSource must not be null");
+
         return currentLogFactory.getLogger(logSource);
     }
 }

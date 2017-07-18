@@ -19,7 +19,7 @@ import java.util.List;
  * Tests for the SqlExecutorStep
  */
 public class SqlExecutorStepTest {
-
+//todo noch zwei tests erstellen welche sicherstellen dass die connections immer geschlossen sind. Ein test "Sonnenpfad", ein test bei Ausführung mit exception
     private GretlLogger log;
 
     public SqlExecutorStepTest() {
