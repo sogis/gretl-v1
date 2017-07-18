@@ -228,6 +228,8 @@ public class Db2DbStepTest {
         Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
+
+        //todo codeverdoppelung. Untenstehendes gibt es schon in der oberen methode, es gibt schöne hilfsmethoden - wieso werden diese nicht verwendet?
         stmt.execute("CREATE TABLE colors ( " +
                 "  rot integer, " +
                 "  gruen integer, " +
@@ -390,7 +392,7 @@ public class Db2DbStepTest {
         db2db.processAllTransferSets(sourceDb, targetDb, mylist);
 
         if ((!sourceDb.getDbConnection().isClosed())||(!targetDb.getDbConnection().isClosed())) {
-            throw new ConnectException(e) {
+            throw new ConnectException(e) { //todo ConnectException ist auf kontext nicht zutreffend - besser zwei asserts verwenden für src und targetconnection
             };
         }
         con.getDbConnection().close();
@@ -425,7 +427,7 @@ public class Db2DbStepTest {
         }
 
         if ((!sourceDb.getDbConnection().isClosed())||(!targetDb.getDbConnection().isClosed())) {
-            throw new ConnectException(e) {
+            throw new ConnectException(e) { //todo siehe kommentar oben
             };
         }
         con.getDbConnection().close();

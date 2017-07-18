@@ -8,19 +8,22 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertEquals;
 
 
 /**
- * Test-Class for Logger-Class
+ * Test-Class for OldLogger-Class
  */
 public class LoggerTest {
 
     private GretlLogger log;
 
     public LoggerTest() {
-        LogEnvironment.initStandalone();
+        LogEnvironment.initStandalone(Level.ALL);
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
@@ -36,7 +39,7 @@ public class LoggerTest {
         // Tell Java to use your special stream
         System.setErr(ps);
 
-        log.info("Info-Logger-Test");
+        log.info("Info-OldLogger-Test");
 
         // Put things back
         System.err.flush();
@@ -47,12 +50,18 @@ public class LoggerTest {
         String[] ArrayLogMessage = LogMessage.split("\\\n");
 
 
-        if (ArrayLogMessage[1].equals("INFO: Info-Logger-Test")) {
+        if (ArrayLogMessage[1].equals("INFO: Info-OldLogger-Test")) {
 
         } else {
-            assertFalse("Logger is not working properly: " + baos.toString(), true);
+            assertFalse("OldLogger is not working properly: " + baos.toString(), true);
         }
+    }
 
+    @Test
+    public void testOutputsLogSource() throws Exception
+    {
+        Logger jlog = ((CoreJavaLogAdaptor)log).getInnerLogger();
+        assertEquals("The logSource must be equal to the name of this test class", jlog.getName(), this.getClass().getName());
     }
 
     @Test
@@ -65,7 +74,7 @@ public class LoggerTest {
         // Tell Java to use your special stream
         System.setErr(ps);
 
-        log.error("Error-Logger-Test");
+        log.error("Error-OldLogger-Test");
 
         // Put things back
         System.err.flush();
@@ -76,10 +85,10 @@ public class LoggerTest {
         String[] ArrayLogMessage = LogMessage.split("\\\n");
 
 
-        if (ArrayLogMessage[1].equals("SEVERE: Error-Logger-Test")) {
+        if (ArrayLogMessage[1].equals("SEVERE: Error-OldLogger-Test")) {
 
         } else {
-            assertFalse("Logger is not working properly: " + baos.toString(), true);
+            assertFalse("OldLogger is not working properly: " + baos.toString(), true);
         }
 
     }
@@ -95,7 +104,7 @@ public class LoggerTest {
         // Tell Java to use your special stream
         System.setErr(ps);
 
-        log.debug("Debug-Logger-Test");
+        log.debug("Debug-OldLogger-Test");
 
         // Put things back
         System.err.flush();
@@ -106,10 +115,10 @@ public class LoggerTest {
         String[] ArrayLogMessage = LogMessage.split("\\\n");
 
 
-        if (ArrayLogMessage[0].equals("DEBUG: Debug-Logger-Test")) {
+        if (ArrayLogMessage[0].equals("DEBUG: Debug-OldLogger-Test")) {
 
         } else {
-            assertFalse("Logger is not working properly: " + baos.toString(), true);
+            assertFalse("OldLogger is not working properly: " + baos.toString(), true);
         }
 
     }

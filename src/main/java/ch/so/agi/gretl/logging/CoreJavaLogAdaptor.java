@@ -25,4 +25,8 @@ public class CoreJavaLogAdaptor implements GretlLogger {
     public void error(String msg){
         logger.severe(msg);
     }
+
+    Logger getInnerLogger(){
+        return logger;
+    }
 }
