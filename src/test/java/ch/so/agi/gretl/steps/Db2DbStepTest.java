@@ -4,6 +4,7 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
+import ch.so.agi.gretl.util.EmptyListException;
 import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
 import org.junit.After;
 import org.junit.Assert;

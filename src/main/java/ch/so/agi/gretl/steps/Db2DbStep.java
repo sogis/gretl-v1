@@ -3,6 +3,7 @@ package ch.so.agi.gretl.steps;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.EmptyFileException;
+import ch.so.agi.gretl.util.EmptyListException;
 import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
 import ch.so.agi.gretl.util.SqlReader;
 
@@ -34,8 +35,14 @@ public class Db2DbStep {
      * @param sourceDb
      * @param targetDb
      * @param transferSets
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws EmptyFileException
+     * @throws NotAllowedSqlExpressionException
+     * @throws EmptyListException
      */
-    public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
+    public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException, EmptyListException {
+        checkIfListNotEmpty(transferSets);
         log.info( "Found "+transferSets.size()+" transferSets");
         sourceDbConnection = sourceDb.getDbConnection();
         targetDbConnection = targetDb.getDbConnection();
@@ -255,6 +262,17 @@ public class Db2DbStep {
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * @param transferSets
+     * @throws EmptyListException
+     */
+    private void checkIfListNotEmpty(List<TransferSet> transferSets) throws EmptyListException {
+        if(transferSets.size() == 0) {
+            throw new EmptyListException();
+        }
     }
 
 
