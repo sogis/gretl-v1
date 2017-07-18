@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+//todo kein Abstand zwischen klassenkommentar und klasse selbst
+//todo doku der klasse: Was macht sie genau? Was ist ein Transferset?
+
 /**
  * The Db2DbStep Class is used as a Step for transfer of data from one to anoter (or the same) database.
  * In the input SQL-File there could be a more or less complex Select Statement.
@@ -21,6 +24,7 @@ import java.util.List;
 
 public class Db2DbStep {
 
+    //todo wieso nicht gleich den TransactionContext verwenden? Oder wofür sind dessen Methoden
     private Connection sourceDbConnection;
     private Connection targetDbConnection;
     private GretlLogger log;
@@ -31,7 +35,7 @@ public class Db2DbStep {
     }
 
     /**
-     * Main Methode.Calls for each transferSet methode processTransferSet
+     * Main method. Calls for each transferSet methode processTransferSet
      * @param sourceDb
      * @param targetDb
      * @param transferSets
@@ -80,8 +84,8 @@ public class Db2DbStep {
             while (rs.next()) {
                 transferRow(rs, insertRowStatement, columncount);
             }
-        } finally {
-            srcCon.rollback();
+        } finally { //todo ist am falschen ort; eine Transaktion über alle transfersets....
+            srcCon.rollback(); //todo wieso rollback im finally?!
             srcCon.close();
             targetCon.rollback();
             targetCon.close();
@@ -170,6 +174,7 @@ public class Db2DbStep {
             columnNames.append(meta.getColumnName(j));
             bindVariables.append("?");
         }
+        //todo finales logging ist unpersönlich - hier besser z.B: "Transfering x rows with y columns to table z"
         log.info( "I got "+j+" columns");
         // prepare destination sql
         String sql = "INSERT INTO " + destTableName + " ("
@@ -195,11 +200,19 @@ public class Db2DbStep {
      */
 
     private String extractSingleStatement(File targetFile) throws FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
+        //todo check ist gut, hier aber am falschen ort. Gleich eingangs in der Toplevel methode prüfen
+        //todo FileNotFoundException kann irreführend sein -  die Datei kann vorhanden sein, aber für den Benutzer nicht lesbar. Besser IllegalArgumentException mit treffender eigener Fehlermeldung
         if(!targetFile.canRead()) {throw new FileNotFoundException();}
+
+        //todo untenstehender block gehört in den SqlReader - seid pingelig bezüglich codeverdoppelungen
         FileReader read = new FileReader(targetFile);
         PushbackReader reader = null;
         reader = new PushbackReader(read);
         String line = null;
+
+        /*todo bist du wirklich 100% sicher dass es kein korrektes statement geben kann in welchem eines dieser keywords vorkommt?
+            Es liegt in der Verantwortung der Benutzer ihre skripte richtig zu schreiben - diesbezüglich vieleicht Andi als Auftraggeber fragen
+         */
 
         /** LIST of forbidden words **/
         List<String> keywords = new ArrayList<>();
@@ -257,7 +270,7 @@ public class Db2DbStep {
 
     private boolean containsAKeyword(String myString, List<String> keywords){
         for(String keyword : keywords){
-            if(myString.contains(keyword)){
+            if(myString.contains(keyword)){//todo was ist wenn jemand insert klein schreibt? - Wird nicht funktionieren
                 return true;
             }
         }

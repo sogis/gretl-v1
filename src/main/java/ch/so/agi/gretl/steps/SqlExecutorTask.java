@@ -14,19 +14,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+//todo weiss ich aufgrund des kommentars mehr wie wenn ich die "nackte" klasse ohne kommentar sehe?
+// -> Wie ist die beziehung zwischen step und task und wieso?
 /**
  * This Class represents the SqlExecutorStep-Task
  */
 public class SqlExecutorTask extends DefaultTask {
-
-    private GretlLogger log;
 
     public SqlExecutorTask () {
         LogEnvironment.initGradleIntegrated();
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
-
+//todo wieso sourceDB? Es gibt keine targetdb -> besser einfach database
     @Input
     private TransactionContext sourceDb;
 
@@ -34,9 +34,11 @@ public class SqlExecutorTask extends DefaultTask {
     @Input
     private List<String> sqlFiles;
 
+    private GretlLogger log;//todo kontrollieren und static machen - hab ich (oliver) ergänzt da es nichht kompiliert hat...
+
 
     @TaskAction
-    public void sqlExecuterStepTask() {
+    public void sqlExecuterStepTask() { //todo hier gibt's sicher noch einen sprechenderen namen für die methode
 
         List<File> files = convertToValidatedFileList(sqlFiles);
 
@@ -44,7 +46,8 @@ public class SqlExecutorTask extends DefaultTask {
             new SqlExecutorStep().execute(sourceDb, files);
             log.info("Task start");
             try {
-                sourceDb.dbCommit();
+                sourceDb.dbCommit(); //todo kein connectionhandling im Task
+                //todo wo wird sichergestellt dass in jedem Fall die Connection geschlossen wird?
             } catch (SQLException e) {
                 log.info("SQLException: " + e.getMessage());
                 throw new GradleException("SQLException: " + e.getMessage());
