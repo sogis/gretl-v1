@@ -42,7 +42,7 @@ public class SqlExecutorStep {
 
         Connection db = null;
 
-        log.info("Start SqlExecutorStep");
+        log.livecycle("Start SqlExecutor with parameters TransactionContext: "  +trans + " SQL-Files: " + sqlfiles);
 
         checkIfAtLeastOneSqlFileIsGiven(sqlfiles);
 
@@ -59,6 +59,8 @@ public class SqlExecutorStep {
 
             db.commit();
 
+            log.livecycle("End SqlExecutor (successful)");
+
         } catch (Exception e){
             if (db!=null) {
                 db.rollback();
@@ -69,7 +71,6 @@ public class SqlExecutorStep {
             if (db!=null){
                 db.close();
             }
-
         }
     }
 
