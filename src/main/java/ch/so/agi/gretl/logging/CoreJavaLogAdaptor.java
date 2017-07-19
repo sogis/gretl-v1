@@ -1,35 +1,37 @@
 package ch.so.agi.gretl.logging;
 
-import java.util.logging.*;
+
+import java.util.logging.Logger;
 
 /**
- * Created by bjsvwjek on 12.07.17.
+ * Class behind the GretlLogger interface when using the
+ * steps without gradle (in unittests, ...).
  */
 public class CoreJavaLogAdaptor implements GretlLogger {
 
     private java.util.logging.Logger logger;
 
     CoreJavaLogAdaptor(Class logSource, Level logLevel){
-        //System.out.println("logSource in CoreJavaLogAdaptor = "+logSource.getName());
-        this.logger = Logger.getLogger(logSource.getName());
-        this.logger.setLevel(logLevel);
-
-
+        this.logger = java.util.logging.Logger.getLogger(logSource.getName());
+        this.logger.setLevel(logLevel.getInnerLevel());
     }
 
     public void info(String msg){
-        logger.info(msg);
+        logger.fine(msg);
     }
 
     public void debug(String msg){
-        logger.fine(msg);
+        logger.finer(msg);
     }
 
     public void error(String msg){
         logger.severe(msg);
     }
 
+    public void livecycle(String msg){ logger.config(msg); }
+
     Logger getInnerLogger(){
         return logger;
     }
 }
+

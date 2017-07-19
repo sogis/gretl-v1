@@ -3,7 +3,8 @@ package ch.so.agi.gretl.logging;
 import org.gradle.api.logging.*;
 
 /**
- * Created by bjsvwjek on 12.07.17.
+ * Class taking care of the logging when using the Steps
+ * integrated in Gradle (When running the corresponding Tasks in Gradle).
  */
 public class GradleLogAdaptor implements GretlLogger {
 
@@ -19,6 +20,10 @@ public class GradleLogAdaptor implements GretlLogger {
 
     public void debug(String msg){
         logger.debug(msg);
+    }
+
+    public void livecycle(String msg){
+        logger.lifecycle(msg);
     }
 
     public void error(String msg){
