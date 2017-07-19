@@ -58,30 +58,29 @@ Starten von IDEA mittels idea.sh im Verzeichnis ~/idea-IC-171.4073.35/bin
 
 **2.1.	Aufbau**
 
-Das Projekt GRETL ist in zwei Module aufgeteilt: core, steps. Im Core befinden sich Java-Klassen, welche in mehreren Klassen eingesetzt werden (können). Im Modul steps befinden sich die Java-Klassen der Steps und die dazugehörigen Tasks.
+Das Projekt GRETL ist in drei Packages aufgeteilt: logging, steps und util. Im Package logging befinden sich Java-Klassen, welche zum loggen eingesetzt werden. Im Modul steps befinden sich die Java-Klassen der Steps und die dazugehörigen Tasks. Im Package util befinden sich Klassen, welche verschiedene Aufgaben übernehmen (z.B. DbConnector, versch. Exceptions, SqlReader etc.)
 
 
 
 **2.2.	Lib**
 
-Im Verzeichnis lib (gretl/core/lib) sind die benötigten Bibliotheken abgelegt. Darunter sind vor allem jdbc-Treiber für die unterschiedlichen Datenbanktypen.
+Im Verzeichnis lib (gretl/lib) sind die benötigten Bibliotheken abgelegt. Darunter sind vor allem jdbc-Treiber für die unterschiedlichen Datenbanktypen.
 
-**2.3.	Core – Main**
+**2.3.	Util**
 
-Die folgenden Java-Klassen befinden sich im Main-Ordner des Moduls Core.
+Die folgenden Java-Klassen befinden sich im Package "util".
 
 2.3.1.	DbConnector
 
-Package: 	ch.so.agi.gretl.core
+Package: 	ch.so.agi.gretl.util
 
-Bei der DbConnector-Klasse handelt es ich um eine Utility-Class, welche nur eine Methode (connect) aufweist.
+Bei der DbConnector-Klasse handelt es ich um eine Utility-Class, welche nur eine Methode (connect) aufweist. Diese erstellt eine Connection.
 
 2.3.1.1.	Methode connect
 
 Benötigt:  	ConnectionURL (String), UserName (String), Password (String)
 
 Liefert: 	Connection
-
 
 Die Methode erstellt mittels der ConnectionURI, de, Benutzername und dem dazugehörigen Passwort eine Verbindung zur angegebenen Datenbank und liefert diese als returnvalue zurück.
 
@@ -92,7 +91,7 @@ Beispiel::
 
 2.3.2.	FileExtension
 
-Package:	 ch.so.agi.gretl.core
+Package:	 ch.so.agi.gretl.util
 
 Die FileExtension-Klasse ist darauf ausgelegt, dass sie von einem beliebigen File die File-Extension ermittelt.
 
@@ -111,31 +110,42 @@ Beispiel::
 
 2.3.3.	SqlReader
 
-Package: 	ch.so.agi.gretl.core
+Package: 	ch.so.agi.gretl.util
 
-Der SqlReader liest die sqlstatements aus
+Der SqlReader liest die sqlstatements aus einem File aus. 
 
-2.3.3.1.	Methode readsqlStmt
+2.3.3.1. Methode createPushbackReader
 
-Benötigt: 	PushbackReader
+Benötigt: File
+
+Liefert: PushbackReader
+
+2.3.3.2. Methode nextSqlStmt 
+
+Benötigt: 
+
+Liefert: 
+
+2.3.3.3.	Methode readsqlStmt
+
+Benötigt: File
 
 Liefert:	SqlStatement (String)
 
+Erstelllt zuerst durch Aufruf der Methode createPushbackReader einen Reader und schreibt am Ende ein Statement raus. 
+
+(HIER FEHLEN NOCH VIELE METHODEN!!!)
+
+
 Beispiel::
 
-   FileReader read = new FileReader(targetFile);
-
-   PushbackReader reader = null;
-
-   reader = new PushbackReader(read);
-
-   line = SqlReader.readSqlStmt(reader);
+   line = SqlReader.readSqlStmt(targetFile);
 
 2.3.4.	TransactionContext
 
-Package: 	ch.so.agi.gretl.core
+Package: 	ch.so.agi.gretl.steps
 
-Führt verschiedene Methoden auf der Datenbank aus.
+Führt eine Methode auf der Datenbank aus.
 
 2.3.4.1.	Methode getDbConnection
 
