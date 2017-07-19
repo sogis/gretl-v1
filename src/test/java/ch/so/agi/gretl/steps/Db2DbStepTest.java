@@ -4,7 +4,6 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
-import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -21,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * Created by bjsvwsch on 03.05.17.
@@ -29,7 +29,7 @@ public class Db2DbStepTest {
 
     //Konstruktor//
     public Db2DbStepTest () {
-        LogEnvironment.initStandalone();
+        LogEnvironment.initStandalone(Level.ALL);
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
@@ -51,6 +51,7 @@ public class Db2DbStepTest {
 
         TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
+        log.debug("Debug Message");
 
         File sqlFile = createFile("SELECT * FROM colors");
 
@@ -74,38 +75,6 @@ public class Db2DbStepTest {
             if (!rs.getObject("farbname").equals("blau")) throw new Exception(e);
         }
         con.getDbConnection().close();
-    }
-
-    @Test
-    public void NotAllowedSqlExpressionInScriptTest() throws Exception {
-        TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        createTestDb(con);
-
-        File sqlFile = createFile("DELETE FROM colors");
-
-
-        ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
-        mylist.add(new TransferSet(
-                new Boolean(false),
-                sqlFile.getAbsolutePath(),
-                "colors_copy"
-        ));
-
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-
-
-        Db2DbStep db2db = new Db2DbStep();
-
-        try {
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
-            Assert.fail();
-        } catch (NotAllowedSqlExpressionException e) {
-
-        } finally {
-            con.getDbConnection().close();
-        }
-
     }
 
     @Test

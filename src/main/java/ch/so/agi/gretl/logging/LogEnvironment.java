@@ -27,7 +27,7 @@ public class LogEnvironment {
     }
 
     public static GretlLogger getLogger(Class logSource) {
-
+        //System.out.println("Class in getLogger = "+logSource.getName());
         if(currentLogFactory == null)
             throw new IllegalArgumentException("The LogEnvironment must be initialized with one of the init* methods before calling getLogger");
 
