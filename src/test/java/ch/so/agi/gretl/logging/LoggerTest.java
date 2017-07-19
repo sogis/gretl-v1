@@ -1,6 +1,6 @@
 package ch.so.agi.gretl.logging;
 
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -17,6 +17,10 @@ import static org.junit.Assert.assertEquals;
 public class LoggerTest {
 
     private GretlLogger log;
+    private static ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private static PrintStream oldSystem = System.err;
+    private static PrintStream ps;
+
 
     public LoggerTest() {
         LogEnvironment.initStandalone();
@@ -24,22 +28,34 @@ public class LoggerTest {
 
     }
 
-    @Test
-    public void logInfoTest() throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
+    @BeforeClass
+    public static void initialise() {
 
-        //  Save the old System.err
-        PrintStream oldSystem = System.err;
-        // Tell Java to use your special stream
+        PrintStream ps = new PrintStream(baos);
         System.setErr(ps);
 
-        log.info("Info-Logger-Test");
+    }
 
-        // Put things back
+    @Before
+    public void cleanPrintStream(){
+        baos.reset();
+    }
+
+    @AfterClass
+    public static void finalise() {
+
         System.err.flush();
         System.setErr(oldSystem);
 
+    }
+
+
+    // Tell Java to use your special stream
+
+    @Test
+    public void logInfoTest() throws Exception {
+
+        log.info("Info-Logger-Test");
 
         String LogMessage = baos.toString();
         String[] ArrayLogMessage = LogMessage.split(" -> ");
@@ -59,24 +75,11 @@ public class LoggerTest {
 
     @Test
     public void logErrorTest() throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-
-        //  Save the old System.err
-        PrintStream oldSystem = System.err;
-        // Tell Java to use your special stream
-        System.setErr(ps);
 
         log.error("Error-Logger-Test");
 
-        // Put things back
-        System.err.flush();
-        System.setErr(oldSystem);
-
-
         String LogMessage = baos.toString();
         String[] ArrayLogMessage = LogMessage.split(" -> ");
-
 
         if (!ArrayLogMessage[1].equals("Error-Logger-Test\n")) {
             assertFalse("Logger is not working properly: " + baos.toString(), true);
@@ -87,20 +90,8 @@ public class LoggerTest {
 
     @Test
     public void logDebugTest() throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-
-        //  Save the old System.err
-        PrintStream oldSystem = System.err;
-        // Tell Java to use your special stream
-        System.setErr(ps);
 
         log.debug("Debug-Logger-Test");
-
-        // Put things back
-        System.err.flush();
-        System.setErr(oldSystem);
-
 
         String LogMessage = baos.toString();
         String[] ArrayLogMessage = LogMessage.split(" -> ");
