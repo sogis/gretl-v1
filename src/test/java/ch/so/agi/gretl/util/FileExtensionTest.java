@@ -19,7 +19,6 @@ public class FileExtensionTest {
     @Test
     public void getFileExtension() throws Exception {
         File sqlFile =  folder.newFile("query.sql");
-        String sqlFileName ="query.sql";
         if(FileExtension.getFileExtension(sqlFile).equals("sql")){
 
         }  else {
