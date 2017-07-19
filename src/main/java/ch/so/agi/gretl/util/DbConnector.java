@@ -8,14 +8,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /** Utility-Class to open connections **/
-
 public class DbConnector {
     private static Connection con=null;
-    private GretlLogger log;
+    private static GretlLogger log = LogEnvironment.getLogger(DbConnector.class) ;
 
-    public DbConnector() {
-        this.log= LogEnvironment.getLogger(this.getClass());
-    }
 
     /**
      * Returns the connection to a specific database. The database is specified by the arguments ConnectionUrl,
@@ -26,15 +22,17 @@ public class DbConnector {
      * @param Password      password of given database user
      * @return              the connection to the specific database
      */
-
     public static Connection connect(String ConnectionUrl, String UserName, String Password) {
-        DbConnector dbConnector =new DbConnector();
         try {
+
             con = DriverManager.getConnection(
                     ConnectionUrl,UserName,Password);
             con.setAutoCommit(false);
-            dbConnector.log.debug("DB connected with these Parameters:  ConnectionURL:" + ConnectionUrl
-                        + " Username: " + UserName + " Password: " + Password);
+
+            log.debug("DB connected with these Parameters:  ConnectionURL:" + ConnectionUrl +
+                    " Username: " + UserName +
+                    " Password: " + Password);
+
         } catch (SQLException e) {
             if (con!=null) {
                 try {
@@ -42,11 +40,11 @@ public class DbConnector {
                     con.close();
                     con = null;
                 } catch (SQLException f) {
-                    dbConnector.log.info(f.toString());
+                    log.info(f.toString());
                 }
             }
             throw new RuntimeException("Could not connect with database: ", e);
-        };
+        }
         return con;
     }
 }
