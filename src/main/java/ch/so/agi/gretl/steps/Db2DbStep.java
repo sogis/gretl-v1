@@ -58,7 +58,7 @@ public class Db2DbStep {
             if (targetDb.getDbConnection() != null) {
                 targetDb.getDbConnection().rollback();
             }
-            throw new Exception("Could not connect to Database: "+e);
+            throw new Exception("Failed!: "+e);
         } finally {
             if (sourceDb.getDbConnection() != null) {
                 sourceDb.getDbConnection().close();
@@ -80,7 +80,7 @@ public class Db2DbStep {
      * @throws EmptyFileException
      * @throws NotAllowedSqlExpressionException
      */
-    private void processTransferSet(Connection srcCon, Connection targetCon, TransferSet transferSet) throws SQLException, FileNotFoundException, EmptyFileException, NotAllowedSqlExpressionException {
+    private void processTransferSet(Connection srcCon, Connection targetCon, TransferSet transferSet) throws SQLException, IOException, EmptyFileException, NotAllowedSqlExpressionException {
         if (transferSet.getDeleteAllRows() == true) {
             deleteDestTableContents(targetCon, transferSet.getOutputQualifiedSchemaAndTableName());
         }
@@ -199,21 +199,19 @@ public class Db2DbStep {
      * @throws EmptyFileException
      * @throws NotAllowedSqlExpressionException
      */
-    private String extractSingleStatement(File targetFile) throws EmptyFileException, NotAllowedSqlExpressionException, FileNotFoundException {
+    private String extractSingleStatement(File targetFile) throws EmptyFileException, NotAllowedSqlExpressionException, IOException {
 
-        //todo untenstehender block gehört in den SqlReader - seid pingelig bezüglich codeverdoppelungen
-        FileReader read = new FileReader(targetFile);
-        PushbackReader reader = null;
-        reader = new PushbackReader(read);
         String line = null;
 
         String firstline = null;
         try {
-            line = SqlReader.readSqlStmt(reader);
+            line = SqlReader.readSqlStmt(targetFile);
             if(line == null) {
                 log.info("Empty File. No Statement to execute!");
                 throw new EmptyFileException("EmptyFile: "+targetFile.getName());
             }
+
+
             while (line != null) {
                 firstline = line.trim();
                 if (firstline.length() > 0) {
@@ -222,22 +220,14 @@ public class Db2DbStep {
                     log.info( "NO STATEMENT IN FILE!");
                     throw new FileNotFoundException();
                 }
-                // read next line
-                line = SqlReader.readSqlStmt(reader);
-                if (line != null) {
-                    log.info( "There are more then 1 SQL-Statement in the file " + targetFile.getName() + " but only the first Statement will be executed!");
+                line = SqlReader.nextSqlStmt();
+                if(line != null) {
+                    log.info("There are more then 1 Statement in the file!");
                     throw new RuntimeException();
                 }
-
             }
         } catch (IOException e2) {
             throw new IllegalStateException(e2);
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException e3) {
-                throw new IllegalStateException(e3);
-            }
         }
         return firstline;
     }

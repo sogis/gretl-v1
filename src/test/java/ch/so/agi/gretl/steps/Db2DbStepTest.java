@@ -53,7 +53,7 @@ public class Db2DbStepTest {
         createTestDb(con);
         log.debug("Debug Message");
 
-        File sqlFile = createFile("SELECT * FROM colors");
+        File sqlFile = createFile("SELECT * FROM colors; ");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -102,6 +102,8 @@ public class Db2DbStepTest {
             Assert.fail("EmptyFileException müsste geworfen werden");
         } catch (EmptyFileException e) {
 
+        } catch (Exception e) {
+
         } finally {
             con.getDbConnection().close();
         }
@@ -126,10 +128,6 @@ public class Db2DbStepTest {
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
-        ////////////////////////////
-        // Test-Subjekt ////////////
-        ////////////////////////////
-
         Db2DbStep db2db = new Db2DbStep();
 
 
@@ -138,7 +136,9 @@ public class Db2DbStepTest {
             Assert.fail("EmptyFileException müsste geworfen werden");
         } catch (SQLException e) {
 
-        } finally {
+        } catch (Exception e) {
+
+        } finally{
             con.getDbConnection().close();
         }
     }
@@ -183,6 +183,8 @@ public class Db2DbStepTest {
             Assert.fail("Eine Exception müsste geworfen werden. ");
         } catch (SQLException e) {
 
+        } catch (Exception e) {
+
         } finally {
             con.close();
         }
@@ -198,7 +200,6 @@ public class Db2DbStepTest {
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
 
-        //todo codeverdoppelung. Untenstehendes gibt es schon in der oberen methode, es gibt schöne hilfsmethoden - wieso werden diese nicht verwendet?
         stmt.execute("CREATE TABLE colors ( " +
                 "  rot integer, " +
                 "  gruen integer, " +
@@ -230,6 +231,8 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
         } catch (SQLException e) {
+
+        } catch (Exception e) {
 
         } finally {
             con.close();
@@ -303,7 +306,7 @@ public class Db2DbStepTest {
         TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
 
-        File sqlFile = createFile("SELECT * FROM colors WHERE farbname = 'rot'");
+        File sqlFile = createFile("SELECT rot, gruen, blau, farbname FROM (SELECT ROW_NUMBER() OVER() AS rownum, colors.* FROM colors) AS tmp WHERE rownum <= 1;");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -327,6 +330,7 @@ public class Db2DbStepTest {
                 ++count;
             }
             if(count > 1) {
+                log.info("Got "+count+" rows! Very sad!");
                 throw new Exception();
             }
         } finally {
@@ -392,6 +396,8 @@ public class Db2DbStepTest {
         try {
             db2db.processAllTransferSets(sourceDb,targetDb,mylist);
         } catch (SQLException e) {
+
+        } catch (Exception e) {
 
         }
 
