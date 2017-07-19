@@ -32,13 +32,12 @@ public class Db2DbTask extends DefaultTask {
     public List<TransferSet> transferSet;
 
     @TaskAction
-    public void db2DbTask() {
+    public void db2DbTask() throws Exception {
 
             try {
                 new Db2DbStep().processAllTransferSets(sourceDb, targetDb, transferSet);
                 log.info("Task start");
             } catch (SQLException e) {
-                dbRollback(e); //todo muss hier raus - !kein! Connectionhandling im Task
                 log.info( "SQLException: " + e.getMessage());
                 throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
             } catch (FileNotFoundException e) {

@@ -1,12 +1,8 @@
 package ch.so.agi.gretl.steps;
 
-
 import ch.so.agi.gretl.util.DbConnector;
-
-
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -29,7 +25,6 @@ public class TransactionContext  {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
-//todo autocommit eintstellungen nicht notwendig?
     public Connection getDbConnection() {
         if (dbConnection == null) {
             dbConnection = DbConnector.connect(dbUri, dbUser, dbPassword);
