@@ -27,6 +27,10 @@ public class SqlReader {
 
         StringBuffer stmt=new StringBuffer();
         int c=reader.read();
+        while (c==' ') {
+            c = reader.read();
+        }
+
 
 
         stmt = createStatement(c,reader,stmt);
@@ -66,6 +70,7 @@ public class SqlReader {
                 stmt = handlingGivenCharacters(c,reader,stmt);
                 c=reader.read();
             } else {
+                c = reader.read();
                 break;
             }
 
