@@ -1,18 +1,15 @@
 package ch.so.agi.gretl.logging;
 
-import java.util.logging.Level;
-
 /**
  * Holds the global logging factory used by the Step
  * and helper classes to get a logger instance.
  * Holds either a logging factory for standalone use
- * of the steps classes as in unit tests or the gradle
+ * of the steps classes as in unit tests or the gradle *
  * logging environment for integrated use of the steps
  * in gradle.
- *
- * Created by bjsvwjek on 12.07.17.
  */
 public class LogEnvironment {
+
     private static LogFactory currentLogFactory;
 
     public static void initGradleIntegrated() {
@@ -21,7 +18,7 @@ public class LogEnvironment {
     }
 
     public static void initStandalone(){
-        initStandalone(Level.ALL);
+        initStandalone(Level.DEBUG);
     }
 
     public static void initStandalone(Level logLevel) {

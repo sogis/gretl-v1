@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.logging.Level;
+
 import java.util.logging.Logger;
 
 import static junit.framework.TestCase.assertFalse;
@@ -23,7 +23,7 @@ public class LoggerTest {
     private GretlLogger log;
 
     public LoggerTest() {
-        LogEnvironment.initStandalone(Level.ALL);
+        LogEnvironment.initStandalone(Level.DEBUG);
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
