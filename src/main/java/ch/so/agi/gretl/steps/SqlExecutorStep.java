@@ -42,7 +42,9 @@ public class SqlExecutorStep {
 
         Connection db = null;
 
-        log.livecycle("Start SqlExecutor with parameters TransactionContext: "  +trans + " SQL-Files: " + sqlfiles);
+        log.livecycle("Start SqlExecutor with parameters DB-URL: "  + trans.getDbConnection().getMetaData().getURL() +
+                ", DB-User: " + trans.getDbConnection().getMetaData().getUserName() +
+                ", Files: " + sqlfiles);
 
         checkIfAtLeastOneSqlFileIsGiven(sqlfiles);
 
