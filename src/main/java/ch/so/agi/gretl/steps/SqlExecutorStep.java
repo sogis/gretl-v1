@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import static ch.so.agi.gretl.util.SqlReader.createPushbackReader;
 
 
 /**
@@ -38,7 +37,7 @@ public class SqlExecutorStep {
      * @throws Exception    if File is missing, no correct extension, no connection to database, could not read file or
      *                      problems while executing sql-queries
      */
-    public  void execute(TransactionContext trans, List<File> sqlfiles)
+    public void execute(TransactionContext trans, List<File> sqlfiles)
             throws Exception {
 
         Connection db = null;

@@ -20,6 +20,7 @@ import java.util.List;
  * Only this Class should execute the SQLExecutorStep. Users must use this Class to access SQLExecutorStep
  */
 public class SqlExecutorTask extends DefaultTask {
+    private static GretlLogger log;
 
     public SqlExecutorTask () {
         LogEnvironment.initGradleIntegrated();
@@ -33,8 +34,6 @@ public class SqlExecutorTask extends DefaultTask {
 
     @Input
     private List<String> sqlFiles;
-
-    private static GretlLogger log;//todo kontrollieren und static machen - hab ich (oliver) ergänzt da es nichht kompiliert hat...
 
 
     @TaskAction

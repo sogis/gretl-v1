@@ -19,7 +19,6 @@ import java.util.List;
  * Tests for the SqlExecutorStep
  */
 public class SqlExecutorStepTest {
-//todo noch zwei tests erstellen welche sicherstellen dass die connections immer geschlossen sind. Ein test "Sonnenpfad", ein test bei Ausführung mit exception
     private GretlLogger log;
 
     public SqlExecutorStepTest() {
@@ -42,6 +41,8 @@ public class SqlExecutorStepTest {
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
         clearTestDb(sourceDb);
     }
+
+
 
 
     @Test
@@ -132,6 +133,30 @@ public class SqlExecutorStepTest {
 
         x.execute(sourceDb,sqlListe);
     }
+
+
+    @Test
+    public void checkIfConnectionIsClosed() throws Exception{
+        SqlExecutorStep x = new SqlExecutorStep();
+        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+
+        List<File> sqlListe = createCorrectSqlFiles();
+
+        x.execute(sourceDb,sqlListe);
+        Assert.assertTrue(sourceDb.getDbConnection().isClosed());
+    }
+
+    @Test
+    public void notClosedConnectionThrowsError() throws Exception{
+        SqlExecutorStep x = new SqlExecutorStep();
+        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+
+        List<File> sqlListe = createCorrectSqlFiles();
+
+        x.execute(sourceDb,sqlListe);
+        Assert.assertFalse(!sourceDb.getDbConnection().isClosed());
+    }
+
 
     private void clearTestDb(TransactionContext sourceDb) throws Exception {
         Connection con = sourceDb.getDbConnection();
