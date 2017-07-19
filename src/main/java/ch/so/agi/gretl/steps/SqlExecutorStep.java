@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.List;
 
 
+
 /**
  * The SqlExecutorStep Class is used as a Step and does Transformations on data within a database based on queries in
  * sql-Scripts
@@ -36,7 +37,7 @@ public class SqlExecutorStep {
      * @throws Exception    if File is missing, no correct extension, no connection to database, could not read file or
      *                      problems while executing sql-queries
      */
-    public  void execute(TransactionContext trans, List<File> sqlfiles)
+    public void execute(TransactionContext trans, List<File> sqlfiles)
             throws Exception {
 
         Connection db = null;
@@ -62,7 +63,7 @@ public class SqlExecutorStep {
             if (db!=null) {
                 db.rollback();
             }
-            throw new Exception ("Could not connect to Database: " + e);
+            throw e;
 
         } finally {
             if (db!=null){
@@ -122,12 +123,9 @@ public class SqlExecutorStep {
         for (File sqlfile: sqlfiles){
 
             try {
-                FileInputStream sqlFileInputStream = new FileInputStream(sqlfile);
-                InputStreamReader sqlFileReader = null;
-                sqlFileReader = new InputStreamReader(sqlFileInputStream);
-                executeSqlScript(db, sqlFileReader);
-                sqlFileReader.close();
-                sqlFileInputStream.close();
+
+                executeAllSqlStatements(db, sqlfile);
+
 
             } catch (Exception h) {
                 throw new Exception("Error with File: " + sqlfile.getAbsolutePath() + " " + h.toString());
@@ -136,41 +134,25 @@ public class SqlExecutorStep {
     }
 
 
-    /**
-     * Gets the sqlqueries out of the given file and executes the statements on the given database
-     * @param conn              Database connection
-     * @param inputStreamReader inputStream of a specific file
-     * @throws Exception        SQL-Exception while executing sqlstatement
-     */
-    private void executeSqlScript(Connection conn, InputStreamReader inputStreamReader)
-            throws Exception{
-
-        PushbackReader reader = null;
-        reader = new PushbackReader(inputStreamReader);
-
-        executeAllSqlStatements(conn, reader);
-
-
-        reader.close();
-
-    }
 
 
     /**
      * @param conn             Database connection
-     * @param reader           Filereader
+     * @param sqlfile          SQL-File
      * @throws Exception       SQL-Exception while executing sqlstatement
      */
-    private void executeAllSqlStatements (Connection conn, PushbackReader reader)
+    private void executeAllSqlStatements (Connection conn, File sqlfile)
             throws Exception {
 
-        String statement = SqlReader.readSqlStmt(reader);
+
+        String statement = SqlReader.readSqlStmt(sqlfile);
 
         while (statement != null) {
 
             prepareSqlStatement(conn,statement);
-            statement = SqlReader.readSqlStmt(reader);
+            statement = SqlReader.nextSqlStmt();
         }
+
     }
 
     /**
