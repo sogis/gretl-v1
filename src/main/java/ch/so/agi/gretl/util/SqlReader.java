@@ -13,8 +13,8 @@ public class SqlReader {
     private static InputStreamReader sqlFileReader;
     private static PushbackReader reader;
 
-
     private static GretlLogger log = LogEnvironment.getLogger(SqlReader.class);
+
 
     public static void createPushbackReader(File sqlfile) throws FileNotFoundException {
         sqlFileInputStream = new FileInputStream(sqlfile);
@@ -37,7 +37,7 @@ public class SqlReader {
         }
 
         return stmt.toString();
-    };
+    }
 
 
     public static String readSqlStmt(File sqlfile)
@@ -62,11 +62,14 @@ public class SqlReader {
             throws IOException{
 
         while(c!=-1) {
-            stmt = handlingGivenCharacters(c,reader,stmt);
-            c=reader.read();
-            log.info("**"+c +"***");
+            if (c!=';') {
+                stmt = handlingGivenCharacters(c,reader,stmt);
+                c=reader.read();
+            } else {
+                break;
+            }
+
         }
-        log.info(stmt.toString());
         return stmt;
     }
 
@@ -74,7 +77,7 @@ public class SqlReader {
     private static StringBuffer handlingGivenCharacters(int c, java.io.PushbackReader reader, StringBuffer stmt)
             throws IOException{
 
-        switch (c) {
+        switch ((char) c) {
             case '-':
                 stmt = checkCharacterAfterHyphen(reader,stmt);
                 break;
