@@ -52,8 +52,8 @@ public class Db2DbTask extends DefaultTask {
                 throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
             }
             try {
-                sourceDb.dbCommit();
-                targetDb.dbCommit();
+                sourceDb.getDbConnection().commit();
+                targetDb.getDbConnection().commit();
                 log.info( "Transaction successful!");
             } catch (SQLException e) {
                 log.info( "SQLException: " + e.getMessage());
@@ -64,7 +64,7 @@ public class Db2DbTask extends DefaultTask {
 
     private void dbRollback(Exception e) {
         try {
-            sourceDb.dbRollback();
+            sourceDb.getDbConnection().rollback();
         } catch (SQLException e1) {
             log.debug( "Failed to rollback "+e.getMessage());
         }
