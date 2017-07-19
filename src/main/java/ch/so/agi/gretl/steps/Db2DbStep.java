@@ -11,8 +11,6 @@ import java.io.*;
 import java.sql.*;
 import java.util.List;
 
-//todo doku der klasse: Was macht sie genau? Was ist ein Transferset?
-
 /**
  * The Db2DbStep Class is used as a step for transfer of tabulated data from one to anoter database.
  * It needs a sourceDb (TransactionContext), a targetDb (TransactionContext) and a list of transferSet, containing 1. a
@@ -51,6 +49,8 @@ public class Db2DbStep {
                 }
                 processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
             }
+            sourceDbConnection.commit();
+            targetDbConnection.commit();
         } catch (Exception e) {
             if (sourceDb.getDbConnection()!=null) {
                 sourceDb.getDbConnection().rollback();

@@ -10,8 +10,11 @@ public class CoreJavaLogAdaptor implements GretlLogger {
     private java.util.logging.Logger logger;
 
     CoreJavaLogAdaptor(Class logSource, Level logLevel){
-        this.logger = java.util.logging.Logger.getLogger(logSource.getName());
+        //System.out.println("logSource in CoreJavaLogAdaptor = "+logSource.getName());
+        this.logger = Logger.getLogger(logSource.getName());
         this.logger.setLevel(logLevel);
+
+
     }
 
     public void info(String msg){
