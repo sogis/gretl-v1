@@ -238,7 +238,7 @@ public class SqlExecutorStepTest {
                 "  colors.blau,\n" +
                 "  colors.farbname\n" +
                 "FROM colors\n" +
-                "WHERE farbname = 'rot'; SELECT farbname FROM colors WHERE gruen=0 GROUP BY farbname");
+                "WHERE farbname = 'rot'   ;    SELECT farbname FROM colors WHERE gruen=0 GROUP BY farbname");
         writer.close();
 
         File sqlFile1 =  folder.newFile("query1.sql");
