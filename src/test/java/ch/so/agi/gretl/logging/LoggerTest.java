@@ -1,9 +1,5 @@
 package ch.so.agi.gretl.logging;
 
-import ch.so.agi.gretl.logging.GretlLogger;
-import ch.so.agi.gretl.logging.LogEnvironment;
-
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -23,12 +19,11 @@ public class LoggerTest {
     private GretlLogger log;
 
     public LoggerTest() {
-        LogEnvironment.initStandalone(Level.DEBUG);
+        LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
+
     }
 
-
-    /*Not working with ./gradlew test : The question is where will the Infolog be written? It seems not on System.err*/
     @Test
     public void logInfoTest() throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -47,12 +42,10 @@ public class LoggerTest {
 
 
         String LogMessage = baos.toString();
-        String[] ArrayLogMessage = LogMessage.split("\\\n");
+        String[] ArrayLogMessage = LogMessage.split(" -> ");
 
 
-        if (ArrayLogMessage[1].equals("INFO: Info-Logger-Test")) {
-
-        } else {
+        if (!ArrayLogMessage[1].equals("Info-Logger-Test\n")) {
             assertFalse("Logger is not working properly: " + baos.toString(), true);
         }
     }
@@ -82,20 +75,18 @@ public class LoggerTest {
 
 
         String LogMessage = baos.toString();
-        String[] ArrayLogMessage = LogMessage.split("\\\n");
+        String[] ArrayLogMessage = LogMessage.split(" -> ");
 
 
-        if (ArrayLogMessage[1].equals("SEVERE: Error-Logger-Test")) {
-
-        } else {
+        if (!ArrayLogMessage[1].equals("Error-Logger-Test\n")) {
             assertFalse("Logger is not working properly: " + baos.toString(), true);
         }
 
     }
 
-    /* actually not working, but should somehow be tested
+
     @Test
-    public void debugInfoTest() throws Exception {
+    public void logDebugTest() throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
 
@@ -112,17 +103,13 @@ public class LoggerTest {
 
 
         String LogMessage = baos.toString();
-        String[] ArrayLogMessage = LogMessage.split("\\\n");
+        String[] ArrayLogMessage = LogMessage.split(" -> ");
 
-
-        if (ArrayLogMessage[0].equals("DEBUG: Debug-Logger-Test")) {
-
-        } else {
+        if (!ArrayLogMessage[1].equals("Debug-Logger-Test\n")) {
             assertFalse("Logger is not working properly: " + baos.toString(), true);
         }
 
     }
-    */
 
 
 }
