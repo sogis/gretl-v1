@@ -21,7 +21,6 @@ public class Db2DbStep {
 
     private GretlLogger log;
 
-    /** Constructor **/
     public Db2DbStep() {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
@@ -31,15 +30,15 @@ public class Db2DbStep {
      * @param sourceDb
      * @param targetDb
      * @param transferSets
-     * @throws SQLException
-     * @throws FileNotFoundException
-     * @throws EmptyFileException
-     * @throws NotAllowedSqlExpressionException
-     * @throws EmptyListException
+     * @throws Exception
      */
     public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws Exception {
         checkIfListNotEmpty(transferSets);
-        log.info( "Found "+transferSets.size()+" transferSets");
+        log.livecycle( "\n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
+                "sourceDb = "+sourceDb.getDbConnection().getMetaData().getURL()+", " +
+                "user = "+sourceDb.getDbConnection().getMetaData().getUserName()+", \n" +
+                "targetDb = "+targetDb.getDbConnection().getMetaData().getURL()+", " +
+                "user = "+targetDb.getDbConnection().getMetaData().getUserName()+"\n");
         try {
             Connection sourceDbConnection = sourceDb.getDbConnection();
             Connection targetDbConnection = targetDb.getDbConnection();
@@ -152,7 +151,8 @@ public class Db2DbStep {
      * @param srcCon
      * @param targetCon
      * @param rs
-     * @param destTableName   @throws SQLException
+     * @param destTableName
+     * @throws SQLException
      */
     private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, String destTableName) throws SQLException {
         ResultSetMetaData meta = null;
@@ -197,9 +197,8 @@ public class Db2DbStep {
      * @return
      * @throws FileNotFoundException
      * @throws EmptyFileException
-     * @throws NotAllowedSqlExpressionException
      */
-    private String extractSingleStatement(File targetFile) throws EmptyFileException, NotAllowedSqlExpressionException, IOException {
+    private String extractSingleStatement(File targetFile) throws EmptyFileException, IOException {
 
         String line = null;
 

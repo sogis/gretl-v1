@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
 
 /**
  * Created by bjsvwsch on 03.05.17.
@@ -29,7 +28,7 @@ public class Db2DbStepTest {
 
     //Konstruktor//
     public Db2DbStepTest () {
-        LogEnvironment.initStandalone(Level.ALL);
+        LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
@@ -51,9 +50,9 @@ public class Db2DbStepTest {
 
         TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
-        log.debug("Debug Message");
 
-        File sqlFile = createFile("SELECT * FROM colors; ");
+        File sqlFile = createFile("SELECT * FROM colors; ", "query.sql");
+        File sqlFile2 = createFile("SELECT * FROM colors; ", "query2.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -61,6 +60,12 @@ public class Db2DbStepTest {
                 sqlFile.getAbsolutePath(),
                 "colors_copy"
         ));
+        mylist.add(new TransferSet(
+                new Boolean(false),
+                sqlFile2.getAbsolutePath(),
+                "colors_copy"
+        ));
+
 
         TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
@@ -115,7 +120,7 @@ public class Db2DbStepTest {
         TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
 
-        File sqlFile = createFile("SELECT BLABLABLA FROM colors");
+        File sqlFile = createFile("SELECT BLABLABLA FROM colors", "query.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -163,7 +168,7 @@ public class Db2DbStepTest {
 
         stmt.execute("CREATE TABLE colors_copy (rot integer, gruen integer)");
 
-        File sqlFile = createFile("SELECT rot, gruen, blau, farbname FROM colors");
+        File sqlFile = createFile("SELECT rot, gruen, blau, farbname FROM colors", "query.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -211,7 +216,7 @@ public class Db2DbStepTest {
 
         stmt.execute("CREATE TABLE colors_copy (rot integer, gruen integer, blau integer, farbname integer)");
 
-        File sqlFile = createFile("SELECT * FROM colors");
+        File sqlFile = createFile("SELECT * FROM colors", "query.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -245,7 +250,7 @@ public class Db2DbStepTest {
         TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTableInTestDb(con.getDbConnection());
 
-        File sqlFile = createFile("SELECT * FROM colors");
+        File sqlFile = createFile("SELECT * FROM colors", "query.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -276,7 +281,7 @@ public class Db2DbStepTest {
         TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
 
-        File sqlFile = createFile("SELECT * FROM colors");
+        File sqlFile = createFile("SELECT * FROM colors", "query.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -306,7 +311,7 @@ public class Db2DbStepTest {
         TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
 
-        File sqlFile = createFile("SELECT rot, gruen, blau, farbname FROM (SELECT ROW_NUMBER() OVER() AS rownum, colors.* FROM colors) AS tmp WHERE rownum <= 1;");
+        File sqlFile = createFile("SELECT rot, gruen, blau, farbname FROM (SELECT ROW_NUMBER() OVER() AS rownum, colors.* FROM colors) AS tmp WHERE rownum <= 1;", "query.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -349,7 +354,7 @@ public class Db2DbStepTest {
         TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
 
-        File sqlFile = createFile("SELECT * FROM colors");
+        File sqlFile = createFile("SELECT * FROM colors", "query.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -379,7 +384,7 @@ public class Db2DbStepTest {
         TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
 
-        File sqlFile = createFile("SELECT güggeliblau FROM colors_copy");
+        File sqlFile = createFile("SELECT güggeliblau FROM colors_copy", "query.sql");
 
         ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
         mylist.add(new TransferSet(
@@ -424,8 +429,8 @@ public class Db2DbStepTest {
 
     }
 
-    private File createFile(String stm) throws IOException {
-        File sqlFile =  folder.newFile("query.sql");
+    private File createFile(String stm, String fileName) throws IOException {
+        File sqlFile =  folder.newFile(fileName);
         BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
         writer.write(stm);
         writer.close();
