@@ -15,35 +15,7 @@ public class SqlReader {
 
     private static GretlLogger log = LogEnvironment.getLogger(SqlReader.class);
 
-
-    public static void createPushbackReader(File sqlfile) throws FileNotFoundException {
-        sqlFileInputStream = new FileInputStream(sqlfile);
-        sqlFileReader = new InputStreamReader(sqlFileInputStream);
-
-        reader = new PushbackReader(sqlFileReader);
-    }
-
-    public static String nextSqlStmt() throws IOException{
-
-        StringBuffer stmt=new StringBuffer();
-        int c=reader.read();
-        while (c==' ') {
-            c = reader.read();
-        }
-
-
-
-        stmt = createStatement(c,reader,stmt);
-
-        if(stmt.length()==0){
-            closePushbackReader();
-            return null;
-        }
-
-        return stmt.toString();
-    }
-
-
+    
     public static String readSqlStmt(File sqlfile)
             throws IOException {
 
@@ -60,6 +32,13 @@ public class SqlReader {
 
         return stmt.toString();
 
+    }
+
+    public static void createPushbackReader(File sqlfile) throws FileNotFoundException {
+        sqlFileInputStream = new FileInputStream(sqlfile);
+        sqlFileReader = new InputStreamReader(sqlFileInputStream);
+
+        reader = new PushbackReader(sqlFileReader);
     }
 
     private static StringBuffer createStatement(int c, java.io.PushbackReader reader, StringBuffer stmt)
@@ -218,6 +197,24 @@ private static StringBuffer checkCharacterAfterHyphen(java.io.PushbackReader rea
             }
         }
         return stmt;
+    }
+
+    public static String nextSqlStmt() throws IOException{
+
+        StringBuffer stmt=new StringBuffer();
+        int c=reader.read();
+        while (c==' ') {
+            c = reader.read();
+        }
+
+        stmt = createStatement(c,reader,stmt);
+
+        if(stmt.length()==0){
+            closePushbackReader();
+            return null;
+        }
+
+        return stmt.toString();
     }
 
 
