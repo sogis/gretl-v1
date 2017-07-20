@@ -743,113 +743,41 @@ Group legt fest zu welcher Gruppe/Projekt das Modul gretl gehört und welche Ver
 
 Abhängigkeiten müssen sowohl im build.gradle wie auch in INTELLIJ IDEA definiert werden.
 
-3.1.1.	Core
-
-3.1.1.1.	Build.gradle
+3.1.1.	Build.gradle
 
 Folgende Abhängigkeiten müssen im build.gradle des cores definiert sein:
 
 •	Junit Version 4.12 (testCompile)
 •	Files: './lib/ojdbc7.jar', './lib/postgresql-42.0.0.jar', './lib/sqljdbc42.jar', './lib/sqlite-jdbc-3.16.1.jar', './lib/derby.jar' (compile)
-•	Slf4j-api Version 1.8.0-alpha2 (compile)
-•	Slf4j-simple Version 1.8.0-alpha2 (compile)
 •	gradleApi() (compile)
 
 Für die Tests wird Junit benötigt. Da es aber lediglich dort benötigt und verwendet wird, wird es nicht mit compile in den dependencies aufgeführt sondern mit testCompile.
 Sämtliche Files werden für die Erstellung der verschiedenen Datenbankverbindungen benötigt. Da diese sowohl im main wie auch im test benötigt werden, werden sie mit compile in den dependencies aufgeführt.
-Für das Logging werden zudem noch slf4j-api und slf4j-simple benötigt. Da auch diese sowohl im main wie auch im test benötigt werden, werden sie mit compile in den dependencies aufgeführt.
 gradleApi() wird benötigt um die java-Klassen mit gradle zu komplieren.
 
-3.1.1.2.	INTELLIJ IDEA
+3.1.2.	INTELLIJ IDEA
 
 Um die Abhängigkeiten in der IDE festzulegen muss im Menü File > Project Structure ausgewählt werden. Anschliessend in Modules und dort in core wechseln. Im core_main und core_test sind anschliessend im Reiter Dependencies folgende Abhängigkeiten festzulegen:
 
-•	Derby.jar (main, test)
-•	Sqlite-jdbc-3.16.1.jar (main, test)
-•	Sqljdbc42.jar (main, test)
-•	Ojdbc7.jar (main, test)
-•	Postgresql-42.0.0.jar (main, test)
-•	Gradle: org.slf4j:slf4j-api:1.8.0-alpha2 (main, test)
-•	Gradle: org.slf4j:slf4j-simple:1.8.0-alpha2 (main, test)
-•	Core_main (test)
-•	Gradle:junit:junit:4.12 (test)
-•	Gradle:org.hamcrest:hamcrest-core:1.3 (test)
-
-3.1.2.	Steps
-
-3.1.2.1.	Build.gradle
-
-Folgende Abhängigkeiten müssen im build.gradle der steps definiert sein:
-
-•	Junit Version 4.12 (testCompile)
-•	Core (compile project)
-•	gradleApi() (compile)
-
-Für die Tests wird Junit benötigt. Da es aber lediglich dort benötigt und verwendet wird, wird es nicht mit compile in den dependencies aufgeführt sondern mit testCompile.
-Das Modul core wird im Module steps benötigt daher wird dies mit compile project in den dependencies aufgeführt.
-gradleApi() wird benötigt um die java-Klassen mit gradle zu komplieren.
-
-3.1.2.2.	INTELLIJ IDEA
-
-Um die Abhängigkeiten in der IDE festzulegen muss im Menü File > Project Structure ausgewählt werden. Anschliessend in Modules und dort in steps wechseln. Im steps_main und steps_test sind anschliessend im Reiter Dependencies folgende Abhängigkeiten festzulegen:
-
-•	Gradle-installation-beacon-3.3.jar (main, test)
-•	Groovy-all-2.4.7.jar (main, test)
-•	Steps_main (test)
-•	Gradle-api-3.3.jar (main, test)
-•	Sqlite-jdbc-3.16.1.jar (main, test)
-•	Postgresql-42.0.0.jar (main, test)
-•	Sqljdbc42.jar (main, test)
-•	Derby.jar (main, test)
-•	Ojdbc7.jar (main, test)
-•	Core_main (main, test)
-•	Gradle: junit:junit:4.12 (test)
-•	Gradle:org.slf4j:slf4j-api:1.8.0-alpha2 (main, test)
-•	Gradle:org.slf4j:slf4j-simple:1.8.0-alpha2 (main, test)
-•	Gradle:org.hamcrest:hamcrest-core:1.3 (test)
-
-3.1.3.	Gretl
-
-3.1.3.1.	Build.gradle
-
-Folgende Abhängigkeiten müssen im build.gradle des gretls definiert sein:
-
-•	Junit Version 4.12 (testCompile)
-•	Core (compile project)
-•	Steps (compile project)
-•	gradleApi() (compile)
-
-Für die Tests wird Junit benötigt. Da es aber lediglich dort benötigt und verwendet wird, wird es nicht mit compile in den dependencies aufgeführt sondern mit testCompile.
-Sowohl das Modul core wie auch das Modul steps werden im Projekt gretl benötigt daher werden die beiden mit compile project in den dependencies aufgeführt.
-gradleApi() wird benötigt um die java-Klassen mit gradle zu komplieren.
-
-3.1.3.2.	INTELLIJ IDEA
-
-Um die Abhängigkeiten in der IDE festzulegen muss im Menü File > Project Structure ausgewählt werden. Anschliessend in Modules und dort in gretl wechseln. Im gretl_main und gretl_test sind anschliessend im Reiter Dependencies folgende Abhängigkeiten festzulegen:
-
-•	Groovy-all-2.4.7.jar (main, test)
-•	Derby.jar (main, test)
-•	Gradle-installation-beacon-3.3.jar (main, test)
-•	Gretl_main (test)
-•	Ojdbc7.jar (main, test)
-•	Gradle-api-3.3.jar (main, test)
-•	Postgresqll-42.0.0.jar (main, test)
-•	Sqlite-jdbc-3.16.1.jar (main, test)
-•	Sqljdbc42.jar (main, test)
-•	Gradle:junit:junit:4.12 (test)
-•	Gradle:org.slf4j:slf4j-api:1.8.0-alpha2 (main, test)
-•	Gradle:org.slf4j:slf4j-simple:1.8.0-alpha2 (main, test)
-•	Gradle:org.hamcrest:hamcrest-core:1.3 (test)
-•	Core_main (main)
-•	Steps (main)
+-	derby.jar (main, test)
+-	sqlite-jdbc-3.16.1.jar (main, test)
+-	sqljdbc42.jar (main, test)
+-	ojdbc7.jar (main, test)
+-	postgresql-42.0.0.jar (main, test)
+-	gradle-installation-baecon-3.3.jar (main, test)
+-	gradle-api-3.3.jar (main, test)
+-  groovy-all-2.4.7.jar (main, test)
+-	gretl_main (test)
+-	Gradle:junit:junit:4.12 (test)
+-	Gradle:org.hamcrest:hamcrest-core:1.3 (test)
 
 **3.2.	Tests ausführen**
 
-Um zu prüfen, ob die Java-Klassen korrekt funktionieren wurden für (fast) jede Klasse Unittest definiert (s. Kapitel 2.4, 2.6). Diese können einzeln oder alle zusammen ausgeführt werden.
+Um zu prüfen, ob die Java-Klassen korrekt funktionieren wurden für (fast) jede Klasse Unittest definiert. Diese können einzeln oder alle zusammen ausgeführt werden.
 
 3.2.1.	Einzelne Tests ausführen
 
-Um die in den Kapiteln 2.4 und 2.6 aufgeführten Tests ausführen zu können, wird in INTELLIJ IDEA die entsprechende Klasse, welche getestet werden soll geöffnet. Anschliessend kann mittels Rechtsklick auf den Testnamen (z.b. executeWithoutFiles()) im sich öffnenden Kontextmenü "Run *Testnamen()*" ausgewählt werden. Anschliessend wird der Test ausgeführt. Wenn er mit einem exit code 0 abschliesst ist der Test erfolgreich durchgelaufen.
+Um die Tests ausführen zu können, wird in INTELLIJ IDEA die entsprechende Klasse, welche getestet werden soll geöffnet. Anschliessend kann mittels Rechtsklick auf den Testnamen (z.b. executeWithoutFiles()) im sich öffnenden Kontextmenü "Run *Testnamen()*" ausgewählt werden. Anschliessend wird der Test ausgeführt. Wenn er mit einem exit code 0 abschliesst ist der Test erfolgreich durchgelaufen.
 
 3.2.2.	Alle Tests ausführen
 
@@ -863,13 +791,15 @@ Für die Tasks wurden keine Tests erstellt, da diese keine neuen Features prüfe
 
 **3.3.	Umbenennen - Refactor**
 
+Um den Namen einer Variable, Methode o.ä. zu ändern. muss der Name markiert und mit Rechtsklick darauf geklickt werden. Anschliessend muss Refactor > Rename ausgewählt werden und der neue Name eingegeben werden. Mit Enter werden die Änderungen überall, wo die Variable resp Methode verwendet wird, vorgenommen.
+
 """""""""""""""""
 
 **4.	GRETL – Gradleprojekt für Tasks**
 
-Damit keine Änderungen (beabsichtigte/versehentliche) vorgenommen werden können, soll aus dem gretl-Projekt ein jar  erstellt werden. Da dadurch eigene Tasks nicht in diesem Projekt definiert werden können, muss ein separates Projekt erstellt werden.
+Damit keine Änderungen (beabsichtigte/versehentliche) vorgenommen werden können, soll aus dem gretl-Projekt ein jar erstellt werden. Da dadurch eigene Tasks nicht in diesem Projekt definiert werden können, muss ein separates Projekt erstellt werden.
 
-**4.1.	Aufbau**
+**4.1.	Aufbau**  ----> überarbeiten, wenn klar wie aufgebaut.
 
 Der Aufbau eines solchen separaten Task-Projekt könnte wie folgt aussehen.
 Build.gradle::
@@ -962,8 +892,8 @@ Hierfür müssen in einem gradle-Projekt die eigenen gewünschten Tasks aufgefü
 Hingegen hat ein Task, welche auf dem SQLExecutor-Step aufbauen soll, immer folgende Struktur::
 
    Task Name_des_SQLExecutor_Tasks (type: SQLExecutorStepTask) {
-       sourceDb =  new TransactionContext("jdbc:postgresql://mydb:5432/sogis","user","pw");
-       sqlFiles = [new File("/home/test.sql")];
+       database =  new TransactionContext("jdbc:postgresql://mydb:5432/sogis","user","pw");
+       sqlFiles = ["/home/test.sql"];
    }
 
 Jeder Task muss entweder vom Typ SQLExecutorTask oder vom Typ Db2DbStepTask sein. Wobei mehrere Tasks den gleichen Typ aufweisen können. Zwingend jedoch ist, dass jeder Task einen eindeutigen Namen aufweist.
@@ -987,7 +917,7 @@ Im Task, welcher auf dem Db2Db-Step aufbaut, wird nebst den beiden Datenbankverb
 
 4.3.3.	SqlFiles
 
-Im auf dem SQLExecutor-Step aufbauenden Task muss nebst einer Datenbankverbindung auch noch mindestens ein SQL-File angegeben werden. Wobei die angegebenen Files zwingend die Endung .sql aufweisen müssen.
+Im auf dem SQLExecutor-Step aufbauenden Task muss nebst einer Datenbankverbindung auch noch mindestens ein Pfad zu einem SQL-File angegeben werden. Wobei die angegebenen Files zwingend die Endung .sql aufweisen müssen.
 
 4.3.4.	Abhängigkeiten in Tasks definieren
 
@@ -1028,7 +958,7 @@ Um die Abhängigkeiten in der IDE festzulegen muss im Menü File > Project Struc
 
 Damit die individuellen Tasks ausgeführt werden können muss zuerst ein jar des gretls erzeugt werden.
 
-**5.1.	Erzeugen eines builds**
+**5.1.	Erzeugen eines builds**  ---> überarbeiten, wenn klar wohin publiziert wird
 
 Um das Projekt GRETL im lokalen Repository (.m2/gretl) zu publizieren und daher ein jar zu erzeugen, muss in der Konsole im Projektordner (trunk) folgender Befehl ausgeführt werden::
 
@@ -1041,7 +971,7 @@ Hierzu muss in der Konsole in den Ordner des Gradle-Task-Projekts gewechselt wer
    ./gradlew endTask --no-daemon
 
 Wobei endTask der Name des auszuführenden Tasks ist.
-**
-6.	GRETL intern zur Verfügung stellen**
+
+**6.	GRETL intern zur Verfügung stellen**  ---> überarbeiten, wenn klar wo zur Verfügung gestellt
 
 Alles noch unklar!!!!
