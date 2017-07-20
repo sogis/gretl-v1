@@ -189,7 +189,7 @@ Benötigt: Char, PushbackReader, StringBuffer
 
 Liefert: StringBuffer
 
-
+Die Methode addingQuotedString fügt das übergebene Char dem StringBuffer hinzu. Anschliessend wird solange das nächste Char gelesen, bis entweder das Ende des Files erreicht ist, oder es sich beim Char um ein Apostroph "'" handelt. Am Schluss wird der StringBuffer zurückgegeben.
 
 2.3.3.9. splitStatement
 
@@ -197,7 +197,8 @@ Benötigt: Char, PushbackReader, StringBuffer
 
 Liefert: StringBuffer
 
-
+Als erstes wird in der Methode splitStatement das übergebene Char an den übergebenen StringBuffer angefügt. Anschliessend wird das nächste Char gelesen. Handelt es sich um einen Zeilenumbruch ("\\n" oder "\\r"), so wird das nächste Char gelesen. Repräsentiert diese Char weder einen weiteren Zeilenumbruch noch das Ende des Files so wird das Lesen des Chars wieder rückgängig gemacht.
+Handelte es sich beidem gelesenen Char um keinen Zeilenumbruch, so wird geprüft, ob es sich um das Fileende handelt. Sollte dies nicht der Fall sein, so wird das Lesen des Chars wieder rückgängig gemacht.
 
 2.3.3.10. replaceLineBreakCharacter
 
