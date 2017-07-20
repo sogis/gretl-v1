@@ -452,6 +452,19 @@ Liefert: nichts
 
 Die Methode error gibt die Mitteilung an den Logger mit dem Loglevel error weiter.
 
+2.5.4. Interface LogFactory
+
+Package: ch.so.agi.gretl.logging
+
+Das Interface setzt die Methoden getLogger voraus. Diese Methoden benötigen alle eine Class.
+
+2.5.5. CoreJavaLogFactory  --- ToDo: Was genau macht diese Klasse?????? ----
+
+Package: ch.so.agi.gretl.logging
+
+Die Klasse CoreJavaLogFactory implementiert das Interface LogFactory. 
+
+
 
 
 2.5.1.Logger
