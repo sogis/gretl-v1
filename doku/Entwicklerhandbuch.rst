@@ -579,17 +579,26 @@ Beispiel::
    
    executeSqlStatement(dbstmt, statement)
    
-   
-   
-   
-   
+2.7.4. SqlExecutorTask
 
-2.5.4.	SqlExecutorStepTask
+Package: ch.so.agi.gretl.steps
 
-Package: 	ch.so.agi.gretl.steps
+Die Klasse SqlExecutorStepTask repräsentiert den Task zum SqlExecutorStep. Sie verlangen einen TransactionContext (sourceDb) und und eine Liste mit Pfaden zu den(SQL-)Files (sqlFiles)
 
-Die Klasse SqlExecutorStepTask repräsentiert den Task zum SqlExecutorStep. Sie verlangen einen TransactionContext (sourceDb) und und eine Liste mit (SQL-)Files (sqlFiles).
+2.7.4.1. Methode executeSqlExecutor
+
+Benötigt: nichts 
+
+Liefert: nichts
+
+In einem ersten Schritt wird in der Methode executeSqlExecutor geprüft, ob die Inputvariable sqlFiles null ist. Anschliessend wird die Methode convertToValidatedFileList
+
 In der TaskAction werden die beiden Inputs (sourceDb, sqlFiles) an die Methode execute des SqlExecutorStep (s. Kapitel 2.5.3.1) übergeben und die Methode ausgeführt. Im Anschluss an diese Methode wird ein Commit auf der Datenbank ausgeführt und so die SQL-Statements ausgeführt und die Daten geschrieben.
+
+
+
+
+
 
 2.3.4.	TransactionContext
 
