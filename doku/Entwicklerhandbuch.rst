@@ -370,6 +370,90 @@ strangeFileNameExtension: Prüft, ob bei einem File mit folgendem Namen (c:\\fil
 
 ---- ToDo: Alles überarbeiten!!!! -----
 
+2.5.1. Interface GretlLogger
+
+Package: ch.so.agi.gretl.logging
+
+Das Interface setzt die Methoden info, debug, error und livecycle voraus. Diese Methoden benötigen alle einen String.
+
+2.5.2. CoreJavaLogAdaptor  --- ToDo: Was genau passiert beim Objekt?
+
+Package: ch.so.agi.gretl.logging
+
+Die Klasse CoreJavaLogAdaptor implementiert das GretlLogger-Interface. Sie wird genutzt, wenn die Steps ohne gradle genutzt werden (z.B. unittest).
+
+2.5.2.1. Methode info
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode info gibt die Mitteilung an den Logger mit dem Loglevel fine weiter.
+
+2.5.2.2. Methode debug
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode debug gibt die Mitteilung an den Logger mit dem Loglevel finer weiter.
+
+2.5.2.3. error
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode error gibt die Mitteilung den den Logger mit dem Loglevel severe weiter.
+
+2.5.2.4. livecycle
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode livecycle gibt die Mitteilung an den Logger mit dem Loglvel config weiter.
+
+2.5.3. GradleLogAdaptor
+
+Package: ch.so.agi.gretl.logging
+
+Die Klasse GradleLogAdaptor implementiert das GretlLogger-Interface. Sie wird genutzt, wenn die Steps mit gradle ausgeführt werden (z.B. Tasks).
+
+2.5.3.1. info
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode info gibt die Mitteilung an den Logger mit dem Loglevel info weiter.
+
+2.5.3.2. debug
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode debug gibt die Mitteilung an den Logger mit dem Loglevel debug weiter.
+
+2.5.3.3. livecycle
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode livecycle gibt die Mitteilung an den Logger mit dem Loglevel lifecycle weiter.
+
+2.5.3.4. error
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode error gibt die Mitteilung an den Logger mit dem Loglevel error weiter.
+
+
+
 2.5.1.Logger
 
 Package: 	ch.so.agi.gretl.logging
@@ -394,9 +478,18 @@ Package: 	ch.so.agi.gretl.logging
 
 Mit der LoggerTest-Klasse wird die Funktionalität der Logger-Klasse überprüft. Dabei wird bevor irgendein Test ausgeführt wird eine PrintStream erzeugt und System.err wird so umgestellt, dass dieser den neu erzeugten PrintStream als Output nutzt. 
 Vor jedem Test wird zudem der PrintStream zurückgesetzt. Und am Ende aller Test wird System.err wieder zurückgesetzt.
-logInfoTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
-logDebugTest: Prüft, ob die in System.err geworfene Logmeldung der Erwartung entspricht.
-logErrorTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
+
+2.6.1.1. Test logInfoTest
+
+Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
+
+2.6.1.2. Test logDebugTest
+
+Prüft, ob die in System.err geworfene Logmeldung der Erwartung entspricht.
+
+2.6.1.3. Test logErrorTest
+
+Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 
 **2.7.	Steps**
    
@@ -798,12 +891,12 @@ Die Methode createWrongSqlFiles erstellt eine SQL-Datei, welche mit einer fehler
 
 Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
-2.8.2.17. checkIfConnectionIsClosed
+2.8.2.17. Test checkIfConnectionIsClosed
 
 Prüft, ob nach dem Ausführen des Steps die Datenbankverbindung korrekt geschlossen wurde. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
 
-2.8.2.18. notClosedConnectionThrowsError
+2.8.2.18. Test notClosedConnectionThrowsError
 
 Prüft, ob eine Datenbankverbindung, welche nach dem Ausführen des Steps nicht erfolgreich geschlossen wurde, eine Fehler verursacht. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
