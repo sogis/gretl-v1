@@ -21,7 +21,9 @@ Entwicklerhandbuch
 SDKMAN gemäss Anleitung (http://sdkman.io/install.html) installieren. Anschliessend soll getestet werden, ob die Installation erfolgreich abgeschlossen wurde, in dem auf der Kommandozeile den Befehl "sdk" ausgeführt wird.
 
 Testen ob Installation in Ordnung: Auf Kommandozeile den SDKMAN-Befehl "sdk" ausführen.
+
 1.2.2.	Java
+
 Um Java zu installieren muss folgender Befehl in der Konsole ausgeführt werden:
 
 sdk i java 8u121
@@ -898,7 +900,7 @@ Hingegen hat ein Task, welche auf dem SQLExecutor-Step aufbauen soll, immer folg
 
 Jeder Task muss entweder vom Typ SQLExecutorTask oder vom Typ Db2DbStepTask sein. Wobei mehrere Tasks den gleichen Typ aufweisen können. Zwingend jedoch ist, dass jeder Task einen eindeutigen Namen aufweist.
 
-4.3.1.	Datenbankverbindungen - TransactionContext
+4.3.1. Datenbankverbindungen - TransactionContext
 
 Wobei sowohl beim Db2Db-Task wie auch beim SQLExecutorTask verschiedene Datenbanktypen verwendet werden können. Hierfür muss bei sourceDb resp. targetDb folgende Connectionstrings dem TransactionContext als erster Parameterwert mitgegeben werden.
 ::
@@ -911,15 +913,15 @@ Wobei sowohl beim Db2Db-Task wie auch beim SQLExecutorTask verschiedene Datenban
 
 Als zweiter Parameter wird der Benutzername und als dritter das Passwort übergeben. Im Fall der Derby-DB sind sowohl der Benutzername wie auch das Passwort Null.
 
-4.3.2.	TransferSet
+4.3.2. TransferSet
 
 Im Task, welcher auf dem Db2Db-Step aufbaut, wird nebst den beiden Datenbankverbindungen auch ein transferSet benötigt. Als erster Parameterwert muss entweder True oder False übergeben werden. Dabei wird angegeben, ob im Falle einer bereits existierenden Zieltabelle diese zuerst geleert werden soll (True) oder nicht (False). Als zweiter Parameterwert muss das SQL-File angegeben werden, welches das SQL-Statement für die Quelltabellen beinhaltet. Als letzter Parameterwert muss der qualifizierte Schemen- und Tabellennamen der Zieltabelle angegeben werden.
 
-4.3.3.	SqlFiles
+4.3.3. SqlFiles
 
 Im auf dem SQLExecutor-Step aufbauenden Task muss nebst einer Datenbankverbindung auch noch mindestens ein Pfad zu einem SQL-File angegeben werden. Wobei die angegebenen Files zwingend die Endung .sql aufweisen müssen.
 
-4.3.4.	Abhängigkeiten in Tasks definieren
+4.3.4. Abhängigkeiten in Tasks definieren
 
 Wenn Tasks davon abhängig sind, dass andere Tasks zuvor ausgeführt werden, so kann dies in den Tasks definiert werden. Es ist möglich einen Task von einem oder mehreren Tasks abhängig zu machen. Folgende Beispiele zeigen, wie ein Task von einem oder mehreren Tasks abhängig gemacht wird::
 
@@ -933,7 +935,7 @@ Wenn Tasks davon abhängig sind, dass andere Tasks zuvor ausgeführt werden, so 
 
 Bevor der Task SqlExecutorTask1 ausgeführt wird muss der Task SqlExecutorTask (und SqlExecutorTask3) ausgeführt werden.
 
-4.3.5.	EndTask
+4.3.5. EndTask
 
 Beim Endtask werden alle Task, welche in einem Schritt ausgeführt werden sollen, als Abhängigkeiten aufgeführt. Die Reihenfolge der Definition entspricht, sofern es keine Abhängigkeiten gibt, der Reihenfolge der Ausführung. Ein Beispiel für einen solchen Endtask::
 
