@@ -118,7 +118,7 @@ Der SqlReader liest Statement für Statement die SQL-Statements aus einem File a
 
 2.3.3.1.	Methode readSqlStmt
 
-Benötigt: File
+Benötigt: sqlfile (File)
 
 Liefert:	SQL-Statement (String)
 
@@ -132,7 +132,7 @@ Beispiel::
 
 2.3.3.2. Methode createPushbackReader
 
-Benötigt: File
+Benötigt: sqlfile (File)
 
 Liefert: PushbackReader
 
@@ -145,7 +145,7 @@ Beispiel::
 
 2.3.3.3. Methode createStatement
 
-Benötigt: Char, PushbackReader, StringBuffer
+Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
 Liefert: StringBuffer
 
@@ -166,7 +166,7 @@ Beispiel::
 
 2.3.3.4. Methode handlingGivenCharacters
 
-Benötigt: Char, PushbackReader, StringBuffer
+Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
 Liefert: StringBuffer
 
@@ -198,7 +198,7 @@ Beispiel::
 
 2.3.3.5. checkCharacterAfterHyphen
 
-Benötigt: PushbackReader, StringBuffer
+Benötigt: reader (PushbackReader), stmt (StringBuffer)
 
 Liefert: StringBuffer
 
@@ -218,7 +218,7 @@ Beispiel::
 
 2.3.3.6. ignoreCommentsUntilLinebreak
 
-Benötigt: PushbackReader
+Benötigt: reader (PushbackReader)
 
 Liefert: nichts
 
@@ -237,7 +237,7 @@ Beispiel::
 
 2.3.3.7. addingQuotedString
 
-Benötigt: Char, PushbackReader, StringBuffer
+Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
 Liefert: StringBuffer
 
@@ -257,7 +257,7 @@ Beispiel::
 
 2.3.3.8. splitStatement
 
-Benötigt: Char, PushbackReader, StringBuffer
+Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
 Liefert: StringBuffer
 
@@ -278,7 +278,7 @@ Beispiel::
 
 2.3.3.9. replaceLineBreakCharacter
 
-Benötigt: Char, PushbackReader, StringBuffer
+Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
 Liefert: StringBuffer
 
@@ -334,7 +334,7 @@ Beispiel::
 
 Package: ch.so.agi.gretl.util
 
------ hier fehlt Text -----
+----- ToDo: hier fehlt Text -----
 
 2.3.6.	NotAllowedSqlExpressionException
 
@@ -368,7 +368,7 @@ strangeFileNameExtension: Prüft, ob bei einem File mit folgendem Namen (c:\\fil
 
 **2.5.	Logging**
 
-(Hier muss noch seeeeeeeeeehr viel gemacht werden!!!!!!!!!!!!!!!!!)
+---- ToDo: Alles überarbeiten!!!! -----
 
 2.5.1.Logger
 
@@ -400,7 +400,7 @@ logErrorTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 
 **2.7.	Steps**
    
-2.7.1. Db2DbStep  --> Bitte überarbeiten/prüfen
+2.7.1. Db2DbStep  --> ToDo: Bitte überarbeiten/prüfen
 
 Package: ch.so.agi.gretl.steps
 
@@ -470,7 +470,7 @@ Beispiel::
    while (rs.next()) {transferRow(rs, insertRowStatement, columncount);}
 
 
-2.7.2. Db2DbStepTask  --> bitte überarbeiten/prüfen
+2.7.2. Db2DbStepTask  --> ToDo: bitte überarbeiten/prüfen
 
 Package: 	ch.so.agi.gretl.steps
 
@@ -678,7 +678,7 @@ Beispiel::
 
 **2.8.	Steps – Test**
 
-2.8.1. Db2DbStepTest   ----> überarbeiten/prüfen
+2.8.1. Db2DbStepTest   ----> ToDo: überarbeiten/prüfen
 
 Package: ch.so.agi.gretl.steps
 
@@ -801,7 +801,7 @@ Um den Namen einer Variable, Methode o.ä. zu ändern. muss der Name markiert un
 
 Damit keine Änderungen (beabsichtigte/versehentliche) vorgenommen werden können, soll aus dem gretl-Projekt ein jar erstellt werden. Da dadurch eigene Tasks nicht in diesem Projekt definiert werden können, muss ein separates Projekt erstellt werden.
 
-**4.1.	Aufbau**  ----> überarbeiten, wenn klar wie aufgebaut.
+**4.1.	Aufbau**  ----> ToDo: überarbeiten, wenn klar wie aufgebaut.
 
 Der Aufbau eines solchen separaten Task-Projekt könnte wie folgt aussehen.
 Build.gradle::
@@ -960,7 +960,7 @@ Um die Abhängigkeiten in der IDE festzulegen muss im Menü File > Project Struc
 
 Damit die individuellen Tasks ausgeführt werden können muss zuerst ein jar des gretls erzeugt werden.
 
-**5.1.	Erzeugen eines builds**  ---> überarbeiten, wenn klar wohin publiziert wird
+**5.1.	Erzeugen eines builds**  ---> ToDo: überarbeiten, wenn klar wohin publiziert wird
 
 Um das Projekt GRETL im lokalen Repository (.m2/gretl) zu publizieren und daher ein jar zu erzeugen, muss in der Konsole im Projektordner (trunk) folgender Befehl ausgeführt werden::
 
@@ -974,6 +974,6 @@ Hierzu muss in der Konsole in den Ordner des Gradle-Task-Projekts gewechselt wer
 
 Wobei endTask der Name des auszuführenden Tasks ist.
 
-**6.	GRETL intern zur Verfügung stellen**  ---> überarbeiten, wenn klar wo zur Verfügung gestellt
+**6.	GRETL intern zur Verfügung stellen**  ---> ToDo: überarbeiten, wenn klar wo zur Verfügung gestellt
 
 Alles noch unklar!!!!
