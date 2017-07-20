@@ -28,19 +28,24 @@ public class SqlExecutorTask extends DefaultTask {
 
 
     @Input
-    private TransactionContext database;
+    public TransactionContext database;
 
 
     @Input
-    private List<String> sqlFiles;
+    public List<String> sqlFiles;
 
 
     @TaskAction
     public void executeSQLExecutor() {
 
+        if (sqlFiles==null) {
+            throw new GradleException("sqlFiles is null");
+        }
+
         List<File> files = convertToValidatedFileList(sqlFiles);
 
         try {
+
             new SqlExecutorStep().execute(database, files);
             log.info("Task start");
         } catch (Exception e) {
