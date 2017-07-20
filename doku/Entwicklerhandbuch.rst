@@ -692,7 +692,7 @@ SQLExceptionTest(): Überprüft, ob bei einem fehlerhaften SQL-Stetement eine SQ
 
 Package: ch.so.agi.gretl.steps
 
-Die Klasse SqlExecutorStepTest überprüft die Funktionalitäten der SqlExecutorStep-Klasse. Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird. Anschliessend wird eine Testdatenbank mit Testdaten angelegt. Diese wird nach dem Abschluss der Tests wieder verworfen.
+Die Klasse SqlExecutorStepTest überprüft die Funktionalitäten der SqlExecutorStep-Klasse. Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird (Rule). Anschliessend wird eine Testdatenbank mit Testdaten angelegt (Before). Diese wird nach dem Abschluss der Tests wieder verworfen (After).
 
 2.8.2.1. Methode initialize
 
@@ -784,31 +784,29 @@ Die Methode createEmptySqlFile erzeugt ein leeres SQL-File, welches dann zurück
 
 2.8.2.14. Test executeWrongQuery
 
-Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query falsch ist.
+Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query falsch ist. Mit der Methode createWrongSqlFiles werden fehlerhafte SQL-Files erzeugt
+
+2.8.2.15. Methode createWrongSqlFiles
+
+Benötigt: nichts
+
+Liefert: List<File>
+
+Die Methode createWrongSqlFiles erstellt eine SQL-Datei, welche mit einer fehlerbehafteten Query abgefüllt wird, und gibt dieses File im Anschluss in einer Liste zurück.
+
+2.8.2.16. Test executePositiveTest
+
+Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
+
+2.8.2.17. checkIfConnectionIsClosed
+
+Prüft, ob nach dem Ausführen des Steps die Datenbankverbindung korrekt geschlossen wurde. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
 
+2.8.2.18. notClosedConnectionThrowsError
 
+Prüft, ob eine Datenbankverbindung, welche nach dem Ausführen des Steps nicht erfolgreich geschlossen wurde, eine Fehler verursacht. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
-
-
-
-
-
-
-
-: 
-
-executeDifferentExtensions: 
-
-: 
-
-executeWrongQuery:  Damit die Query getestet werden kann, wird zu Beginn eine entsprechende Tabelle angelegt.
-
-executePositiveTest: Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Hierzu wird zu Beginn eine Tabelle in der Datenbank angelegt und mit drei Einträgen abgefüllt.
-
-checkIfConnectionIsClosed: Prüft, ob nach dem Ausführen des Steps die Datenbankverbindung korrekt geschlossen wurde.
-
-notClosedConnectionThrowsError: Prüft, ob eine Datenbankverbindung, welche nach dem Ausführen des Steps nicht erfolgreich geschlossen wurde, eine Fehler verursacht.
 
 **2.9.	Build.gradle**
 
