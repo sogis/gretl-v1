@@ -694,6 +694,55 @@ Package: ch.so.agi.gretl.steps
 
 Die Klasse SqlExecutorStepTest überprüft die Funktionalitäten der SqlExecutorStep-Klasse. Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird. Anschliessend wird eine Testdatenbank mit Testdaten angelegt. Diese wird nach dem Abschluss der Tests wieder verworfen.
 
+2.8.2.1. Methode initialize
+
+Benötigt: nichts
+
+Liefert: nichts
+
+Die initialize-Methode wird vor allen anderen Methoden und Tests ausgeführt. Sie beinhaltet einen TransactionContext zu einer Derby-DB, welchen sie an die Methode createTestDb übergibt.
+
+2.8.2.2. Methode createTestDb
+
+Benötigt: sourceDb (TransactionContext)
+
+Liefert: nichts
+
+Die Methode erstellt eine Verbindung zu der im TransactionContext übergebenen Datenbank, führt anschliessend die Methode create TableInTestDb aus und schliesst die Verbindung zur Datenbank.
+
+2.8.2.3. Methode createTableInTestDb
+
+Benötigt: con (Connection)
+
+Liefert: nichts
+
+Die Methode createTableInTestDb erstellt in der übergebenen Datenbank eine Tabelle und führt anschliessend die Methode writeExampleDataInTestDB aus.
+
+2.8.2.4. Methode writeExampleDataInTestDB
+
+Benötigt: con (Connection)
+
+Liefert: nichts
+
+Die Methode writeExampleDataInTestDB fügt mehrere Testdatensätze in die mit createTableInTestDb erstellten Tabelle ein.
+
+2.8.2.5. Methode finalise
+
+Benötigt: nichts
+
+Liefert: nichts
+
+Die finalise-Methode wird nach allen Methoden und Test ausgeführt. Sie beinhlatet einen TransactionContext zu einer Derby-DB, welchen sie an die Methode clearTestDb übergibt.
+
+2.8.2.6. Methode 
+
+
+
+
+
+
+
+
 executeWithoutFiles: Prüft, ob eine Fehlermeldung geworfen wird, wenn keine Files aber eine Datenbankconnection angegeben werden.
 
 executeWithoutDb: Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar ein sqlFile übergeben wird, aber keine Datenbankconnection.
