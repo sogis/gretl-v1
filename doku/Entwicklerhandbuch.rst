@@ -734,7 +734,57 @@ Liefert: nichts
 
 Die finalise-Methode wird nach allen Methoden und Test ausgeführt. Sie beinhlatet einen TransactionContext zu einer Derby-DB, welchen sie an die Methode clearTestDb übergibt.
 
-2.8.2.6. Methode 
+2.8.2.6. Methode clearTestDb
+
+Benötigt: sourceDb (TransactionContext)
+
+Liefert: nichts
+
+Die Methode erstellt eine Verbindung zu der im TransactionContext übergebenen Datenbank, löscht die Tabelle in createTableInTestDb erstellte Tabelle und schliesst die Verbindung zur Datenbank.
+
+2.8.2.7. Test executeWithoutFiles
+
+Prüft, ob eine Fehlermeldung geworfen wird, wenn keine Files aber eine Datenbankconnection angegeben werden.
+
+2.8.2.8. Test executeWithoutDb
+
+Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar ein sqlFile übergeben wird, aber keine Datenbankconnection. Der Test verwendet die Methode createCorrectSqlFiles für die Erstellung der sqlFiles
+
+2.8.2.9. Methode createCorrectSqlFiles
+
+Benötigt: nichts
+
+Liefert: List<File>
+
+Mit der Methode createCorrectSqlFiles werden zwei SQL-Dateien (query.sql, query1.sql) erzeugt, welche sogleich mit Queries abgefüllt werden und schliessend als Liste zurückgegeben werden.
+
+2.8.2.10. Test executeDifferentExtensions
+
+Prüft, ob eine Fehlermeldung geworfen wird, wenn eine Datenbankverbindung und in der Fileliste ein SQL-File und ein txt-File übergeben werden. Für die Erzeugung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet. Anschliessend wird mit der Methode createSqlFileWithWrongExtension ein txt-Datei erstellt.
+
+2.8.2.11. Methode createSqlFileWithWrongExtension
+
+Benötigt: nichts
+
+Liefert: File
+
+Die Methode createSqlFileWithWrongExtension erzeugt eine txt-Datei, in welche eine Query geschrieben wird. Diese Datei wird als File zurückgegeben.
+
+2.8.2.12. Test executeEmptyFile
+
+Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung, ein sql-File mit einer Query und ein sql-File ohne Query übergeben werden. Die korrekten SQL-Files werden mit der Methode createCeorrectSqlFiles erzeugt. Das leere SQL-File wird mit der Methode createEmptySqlFile erzeugt.
+
+2.8.2.13. Methode createEmptySqlFile
+
+Benötigt: nichts
+
+Liefert: File
+
+Die Methode createEmptySqlFile erzeugt ein leeres SQL-File, welches dann zurückgegeben wird.
+
+2.8.2.14. Test executeWrongQuery
+
+Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query falsch ist.
 
 
 
@@ -743,15 +793,16 @@ Die finalise-Methode wird nach allen Methoden und Test ausgeführt. Sie beinhlat
 
 
 
-executeWithoutFiles: Prüft, ob eine Fehlermeldung geworfen wird, wenn keine Files aber eine Datenbankconnection angegeben werden.
 
-executeWithoutDb: Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar ein sqlFile übergeben wird, aber keine Datenbankconnection.
 
-executeDifferentExtensions: Prüft, ob eine Fehlermeldung geworfen wird, wenn eine Datenbankverbindung und in der Fileliste ein SQL-File und ein txt-File übergeben werden.
 
-executeEmptyFile: Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung, ein sql-File mit einer Query und ein sql-File ohne Query übergeben werden. Dazu wird zu Beginn eine Tabelle in der Datenbank angelegt, auf welcher die Query ausgeführt werden kann.
+: 
 
-executeWrongQuery: Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query falsch ist. Damit die Query getestet werden kann, wird zu Beginn eine entsprechende Tabelle angelegt.
+executeDifferentExtensions: 
+
+: 
+
+executeWrongQuery:  Damit die Query getestet werden kann, wird zu Beginn eine entsprechende Tabelle angelegt.
 
 executePositiveTest: Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Hierzu wird zu Beginn eine Tabelle in der Datenbank angelegt und mit drei Einträgen abgefüllt.
 
