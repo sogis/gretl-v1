@@ -112,9 +112,23 @@ Beispiel::
 
 Package: 	ch.so.agi.gretl.util
 
-Der SqlReader liest Statement für Statement die SQL-Statements aus einem File aus.
+Der SqlReader liest Statement für Statement die SQL-Statements aus einem File aus. 
 
-2.3.3.1. Methode createPushbackReader
+2.3.3.1.	Methode readSqlStmt
+
+Benötigt: File
+
+Liefert:	SQL-Statement (String)
+
+Erstellt zuerst durch Aufruf der Methode createPushbackReader einen Reader und gibt am Ende das erste Statement aus dem File zurück.
+
+Beispiel::
+
+   Connection db = DriverManager.getConnection(ConnectionUrl, UserName, Password)
+   List<File> sqlfiles = [new File("/Path/to/File/Filename.sql")]
+   readSqlStmt(sqlfiles, db)
+
+2.3.3.2. Methode createPushbackReader
 
 Benötigt: File
 
@@ -122,23 +136,12 @@ Liefert: PushbackReader
 
 Die Methode erstellt mit dem übergebenen File einen PushbackReader. Dieser ermöglicht das File char für char zu lesen und er ermöglicht auch, dass vorausgeschaut wird, welches char als nächstes geliefert wird.
 
-2.3.3.2. Methode nextSqlStmt 
+Beispiel::
 
-Benötigt: nichts
+   sqlfile = new File("/Path/to/File/Filename.sql")
+   createPushbackReader(sqlfile)
 
-Liefert: SQL-Statement (String)
-
-Die Methode nextSqlStmt ermittelt das nächste SQL-Statement und liefert dieses zurück.
-
-2.3.3.3.	Methode readSqlStmt
-
-Benötigt: File
-
-Liefert:	SQL-Statement (String)
-
-Erstellt zuerst durch Aufruf der Methode createPushbackReader einen Reader und gibt am Ende das erste Statement aus dem File zurück. 
-
-2.3.3.4. Methode createStatement
+2.3.3.3. Methode createStatement
 
 Benötigt: Char, PushbackReader, StringBuffer
 
@@ -146,7 +149,20 @@ Liefert: StringBuffer
 
 Mit der Methode createStatement werden die Chars, welche aus dem File ausgelesen werden zu einem Statement zusammengefügt und als StringBuffer zurück gegeben. Dafür wird jedes Char geprüft, ob es nicht das Ende des Files ist oder ein Semikolon ";" und anschliessen mit der Methode handlingGivenCharacters weiterverarbeitet. Das Resultat wird als StringBuffer gespeichert und es wird das nächste char gelesen. Ist entweder das Ende des Files erreicht oder ist das Char ein Semikolon, so wird das nächste Char gelesen und anschliessend das Statement als StringBuffer zurückgegeben.
 
-2.3.3.5. Methode handlingGivenCharacters
+Beispiel::
+
+   sqlfile = new File("/Path/to/File/Filename.sql")
+   sqlFileInputStream = new FileInputStream(sqlfile);
+   sqlFileReader = new InputStreamReader(sqlFileInputStream);
+   
+   reader = new PushbackReader(sqlFileReader);
+   int c = reader.read();
+   StringBuffer stmt = new StringBuffer();
+   
+   stmt = createStatement(c, reader, stmt)
+   
+
+2.3.3.4. Methode handlingGivenCharacters
 
 Benötigt: Char, PushbackReader, StringBuffer
 
@@ -166,7 +182,19 @@ char      behandelnde Methode
 
 Jedes andere Char wird dem übergebenen StringBuffer angefügt. Am Schluss wird der StringBuffer zurückgegeben.
 
-2.3.3.6. checkCharacterAfterHyphen
+Beispiel::
+
+   sqlfile = new File("/Path/to/File/Filename.sql")
+   sqlFileInputStream = new FileInputStream(sqlfile);
+   sqlFileReader = new InputStreamReader(sqlFileInputStream);
+   
+   reader = new PushbackReader(sqlFileReader);
+   int c = reader.read();
+   StringBuffer stmt = new StringBuffer();
+   
+   stmt = handlingGivenCharacters(c,reader,stmt);
+
+2.3.3.5. checkCharacterAfterHyphen
 
 Benötigt: PushbackReader, StringBuffer
 
@@ -174,7 +202,19 @@ Liefert: StringBuffer
 
 In der checkCharacterAfterHyphen-Methode wird als erstes das nächste Char gelesen. Im Falle, dass das Ende des Files erreicht ist, wird automatisch ein weitere Bindestrich "-" dem StringBuffer angefügt. Solle es sich um einen weiteren Bindestrich handeln so wird die Methode ignoreCommentsUntilLinebreak ausgeführt. Bei jedem anderen Char wird dem StringBuffer ein weiterer Bindestrich angefügt und anschliessend das gelesene Char angefügt. Am Schluss wird der StringBuffer zurückgegeben
 
-2.3.3.7. ignoreCommentsUntilLinebreak
+Beispiel::
+
+   sqlfile = new File("/Path/to/File/Filename.sql")
+   sqlFileInputStream = new FileInputStream(sqlfile);
+   sqlFileReader = new InputStreamReader(sqlFileInputStream);
+   
+   reader = new PushbackReader(sqlFileReader);
+   int c = reader.read();
+   StringBuffer stmt = new StringBuffer();  
+   
+   stmt = checkCharacterAfterHyphen(reader,stmt);
+
+2.3.3.6. ignoreCommentsUntilLinebreak
 
 Benötigt: PushbackReader
 
@@ -183,7 +223,17 @@ Liefert: nichts
 Die Methode ignoreCommentsUntilLinebreak liest das nächste Char vom PushbackReader. Solange das Ende des Files nicht erreicht ist wird geprüft, ob das Char einen Zeilenumbruch ("\\n" oder "\\r") repräsentiert. Wenn dies der Fall ist, so wird das nächste Char gelesen. Wenn es sich dabei weder um einen weiteren Zeilenumbruch noch um das Ende des Files handelt, wird das Lesen des Chars rückgängig gemacht und es wird aus der Methode ausgetreten. Ansonsten wird das Char nicht ungelesen gemacht, sondern direkt aus der Methode ausgetreten. 
 Sollte es sich aber nicht um einen Zeilenumbruch gehandlet haben, so wird das nächste Char gelesen.
 
-2.3.3.8. addingQuotedString
+Beispiel::
+
+   sqlfile = new File("/Path/to/File/Filename.sql")
+   sqlFileInputStream = new FileInputStream(sqlfile);
+   sqlFileReader = new InputStreamReader(sqlFileInputStream);
+   
+   reader = new PushbackReader(sqlFileReader);
+   
+   ignoreCommentsUntilLinebreak(reader);
+
+2.3.3.7. addingQuotedString
 
 Benötigt: Char, PushbackReader, StringBuffer
 
@@ -191,7 +241,19 @@ Liefert: StringBuffer
 
 Die Methode addingQuotedString fügt das übergebene Char dem StringBuffer hinzu. Anschliessend wird solange das nächste Char gelesen, bis entweder das Ende des Files erreicht ist, oder es sich beim Char um ein Apostroph "'" handelt. Am Schluss wird der StringBuffer zurückgegeben.
 
-2.3.3.9. splitStatement
+Beispiel::
+
+   sqlfile = new File("/Path/to/File/Filename.sql")
+   sqlFileInputStream = new FileInputStream(sqlfile);
+   sqlFileReader = new InputStreamReader(sqlFileInputStream);
+   
+   reader = new PushbackReader(sqlFileReader);
+   int c = reader.read();
+   StringBuffer stmt = new StringBuffer();  
+   
+   stmt = addingQuotedString(c, reader, stmt);
+
+2.3.3.8. splitStatement
 
 Benötigt: Char, PushbackReader, StringBuffer
 
@@ -200,7 +262,19 @@ Liefert: StringBuffer
 Als erstes wird in der Methode splitStatement das übergebene Char an den übergebenen StringBuffer angefügt. Anschliessend wird das nächste Char gelesen. Handelt es sich um einen Zeilenumbruch ("\\n" oder "\\r"), so wird das nächste Char gelesen. Repräsentiert diese Char weder einen weiteren Zeilenumbruch noch das Ende des Files so wird das Lesen des Chars wieder rückgängig gemacht.
 Handelte es sich beidem gelesenen Char um keinen Zeilenumbruch, so wird geprüft, ob es sich um das Fileende handelt. Sollte dies nicht der Fall sein, so wird das Lesen des Chars wieder rückgängig gemacht.
 
-2.3.3.10. replaceLineBreakCharacter
+Beispiel::
+
+   sqlfile = new File("/Path/to/File/Filename.sql")
+   sqlFileInputStream = new FileInputStream(sqlfile);
+   sqlFileReader = new InputStreamReader(sqlFileInputStream);
+   
+   reader = new PushbackReader(sqlFileReader);
+   int c = reader.read();
+   StringBuffer stmt = new StringBuffer();  
+   
+   stmt = splitStatement(c, reader, stmt);
+
+2.3.3.9. replaceLineBreakCharacter
 
 Benötigt: Char, PushbackReader, StringBuffer
 
@@ -208,6 +282,29 @@ Liefert: StringBuffer
 
 Die Methode replaceLineBreakCharacter prüft, ob es sich bei dem übergebenen Char um einen Zeilenumbruch ("\\n" oder "\\r") handelt und fügt stattdessen dem StringBuffer einen Leerschlag hinzu. Anschliessen wird das nächste Char gelesen und geprüft, ob es sich weder um das Fileende noch um einen weiteren Zeilenumbruch handelt. Ist dies der Fall, so wird das Lesen des Chars rückgängig gemacht. Am Schluss wird der StringBuffer zurückgegeben.
 
+Beispiel::
+
+   sqlfile = new File("/Path/to/File/Filename.sql")
+   sqlFileInputStream = new FileInputStream(sqlfile);
+   sqlFileReader = new InputStreamReader(sqlFileInputStream);
+   
+   reader = new PushbackReader(sqlFileReader);
+   int c = reader.read();
+   StringBuffer stmt = new StringBuffer();  
+   
+   stmt = replaceLineBreakCharacter(c, reader, stmt);
+
+2.3.3.10. Methode nextSqlStmt 
+
+Benötigt: nichts
+
+Liefert: SQL-Statement (String)
+
+Die Methode nextSqlStmt ermittelt das nächste SQL-Statement und liefert dieses zurück.
+
+Beispiel::
+
+   String statement = SqlReader.nextSqlStmt(sqlfile);
 
 2.3.3.11. closePushbackReader
 
@@ -215,11 +312,12 @@ Benötigt: nichts
 
 Liefert: nichts
 
-Das Schliessen des FileInputStreams und des InputStreamReaders, welche benötigt wurden zum Erstellen des PushbackReaders, wird mit der Methode closePushbackReader vorgenommenn.
+Das Schliessen des FileInputStreams und des InputStreamReaders, welche benötigt wurden zum Erstellen des PushbackReaders, wird mit der Methode closePushbackReader vorgenommen.
 
 Beispiel::
 
-   line = SqlReader.readSqlStmt(targetFile);
+   closePushbackReader();
+
 
 2.3.4.	TransactionContext
 
