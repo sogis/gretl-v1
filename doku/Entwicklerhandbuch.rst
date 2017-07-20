@@ -583,7 +583,7 @@ Beispiel::
 
 Package: ch.so.agi.gretl.steps
 
-Die Klasse SqlExecutorStepTask repräsentiert den Task zum SqlExecutorStep. Sie verlangen einen TransactionContext (sourceDb) und und eine Liste mit Pfaden zu den(SQL-)Files (sqlFiles)
+Die Klasse SqlExecutorStepTask repräsentiert den Task zum SqlExecutorStep. Sie verlangen einen TransactionContext (sourceDb) und und eine Liste mit Pfaden zu den(SQL-)Files (sqlFiles). In der TaskAction werden die beiden Inputs (sourceDb, sqlFiles) an die Methode execute des SqlExecutorStep übergeben und die Methode ausgeführt.
 
 2.7.4.1. Methode executeSqlExecutor
 
@@ -591,47 +591,94 @@ Benötigt: nichts
 
 Liefert: nichts
 
-In einem ersten Schritt wird in der Methode executeSqlExecutor geprüft, ob die Inputvariable sqlFiles null ist. Anschliessend wird die Methode convertToValidatedFileList
+In einem ersten Schritt wird in der Methode executeSqlExecutor geprüft, ob die Inputvariable sqlFiles null ist. Anschliessend wird die Methode convertToValidatedFileList ausgeführt und es wird versucht die Methode SQLExecutorStep().execute auszuführen.
 
-In der TaskAction werden die beiden Inputs (sourceDb, sqlFiles) an die Methode execute des SqlExecutorStep (s. Kapitel 2.5.3.1) übergeben und die Methode ausgeführt. Im Anschluss an diese Methode wird ein Commit auf der Datenbank ausgeführt und so die SQL-Statements ausgeführt und die Daten geschrieben.
+Beispiel::
 
+   executeSQLExecutor()
+   
+2.7.4.2. Methode convertToValidatedFileList
 
+Benötigt: filePaths (List<String>)
 
+Liefert: List<File>
 
+Die Methode erzeugt in einem ersten Schrit ein Arraylist für Files. Danach werden die übergebenen filePaths einzeln durchgegangen und für jeden Dateipfad wird geprüft, ob er weder null noch eine Länge von 0 hat. Trifft dies nicht zu so wird aus dem Dateipfad ein File erzeugt und geprüft, ob dieses lesbar ist. Zum Abschluss wird das File der Arraylist hinzugefügt.
 
+Beispiel::
 
-2.3.4.	TransactionContext
+   filePaths = ["/path/to/file/filename.sql"]
+   List<File> files = convertToValidatedFileList(filePaths)
 
-Package: 	ch.so.agi.gretl.steps
+2.7.5. TransactionContext
 
-Führt eine Methode auf der Datenbank aus.
+Package: ch.so.agi.gretl.steps
 
-2.3.4.1.	Methode getDbConnection
+Erstellt eine Verbindung zur Datenbank.
 
-Benötigt: 	ConnectionURL (String), UserName (String), Password (String)
+2.7.5.1.	Methode getDbConnection
+
+Benötigt: 	dbUri (String), dbUser (String), dbPassword (String)
 
 Liefert: 	Connection
 
-Die Methode führt die Methode DbConnector.connect mit den oben erwähnten Parametern aus. Von dieser Methode wird eine Connection zurückgeliefert, welche auch die getDbConnection zurückliefert.
+Die Methode führt die Methode DbConnector.connect mit den oben erwähnten Parametern aus. Von dieser Methode wird eine Connection zurückgeliefert, welche auch die getDbConnection zurückliefert. Die Connection wird mit dem AutoCommit False geöffnet.
 
 Beispiel::
-   public TransactionContext  sourceDb;
+
+   public TransactionContext sourceDb;
    Connection con = sourceDb.getDbConnection();
 
-2.5.5.	TransferSet
+2.7.6. TransferSet
 
-Package: 	ch.so.agi.gretl.steps
+Package: ch.so.agi.gretl.steps
 
 Die Klasse TransferSet definiert die Gestalt eines TransferSets. Es besteht aus drei Parametern:
 - Ein Boolean-Wert, der definiert, ob der Inhalt der Zieltabelle vorgängig gelöscht werden soll.
 - Ein Input-File, in welchem ein SELECT_Statement die Struktur der Input-Daten definiert.
 - Ein String, bestehend aus Schema und Tabelle des gewünschten Outputs.
 
-**2.6.	Steps – Test**
+2.7.6.1. Methode getDeleteAllRows
 
-2.6.1.	Db2DbStepTest
+Benötigt: nichts
 
-Package: 	ch.so.agi.gretl.steps
+Liefert: Boolean
+
+Die Methode getDeleteAllRows gibt die Instanzvariable deleteAllRows, welche an die Klasse TransferSet übergeben wurde, zurück.
+
+Beispiel::
+  
+   getDeleteAllRows();
+   
+2.7.6.2. Methode getInputSqlFile
+
+Benötigt: nichts
+
+Liefert: file
+
+Die Methode getInputSqlFile gibt die Instanzvariable insputSqlfile, welche an die Klasse TransferSet übergeben wurde, zurück.
+
+Beispiel::
+
+   getInputSqlFile();
+   
+2.7.6.3. Methode getOutputQualifiedSchemaAndTableName
+
+Benötigt: nichts
+
+Liefert: String
+
+Die Methode getOutputQualifiedSchemaAndTableName gibt die Instanzvariable outputQualifiedSchemaAndTableName, welche an die Klasse TransferSet übergeben wurde, zurück.
+
+Beispiel::
+
+   getOutputQualifiedSchemaAndTableName();
+
+**2.8.	Steps – Test**
+
+2.8.1. Db2DbStepTest   ----> überarbeiten/prüfen
+
+Package: ch.so.agi.gretl.steps
 
 Die Klasse Db2DbStepTest überprüft die Funktionalitäten der Db2DbStep-Klasse. Bisher liegen die folgenden Tests vor:
 PositiveTest(): Dieser Test ist ein positiv-Test, das heisst, er überprüft, ob der Db2DbStep grundsätzlich funktioniert.
@@ -639,81 +686,54 @@ NotAllowedSqlExpressionInScriptTest(): Dieser Test überprüft, ob bei der Verwe
 Db2DbEmptyFileTest(): Überprüft, ob bei einem leeren File eine EmptyFileException geworfen wird.
 SQLExceptionTest(): Überprüft, ob bei einem fehlerhaften SQL-Stetement eine SQLException geworfen wird.
 
-2.6.2.	SqlExecutorStepTest
+2.8.2. SqlExecutorStepTest
 
-Package: 	ch.so.agi.gretl.steps
+Package: ch.so.agi.gretl.steps
 
-Die Klasse SqlExecutorStepTest überprüft die Funktionalitäten der SqlExecutorStep-Klasse (s. Kapitel 2.5.3). Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird.
+Die Klasse SqlExecutorStepTest überprüft die Funktionalitäten der SqlExecutorStep-Klasse. Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird. Anschliessend wird eine Testdatenbank mit Testdaten angelegt. Diese wird nach dem Abschluss der Tests wieder verworfen.
+
 executeWithoutFiles: Prüft, ob eine Fehlermeldung geworfen wird, wenn keine Files aber eine Datenbankconnection angegeben werden.
+
 executeWithoutDb: Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar ein sqlFile übergeben wird, aber keine Datenbankconnection.
+
 executeDifferentExtensions: Prüft, ob eine Fehlermeldung geworfen wird, wenn eine Datenbankverbindung und in der Fileliste ein SQL-File und ein txt-File übergeben werden.
+
 executeEmptyFile: Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung, ein sql-File mit einer Query und ein sql-File ohne Query übergeben werden. Dazu wird zu Beginn eine Tabelle in der Datenbank angelegt, auf welcher die Query ausgeführt werden kann.
+
 executeWrongQuery: Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query falsch ist. Damit die Query getestet werden kann, wird zu Beginn eine entsprechende Tabelle angelegt.
-execute: Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Hierzu wird zu Beginn eine Tabelle in der Datenbank angelegt und mit drei Einträgen abgefüllt.
 
-**2.7.	Build.gradle**
+executePositiveTest: Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Hierzu wird zu Beginn eine Tabelle in der Datenbank angelegt und mit drei Einträgen abgefüllt.
 
-In den build.gradle-Files werden alle Einstellungen für gradle festgelegt. Dabei hat jedes Modul (core, steps) wie auch das Projekt selber ein solches build.gradle-File
+checkIfConnectionIsClosed: Prüft, ob nach dem Ausführen des Steps die Datenbankverbindung korrekt geschlossen wurde.
 
-2.7.1.	Core
+notClosedConnectionThrowsError: Prüft, ob eine Datenbankverbindung, welche nach dem Ausführen des Steps nicht erfolgreich geschlossen wurde, eine Fehler verursacht.
 
-Das build.gradle des Moduls core sieht wie folgt aus::
+**2.9.	Build.gradle**
 
-   group 'gretl'
-   version '1.0-SNAPSHOT'
-   apply plugin: 'java'
-   apply plugin: 'maven'
-   sourceCompatibility = 1.8
-   repositories {
-       mavenCentral()
-   }
-   dependencies {
-       testCompile group: 'junit', name: 'junit', version: '4.12'
-       compile files('./lib/ojdbc7.jar', './lib/postgresql-42.0.0.jar', './lib/sqljdbc42.jar', './lib/sqlite-jdbc-3.16.1.jar', './lib/derby.jar')
-       compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-alpha2'
-       compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-alpha2'
+In den build.gradle-Files werden alle Einstellungen für gradle festgelegt.
 
-Group legt fest zu welcher Gruppe/Projekt das Modul core gehört und welche Version dieser Gruppe. Mit apply plugin wird festgelegt, dass es sich um ein java und maven-Projekt handelt. Maven wird daher als plugin definiert, damit das lokale Repository (mavenCentral), welches zum Ausführen der Tasks benötigt wird, verwendet werden kann. In den Dependencies werden die Abhängigkeiten aufgeführt (s. Kapitel 3.1).
-
-2.7.2.	Steps
-
-Das build.gradle des Moduls Steps sieht wie folgt aus::
+Das build.gradle des Moduls gretl sieht wie folgt aus::
 
    group 'gretl'
    version '1.0-SNAPSHOT'
+   
    apply plugin: 'java'
    apply plugin: 'maven'
+   
    sourceCompatibility = 1.8
    repositories {
-       mavenCentral()
+      mavenCentral()
    }
+   
    dependencies {
-       testCompile group: 'junit', name: 'junit', version: '4.12'
-       compile project (':core')
-       compile gradleApi()
+      testCompile group: 'junit', name: 'junit', version: '4.12'
+      compile files('./lib/ojdbc7.jar', './lib/postgresql-42.0.0.jar', './lib/sqljdbc42.jar', './lib/sqlite-jdbc-3.16.1.jar', './lib/derby.jar')
+      compile gradleApi()
    }
 
-Group legt fest zu welcher Gruppe/Projekt das Modul steps gehört und welche Version dieser Gruppe. Mit apply plugin wird festgelegt, dass es sich um ein java und maven-Projekt handelt. Maven wird daher als plugin definiert, damit das lokale Repository (mavenCentral), welches zum Ausführen der Tasks benötigt wird, verwendet werden kann. In den Dependencies werden die Abhängigkeiten aufgeführt (s. Kapitel 3.1).
 
-2.7.3.	Gretl
+Group legt fest zu welcher Gruppe/Projekt das Modul gretl gehört und welche Version dieser Gruppe. Mit apply plugin wird festgelegt, dass es sich um ein java und maven-Projekt handelt. Maven wird daher als plugin definiert, damit das lokale Repository (mavenCentral), welches zum Ausführen der Tasks benötigt wird, verwendet werden kann. In den Dependencies werden die Abhängigkeiten aufgeführt.
 
-Das build.gradle des Projekts gretl sieht wie folgt aus::
-
-   group 'gretl'
-   version '1.0-SNAPSHOT'
-   apply plugin: 'java'
-   apply plugin: 'maven'
-   sourceCompatibility = 1.8
-   repositories {
-       mavenCentral()
-   }
-   dependencies {
-       testCompile group: 'junit', name: 'junit', version: '4.12'
-       compile project (':core')
-       compile gradleApi()
-   }
-
-Group legt fest zu welcher Gruppe/Projekt das Projekt gretl gehört und welche Version dieser Gruppe. Mit apply plugin wird festgelegt, dass es sich um ein java und maven-Projekt handelt. Maven wird daher als plugin definiert, damit das lokale Repository (mavenCentral), welches zum Ausführen der Tasks benötigt wird, verwendet werden kann. In den Dependencies werden die Abhängigkeiten aufgeführt (s. Kapitel 3.1).
 
 """""""""""""""""
 
