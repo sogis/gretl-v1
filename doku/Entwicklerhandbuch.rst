@@ -328,7 +328,7 @@ Beispiel::
 
    throw new EmptyFileException("EmptyFile: "+targetFile.getName());
    
-2.3.5. EmptListException
+2.3.5. EmptyListException
 
 Package: ch.so.agi.gretl.util
 
@@ -396,7 +396,200 @@ logInfoTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 logDebugTest: Prüft, ob die in System.err geworfene Logmeldung der Erwartung entspricht.
 logErrorTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 
-**2.5.	Steps - Main**
+**2.7.	Steps**
+   
+2.7.1. Db2DbStep  --> Bitte überarbeiten/prüfen
+
+Package: ch.so.agi.gretl.steps
+
+Die Db2DbStep-Klasse beinhaltet den Db2Db-Step. Sie dient dem Umformen und Kopieren von einer Datenbank in eine andere. In einem SQL-File wird dabei das SQL-Statement für den Input-Datensatz erstellt, der dann in die Output-Datenbank geschrieben werden soll.
+
+2.7.1.1. Methode processAllTransferSets
+
+Diese Methode ruft für jedes in der Liste aufgeführte Transferset die Methode processTransferSet auf.
+
+Beispiel::
+
+   processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets)
+
+2.7.1.2	Methode processTransferSet
+
+Dies ist nun die Methode, welche ein TransferSet abarbeitet. Dabei werden verschiedene andere Methoden aufgerufen.
+Als erstes wird überprüft, ob im TransferSet die Option getDeleteAllRows auf True gesetzt ist. Ist das der Fall, wird die Methode deleteDestTableContents aufgerufen, welche den Inhalt der ZielTtabelle löscht.
+Danach wird mit der Methode extractSingleStatement ein Statement aus dem SQL-File, welches im TransferSet definiert ist, extrahiert und gleich auf unerlaubte Ausdrücke (Delete, Insert, Update etc.) überprüft. Danach wird mit der Methode createResultSet das Statement ausgeführt und anschliessend wird mit der Methode createInsertRowStatement ein SQL-INSERT-Statement vorbereitet. Dieses wird in der Methode transferRow mit den Werten aus dem ResultSet abgefüllt.
+
+Beispiel::
+
+   processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
+
+
+2.7.1.3. Methode deleteDestTableContents
+
+Diese Methode löscht alle Einträge in der Ziel-Tabelle. Dies geschieht nicht mit "truncate", sondern mit "DELETE FROM". Der Grund dafür ist, dass ein Truncate alleine in einer Transaktion stehen müsste und nicht zusammen mit anderen Querys übermittelt (commited) werden kann.
+
+Beispiel::
+
+   deleteDestTableContents(targetCon, transferSet.getOutputQualifiedSchemaAndTableName());
+
+2.7.1.4. Methode createResultSet
+
+Diese Methode führt das sqlSelectStatement aus und liefert ein ResultSet (rs) zurück)
+
+Beispiel::
+
+   ResultSet rs = createResultSet(srcCon, selectStatement);
+
+2.7.1.5. Methode createInsertRowStatement
+
+Diese Methode erstellt das Insert Statement. Dazu werden über die Funktion getMetaData die Metadaten, konkret die columnNames (Spaltennamen) ausgelesen. Die Spaltennamen werden dann zusammengesetzt und im Insert-Statement eingesetzt. Gleichzeitig werden der Anzahl Spalten entsprechend Fragezeichen in die VALUES geschrieben, welche in einer späteren Methode durch die entsprechenden Werten ersetzt werden.
+
+Beispiel::
+
+   createInsertRowStatement(srcCon,rs,transferSet.getOutputQualifiedSchemaAndTableName());
+
+2.7.1.6. Methode extractSingleStatement
+
+Benötigt: File targetFile
+
+Diese Methode extrahiert aus einem definierten File ein SQL Statement. Dabei wird auch auch überprüft ob das File nur ein Statement enthält, oder ob es eventuell auch weitere gibt. Des Weiteren wird auch überprüft, ob eventuelle nicht erlaubte Ausdrücke im Statement vorkommen (z.B. DELETE, INSERT oder UPDATE).
+
+Beispiel::
+
+   extractSingleStatement(transferSet.getInputSqlFile());
+
+2.7.1.7. Methode transferRow
+
+Benötigt: ResultSet rs, PreparedStatement insertRowStatement, int columncount
+
+Diese Methode ersetzt die "?" vominsertRowStatement mit den Werten, die das ResultSet zurückliefert. Im Anschluss wird dieses Statement ausgeführt.
+
+Beispiel::
+
+   while (rs.next()) {transferRow(rs, insertRowStatement, columncount);}
+
+
+2.7.2. Db2DbStepTask  --> bitte überarbeiten/prüfen
+
+Package: 	ch.so.agi.gretl.steps
+
+Die Klasse Db2DbStepTask repräsentiert den Task zum Db2DbStep. Diese Klasse verlangt nach drei Inputs; der sourceDb, der targetDb und eines oder mehrerer TransferSets. Ein Beispiel wie ein solcher Task aussehen könnte:
+::
+
+   task TestTask(type: Db2DbStepTask, dependsOn: 'TestTask2') {
+       sourceDb =  new TransactionContext("jdbc:postgresql://host:port/db","user",null);
+       targetDb = new TransactionContext("jdbc:postgresql://host:port/db","user",null);
+       transferSet = [new TransferSet(true,new java.io.File('path/to/file'),'schema.table')];
+   }
+
+
+2.7.3. SqlExecutorStep
+
+Package: ch.so.agi.gretl.steps
+
+Die SqlExecutorStep-Klasse beinhaltet den Step SQLExecutor und führt dementsprechend die übergebenen sql-Statements auf der übergebenen Datenbank aus.
+
+2.7.3.1. Methode execute
+
+Benötigt: trans (TransactionContext), sqlfiles (List<File>)
+
+Liefert: nichts
+
+Die Methode execute führt zuerst die Methode checkIfAtLeastOneSqlFileIsGiven aus und anschliessend führt sie logPathToInputSqlFiles aus. Danach wird versucht mit dem TransactionContext eine Verbindung zur Datenbank zu erstellen. Danach werden die Methoden checkFileExtensionsForSqlExtension und readSqlFiles ausgeführt. Zum Abschluss wird ein Commit auf der Datenbank ausgeführt. Falls eine Exception geworfen wurde, so wird ein Rollback auf der Datenbank ausgeführt. Am Schluss wird sowohl bei einem Commit wie auch bei einem Rollbakc die Verbindung zur Datenbank geschlossen.
+
+Beispiel::
+
+   SqlExecutorStep x = new SqlExecutorStep();
+   TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]:
+
+   x.execute(sourceDb, sqlListe);
+   
+2.7.3.2. Methode checkIfAtLeastOneSqlFileIsGiven
+
+Benötigt: sqlFiles (List<File>)
+
+Liefert: nichts
+
+Die Methode prüfte, ob mindestens ein File übergeben wurde.
+
+Beispiel::
+
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]:
+   checkFileExtensionsForSqlExtension(sqlfiles);
+   
+2.7.3.3. Methode readSqlFiles
+
+Benötigt: sqlfiles (List<File>), db (Connection)
+
+Liefert: nichts
+
+Die Methode readSqlFiles führt für jedes übergebene File die Methode executeAllSqlStatements aus.
+
+Beispiel::
+
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]:
+   Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
+   readSqlFiles(sqlfiles, db);
+   
+2.7.3.4. Methode executeAllSqlStatements
+
+Benötigt: conn (Connection), sqlfile (File)
+
+Liefert: nichts
+
+Die Methode executeAllSqlStatements führt in einem ersten Schritt die Methode SqlReader.readSqlStmt aus. Anschliessend werden solange die Methoden prepareSqlStatement und SqlReader.nextSqlStmt ausgeführt bis das aus nextSqlStmt resultierende Statement null ist.
+
+Beispiel::
+
+   sqlfile = new File("/Path/to/File/Filename.sql"):
+   Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
+   executeAllSqlStatements(sqlfile, db);
+
+2.7.3.5. Methode prepareSqlStatement
+
+Benötigt: conn (Connection), statement (String)
+
+Liefert: nichts
+
+In einem ersten Schritt werden die unnötigen Blankspaces am Anfang und am Ende des Statementstrings entfernt. Anschliessend wird, sofern die Länge des Strings grösser 0 ist, ein Statement für den Statementstring kreiert und die Methode executeSqlStatement.
+
+Beispiel::
+
+   Connection con = Drivermanager.getConnection(ConnectionUrl, Username, Password);
+   Statement dbstmt = null;
+   dbstmt = conn.createStatement();
+   String statement = "SQL-Query-Statement"
+   
+   executeSqlStatement(dbstmt, statement);
+   
+2.7.3.6. Methode executeSqlStatement
+
+Benötigt: dbstmt (Statement), statement (String)
+
+Liefert: nichts
+
+Die Methode executeSqlStatement versucht das als String übergebene Statement als Statement auf der Datenbank auszuführen. Nachdem dies erfolgreich oder fehlerhaft durchgeführt wurde wird das Datenbank-Statement wieder geschlossen.
+  
+Beispiel::
+
+   Connection con = Drivermanager.getConnection(ConnectionUrl, Username, Password);
+   Statement dbstmt = null;
+   dbstmt = conn.createStatement();
+   String statement = "SQL-Query-Statement"
+   
+   executeSqlStatement(dbstmt, statement)
+   
+   
+   
+   
+   
+
+2.5.4.	SqlExecutorStepTask
+
+Package: 	ch.so.agi.gretl.steps
+
+Die Klasse SqlExecutorStepTask repräsentiert den Task zum SqlExecutorStep. Sie verlangen einen TransactionContext (sourceDb) und und eine Liste mit (SQL-)Files (sqlFiles).
+In der TaskAction werden die beiden Inputs (sourceDb, sqlFiles) an die Methode execute des SqlExecutorStep (s. Kapitel 2.5.3.1) übergeben und die Methode ausgeführt. Im Anschluss an diese Methode wird ein Commit auf der Datenbank ausgeführt und so die SQL-Statements ausgeführt und die Daten geschrieben.
 
 2.3.4.	TransactionContext
 
@@ -415,115 +608,6 @@ Die Methode führt die Methode DbConnector.connect mit den oben erwähnten Param
 Beispiel::
    public TransactionContext  sourceDb;
    Connection con = sourceDb.getDbConnection();
-   
-2.5.1.	Db2DbStep
-
-Package: 	ch.so.agi.gretl.steps
-
-Die Db2DbStep-Klasse beinhaltet den Db2Db-Step. Sie dient dem Umformen und Kopieren von einer Datenbank in eine andere. In einem SQL-File wird dabei das SQL-Statement für den Input-Datensatz erstellt, der dann in die Output-Datenbank geschrieben werden soll.
-
-2.5.1.1.	Methode processAllTransferSets
-
-Diese Methode ruft für jedes in der Liste aufgeführte Transferset die Methode processTransferSet auf.
-
-Beispiel::
-
-   processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets)
-
-2.5.1.2.	Methode processTransferSet
-
-Dies ist nun die Methode, welche ein TransferSet abarbeitet. Dabei werden verschiedene andere Methoden aufgerufen.
-Als erstes wird überprüft, ob im TransferSet die Option getDeleteAllRows auf True gesetzt ist. Ist das der Fall, wird die Methode deleteDestTableContents aufgerufen, welche den Inhalt der ZielTtabelle löscht.
-Danach wird mit der Methode extractSingleStatement ein Statement aus dem SQL-File, welches im TransferSet definiert ist, extrahiert und gleich auf unerlaubte Ausdrücke (Delete, Insert, Update etc.) überprüft. Danach wird mit der Methode createResultSet das Statement ausgeführt und anschliessend wird mit der Methode createInsertRowStatement ein SQL-INSERT-Statement vorbereitet. Dieses wird in der Methode transferRow mit den Werten aus dem ResultSet abgefüllt.
-
-Beispiel::
-
-   processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
-
-
-2.5.1.3	Methode deleteDestTableContents
-
-Diese Methode löscht alle Einträge in der Ziel-Tabelle. Dies geschieht nicht mit "truncate", sondern mit "DELETE FROM". Der Grund dafür ist, dass ein Truncate alleine in einer Transaktion stehen müsste und nicht zusammen mit anderen Querys übermittelt (commited) werden kann.
-
-Beispiel::
-
-   deleteDestTableContents(targetCon, transferSet.getOutputQualifiedSchemaAndTableName());
-
-2.5.1.4 	Methode createResultSet
-
-Diese Methode führt das sqlSelectStatement aus und liefert ein ResultSet (rs) zurück)
-
-Beispiel::
-
-   ResultSet rs = createResultSet(srcCon, selectStatement);
-
-2.5.1.5 	Methode createInsertRowStatement
-
-Diese Methode erstellt das Insert Statement. Dazu werden über die Funktion getMetaData die Metadaten, konkret die columnNames (Spaltennamen) ausgelesen. Die Spaltennamen werden dann zusammengesetzt und im Insert-Statement eingesetzt. Gleichzeitig werden der Anzahl Spalten entsprechend Fragezeichen in die VALUES geschrieben, welche in einer späteren Methode durch die entsprechenden Werten ersetzt werden.
-
-Beispiel::
-
-   createInsertRowStatement(srcCon,rs,transferSet.getOutputQualifiedSchemaAndTableName());
-
-2.5.1.6	Methode extractSingleStatement
-
-Benötigt: File targetFile
-
-Diese Methode extrahiert aus einem definierten File ein SQL Statement. Dabei wird auch auch überprüft ob das File nur ein Statement enthält, oder ob es eventuell auch weitere gibt. Des Weiteren wird auch überprüft, ob eventuelle nicht erlaubte Ausdrücke im Statement vorkommen (z.B. DELETE, INSERT oder UPDATE).
-
-Beispiel::
-
-   extractSingleStatement(transferSet.getInputSqlFile());
-
-2.5.1.7	Methode transferRow
-
-Benötigt: ResultSet rs, PreparedStatement insertRowStatement, int columncount
-
-Diese Methode ersetzt die "?" vominsertRowStatement mit den Werten, die das ResultSet zurückliefert. Im Anschluss wird dieses Statement ausgeführt.
-
-Beispiel::
-
-   while (rs.next()) {transferRow(rs, insertRowStatement, columncount);}
-
-
-2.5.2.	Db2DbStepTask
-
-Package: 	ch.so.agi.gretl.steps
-
-Die Klasse Db2DbStepTask repräsentiert den Task zum Db2DbStep. Diese Klasse verlangt nach drei Inputs; der sourceDb, der targetDb und eines oder mehrerer TransferSets. Ein Beispiel wie ein solcher Task aussehen könnte:
-::
-
-   task TestTask(type: Db2DbStepTask, dependsOn: 'TestTask2') {
-       sourceDb =  new TransactionContext("jdbc:postgresql://host:port/db","user",null);
-       targetDb = new TransactionContext("jdbc:postgresql://host:port/db","user",null);
-       transferSet = [new TransferSet(true,new java.io.File('path/to/file'),'schema.table')];
-   }
-
-
-2.5.3.	SqlExecutorStep
-
-Package: 	ch.so.agi.gretl.steps
-
-Die SqlExecutorStep-Klasse beinhaltet den Step SQLExecutor und führt dementsprechend die übergebenen sql-Statements auf der übergebenen Datenbank aus. Die sql-Statements werden aber nicht commited.
-
-2.5.3.1.	Methode execute
-
-Benötigt: 	db (Connection), sqlfiles (List<File>)
-
-Die Methode execute überprüft in einem ersten Schritt, ob mindestens ein File angegeben wurde und loggt die Filenamen inkl. Pfade. Anschliessend wird überprüft, ob eine DB-Connection übergeben wurde und ob, die Files alle die korrekte Fileextension (Dateiendung) "sql" aufweisen. Zum Abschluss wird jedes File mit der Methode executesqlScript (s. Kapitel 2.5.3.2) ausgeführt.
-
-2.5.3.2.	Methode executeSqlScript
-
-Benötigt: conn (Connection), inputStreamReader (InputStreamReader)
-
-Die Methode executeSqlScript liest mittels der Methode readerSqlStmt (s. Kapitel 2.3.3.1) jede einzelne Zeile eines SQL-Files. Diese wird auch gleich auf der Datenbank ausgeführt (aber nicht commited!).
-
-2.5.4.	SqlExecutorStepTask
-
-Package: 	ch.so.agi.gretl.steps
-
-Die Klasse SqlExecutorStepTask repräsentiert den Task zum SqlExecutorStep. Sie verlangen einen TransactionContext (sourceDb) und und eine Liste mit (SQL-)Files (sqlFiles).
-In der TaskAction werden die beiden Inputs (sourceDb, sqlFiles) an die Methode execute des SqlExecutorStep (s. Kapitel 2.5.3.1) übergeben und die Methode ausgeführt. Im Anschluss an diese Methode wird ein Commit auf der Datenbank ausgeführt und so die SQL-Statements ausgeführt und die Daten geschrieben.
 
 2.5.5.	TransferSet
 
