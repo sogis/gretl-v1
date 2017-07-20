@@ -317,7 +317,86 @@ Das Schliessen des FileInputStreams und des InputStreamReaders, welche benötigt
 Beispiel::
 
    closePushbackReader();
+   
+2.3.4.	EmptyFileException
 
+Package: ch.so.agi.gretl.util
+
+Die EmptyFileException soll geworfen werden, wenn ein File, welches nicht leer sein darf, trotzdem leer ist. Wenn beispielweise das SQL-File, welches beim Db2Db-Step gelesen werden soll, leer ist, soll keine allgemeine, sondern diese spezifische Exception geworfen werden.
+
+Beispiel::
+
+   throw new EmptyFileException("EmptyFile: "+targetFile.getName());
+   
+2.3.5. EmptListException
+
+Package: ch.so.agi.gretl.util
+
+----- hier fehlt Text -----
+
+2.3.6.	NotAllowedSqlExpressionException
+
+Package: ch.so.agi.gretl.util
+
+Die NotAllowedSqlExpressionException soll geworfen werden, wenn in einem SQL-Statement einen Ausdruck enthalten ist, der in diesem Zusammenhang nicht erlaubt ist. (Beispiel: Im SQL-File, welches im Db2Db-Step verwendet wird, ist kein Delete, Update, Insert etc. erlaubt).
+
+Beispiel::
+
+   throw new NotAllowedSqlExpressionException();
+
+**2.4.	Util – Test**
+
+2.4.1.	DbConnectorTest
+
+Package: 	ch.so.agi.gretl.core
+
+Die Klasse DbConnectorTest testet gewisse Funktionalitäten der DbConnector-Klasse.
+connectToDerbyDb: Testet, ob eine Verbindung zur lokalen Derby-Db herstellen kann.
+connectionAutoCommit: Testet, ob AutoCommit wirklich off ist.
+
+2.4.2.	FileExtensionTest
+
+Package: 	ch.so.agi.gretl.core
+
+Die Klasse FileExtensionTest überprüft die Funktionalitäten der FileExtension-Klasse. Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird.
+getFileExtension: Prüft, ob die Methode bei einem File mit der Endung .sql auch die Endung sql ermittelt wird.
+missingFileExtension: Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegeben wird.
+mutipleFileExtension: Prüft, ob bei einem File mit mehreren Endungen (file.ext1.ext2) auch wirklich die letzte Fileendung ausgegeben wird.
+strangeFileNameExtension: Prüft, ob bei einem File mit folgendem Namen (c:\\file) auch wirklich eine Fehlermeldung ausgeworfen wird.
+
+**2.5.	Logging**
+
+(Hier muss noch seeeeeeeeeehr viel gemacht werden!!!!!!!!!!!!!!!!!)
+
+2.5.1.Logger
+
+Package: 	ch.so.agi.gretl.logging
+
+Beinhaltet die Methode log um Informationen zu loggen.
+
+2.5.1.1. Methode log
+
+Benötigt: 	LogLevel (int), Message (String)
+Die Methode log schreibt die übergebene Nachricht (Message) mit dem LogLevelhinweis (INFO, DEBUG, ERROR, LIVECYCLE), je nach Einstellung nach System.err. Die Standardeinstellung sieht vor, dass logmessages mit dem Info-Level nach System.err geschrieben werden, während die logmessages mit dem Debug-Level gar nicht erst geloggt werden.
+Folgende LogLevel gibt es: INFO_LEVEL, DEBUG_LEVEL
+
+Beispiel::
+
+   Logger.log(Logger.INFO_LEVEL,"Task start");
+
+**2.6.	Logging - Test**
+
+2.6.1.	LoggerTest
+
+Package: 	ch.so.agi.gretl.logging
+
+Mit der LoggerTest-Klasse wird die Funktionalität der Logger-Klasse überprüft. Dabei wird bevor irgendein Test ausgeführt wird eine PrintStream erzeugt und System.err wird so umgestellt, dass dieser den neu erzeugten PrintStream als Output nutzt. 
+Vor jedem Test wird zudem der PrintStream zurückgesetzt. Und am Ende aller Test wird System.err wieder zurückgesetzt.
+logInfoTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
+logDebugTest: Prüft, ob die in System.err geworfene Logmeldung der Erwartung entspricht.
+logErrorTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
+
+**2.5.	Steps - Main**
 
 2.3.4.	TransactionContext
 
@@ -335,77 +414,8 @@ Die Methode führt die Methode DbConnector.connect mit den oben erwähnten Param
 
 Beispiel::
    public TransactionContext  sourceDb;
-   new SqlExecutorStep().execute(sourceDb.getDbConnection(),sqlFiles);
-
-2.3.5.	Logger
-
-Package: 	ch.so.agi.gretl.logging
-
-Beinhaltet die Methode log um Informationen zu loggen.
-
-2.3.5.1.	Methode log
-
-Benötigt: 	LogLevel (int), Message (String)
-Die Methode log schreibt die übergebene Nachricht (Message) mit dem LogLevelhinweis (INFO, DEBUG, ERROR, LIVECYCLE), je nach Einstellung nach System.err. Die Standardeinstellung sieht vor, dass logmessages mit dem Info-Level nach System.err geschrieben werden, während die logmessages mit dem Debug-Level gar nicht erst geloggt werden.
-Folgende LogLevel gibt es: INFO_LEVEL, DEBUG_LEVEL
-
-Beispiel::
-
-   Logger.log(Logger.INFO_LEVEL,"Task start");
-
-
-2.3.6.	EmptyFileException
-
-Package: 	ch.so.agi.gretl.core
-
-Die EmptyFileException soll geworfen werden, wenn ein File, welches nicht leer sein darf, trotzdem leer ist. Wenn beispielweise das SQL-File, welches beim Db2Db-Step gelesen werden soll, leer ist, soll keine allgemeine, sondern diese spezifische Exception geworfen werden.
-
-Beispiel::
-
-   throw new EmptyFileException("EmptyFile: "+targetFile.getName());
-
-2.3.7.	NotAllowedSqlExpressionException
-
-Package: 	ch.so.agi.gretl.core
-
-Die NotAllowedSqlExpressionException soll geworfen werden, wenn in einem SQL-Statement einen Ausdruck enthalten ist, der in diesem Zusammenhang nicht erlaubt ist. (Beispiel: Im SQL-File, welches im Db2Db-Step verwendet wird, ist kein Delete, Update, Insert etc. erlaubt).
-
-Beispiel::
-
-   throw new NotAllowedSqlExpressionException();
-
-**2.4.	Core – Test**
-
-2.4.1.	DbConnectorTest
-
-Package: 	ch.so.agi.gretl.core
-
-Die Klasse DbConnectorTest testet gewisse Funktionalitäten der DbConnector-Klasse (s. Kapitel 2.3.1).
-connectToDerbyDb: Testet, ob eine Verbindung zur lokalen Derby-Db herstellen kann.
-connectionAutoCommit: Testet, ob AutoCommit wirklich off ist.
-
-2.4.2.	FileExtensionTest
-
-Package: 	ch.so.agi.gretl.core
-
-Die Klasse FileExtensionTest überprüft die Funktionalitäten der FileExtension-Klasse (s. Kapitel 2.3.2). Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird.
-getFileExtension: Prüft, ob die Methode bei einem File mit der Endung .sql auch die Endung sql ermittelt wird.
-missingFileExtension: Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegeben wird.
-mutipleFileExtension: Prüft, ob bei einem File mit mehreren Endungen (file.ext1.ext2) auch wirklich die letzte Fileendung ausgegeben wird.
-strangeFileNameExtension: Prüft, ob bei einem File mit folgendem Namen (c:\\file) auch wirklich eine Fehlermeldung ausgeworfen wird.
-
-2.4.3.	LoggerTest
-
-Package: 	ch.so.agi.gretl.logging
-
-Benötigt: 	core/src/test/resources/simplelogger.properties
-Mit der LoggerTest-Klasse wird die Funktionalität der Logger-Klasse (s. Kapitel 2.3.5) überprüft.
-logInfoTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
-logDebugTest: Durch die Herabsetzung des DefaultLogLevels mittels simplelogger.properties wird geprüft, ob die in System.err geworfene Logmeldung der Erwartung entspricht.
-inexistentLoglevel: Prüft, ob eine Fehlermeldung zurückgeworfen wird, wenn ein nicht existentes LogLevel verwendet wird.
-
-**2.5.	Steps - Main**
-
+   Connection con = sourceDb.getDbConnection();
+   
 2.5.1.	Db2DbStep
 
 Package: 	ch.so.agi.gretl.steps
