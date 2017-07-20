@@ -452,17 +452,54 @@ Liefert: nichts
 
 Die Methode error gibt die Mitteilung an den Logger mit dem Loglevel error weiter.
 
-2.5.4. Interface LogFactory
+2.5.4. Level  ---- ToDo: Was macht diese Klasse???? -----
+
+Package: ch.so.agi.gretl.logging
+
+In der Klasse Level werden die verschiedenen Konstanten ERROR, LIVECYCLE, INFO und DEBUG als Loglevel definiert.
+
+2.5.4.1. Methode getInnerLevel  ----ToDo: Was macht diese Methdode ???? ---
+
+Benötigt: nichts
+
+Liefert: java.util.logging.Level
+
+Die Methode getInnerLevel gibt das Loglevel zurück
+
+2.5.5. Interface LogFactory
 
 Package: ch.so.agi.gretl.logging
 
 Das Interface setzt die Methoden getLogger voraus. Diese Methoden benötigen alle eine Class.
 
-2.5.5. CoreJavaLogFactory  --- ToDo: Was genau macht diese Klasse?????? ----
+2.5.6. CoreJavaLogFactory  --- ToDo: Was genau macht diese Klasse?????? ----
 
 Package: ch.so.agi.gretl.logging
 
 Die Klasse CoreJavaLogFactory implementiert das Interface LogFactory. 
+
+2.5.6.1. Methode getLogger  --- ToDo: Was genau macht die Methode???? ---
+
+Benötigt: globalLogLevel (Level)
+
+Liefert: GretlLogger
+
+2.5.7. GradleLogFactory  --- ToDo: Was genau macht diese Klasse?????-----
+
+Package: ch.so.agi.gretl.logging
+
+Die Klasse GradleLogFactory implementiert das Interface LogFactory.
+
+2.5.7.1. Methode getLogger  --- ToDo: Was genau macht diese Methode???? ---
+
+Benötigt: logSource (Class)
+
+Liefert: GretlLogger
+
+2.5.8. LogEnvironment
+
+
+
 
 
 
