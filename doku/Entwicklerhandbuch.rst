@@ -496,35 +496,43 @@ Benötigt: logSource (Class)
 
 Liefert: GretlLogger
 
-2.5.8. LogEnvironment
+2.5.8. LogEnvironment  --- ToDo: Was genau macht diese Klasse??? ----
 
+Package: ch.so.agi.gretl.logging
 
+2.5.8.1. Methode initGradleIntegrated  --- ToDo: Was genau macht diese Methode???  ----
 
+Benötigt: nichts 
 
+Liefert: nichts
 
+2.5.8.2. Methode initStandalone
 
+Benötigt: nichts
 
-2.5.1.Logger
+Liefert: nichts
 
-Package: 	ch.so.agi.gretl.logging
+Die Methode initStanalone ohne Übergabewerte führt die Methode initStandalone mit dem Loglevel Debug aus.
 
-Beinhaltet die Methode log um Informationen zu loggen.
+2.5.8.3. Methode initStandalone  --- ToDo: Was genau macht diese Methode??? ----
 
-2.5.1.1. Methode log
+Benötigt: logLevel (Level)
 
-Benötigt: 	LogLevel (int), Message (String)
-Die Methode log schreibt die übergebene Nachricht (Message) mit dem LogLevelhinweis (INFO, DEBUG, ERROR, LIVECYCLE), je nach Einstellung nach System.err. Die Standardeinstellung sieht vor, dass logmessages mit dem Info-Level nach System.err geschrieben werden, während die logmessages mit dem Debug-Level gar nicht erst geloggt werden.
-Folgende LogLevel gibt es: INFO_LEVEL, DEBUG_LEVEL
+Liefert: nichts
 
-Beispiel::
+Prüft, ob die Logfactory null ist oder ob sie von der GradleLogFactory abstammt. Sollte dies der Fall sein, so wird eine neue CoreJavaLogFactory mit dem Loglevel Debug erzeugt.
 
-   Logger.log(Logger.INFO_LEVEL,"Task start");
+2.5.8.4. Methode getLogger  ----ToDo: Was genau macht diese Methode???? ----
+
+Benötigt: logSource (Class)
+
+Liefert: GretlLogger
 
 **2.6.	Logging - Test**
 
-2.6.1.	LoggerTest
+2.6.1. LoggerTest
 
-Package: 	ch.so.agi.gretl.logging
+Package: ch.so.agi.gretl.logging
 
 Mit der LoggerTest-Klasse wird die Funktionalität der Logger-Klasse überprüft. Dabei wird bevor irgendein Test ausgeführt wird eine PrintStream erzeugt und System.err wird so umgestellt, dass dieser den neu erzeugten PrintStream als Output nutzt. 
 Vor jedem Test wird zudem der PrintStream zurückgesetzt. Und am Ende aller Test wird System.err wieder zurückgesetzt.
@@ -1018,17 +1026,17 @@ Um die Abhängigkeiten in der IDE festzulegen muss im Menü File > Project Struc
 
 Um zu prüfen, ob die Java-Klassen korrekt funktionieren wurden für (fast) jede Klasse Unittest definiert. Diese können einzeln oder alle zusammen ausgeführt werden.
 
-3.2.1.	Einzelne Tests ausführen
+3.2.1. Einzelne Tests ausführen
 
 Um die Tests ausführen zu können, wird in INTELLIJ IDEA die entsprechende Klasse, welche getestet werden soll geöffnet. Anschliessend kann mittels Rechtsklick auf den Testnamen (z.b. executeWithoutFiles()) im sich öffnenden Kontextmenü "Run *Testnamen()*" ausgewählt werden. Anschliessend wird der Test ausgeführt. Wenn er mit einem exit code 0 abschliesst ist der Test erfolgreich durchgelaufen.
 
-3.2.2.	Alle Tests ausführen
+3.2.2. Alle Tests ausführen
 
 Um alle Tests zu prüfen muss in der Konsole in den Ordner gewechselt werden, in welchem die Datei gradlew liegt (im trunk-Ordner). Anschliessend wird folgender Befehl ausgeführt:
 ./gradlew test
 Wird mit einem "BUILD FAILED" abgeschlossen, so sind nicht alle Tests erfolgreich durchgeführt worden.
 
-3.2.3.	Wo sind die Tests der Task?
+3.2.3. Wo sind die Tests der Task?
 
 Für die Tasks wurden keine Tests erstellt, da diese keine neuen Features prüfen würden, da die Tasks den Steps entsprechen und diese geprüft werden.
 
