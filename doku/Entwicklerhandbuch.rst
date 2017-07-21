@@ -368,21 +368,19 @@ strangeFileNameExtension: Prüft, ob bei einem File mit folgendem Namen (c:\\fil
 
 **2.5.	Logging**
 
----- ToDo: Alles überarbeiten!!!! -----
-
 2.5.1. Interface GretlLogger
 
 Package: ch.so.agi.gretl.logging
 
 Das Interface setzt die Methoden info, debug, error und livecycle voraus. Diese Methoden benötigen alle einen String.
 
-2.5.2. CoreJavaLogAdaptor  --- ToDo: Was genau passiert beim Objekt?
+2.5.2. CoreJavaLogAdaptor 
 
 Package: ch.so.agi.gretl.logging
 
-Die Klasse CoreJavaLogAdaptor implementiert das GretlLogger-Interface. Sie wird genutzt, wenn die Steps ohne gradle genutzt werden (z.B. unittest).
+Die Klasse CoreJavaLogAdaptor implementiert das GretlLogger-Interface. Sie wird genutzt, wenn die Steps ohne gradle genutzt werden (z.B. unittest). Zuerst wird dabei der Java-Logger geholt (getLogger), wobei ihm der Name der aufrufenden Klasse übergeben wird, danach wird das Loglevel gesetzt. 
 
-2.5.2.1. Methode info
+2.5.2.1. info
 
 Benötigt: msg (String)
 
@@ -390,7 +388,7 @@ Liefert: nichts
 
 Die Methode info gibt die Mitteilung an den Logger mit dem Loglevel fine weiter.
 
-2.5.2.2. Methode debug
+2.5.2.2. debug
 
 Benötigt: msg (String)
 
