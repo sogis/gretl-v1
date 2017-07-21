@@ -2,14 +2,10 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.util.EmptyFileException;
-import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
-import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -37,28 +33,9 @@ public class Db2DbTask extends DefaultTask {
             try {
                 new Db2DbStep().processAllTransferSets(sourceDb, targetDb, transferSet);
                 log.info("Task start");
-            } catch (SQLException e) {
-                log.info( "SQLException: " + e.getMessage());
-                throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
-            } catch (FileNotFoundException e) {
-                dbRollback(e);
-                log.info( "FileNotFoundException: " + e.getMessage());
-                throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
-            } catch (EmptyFileException e) {
-                dbRollback(e);
-                throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
-            } catch (NotAllowedSqlExpressionException e) {
-                dbRollback(e);
-                throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
-            }
-            try {
-                sourceDb.getDbConnection().commit();
-                targetDb.getDbConnection().commit();
-                log.info( "Transaction successful!");
-            } catch (SQLException e) {
-                log.info( "SQLException: " + e.getMessage());
-                dbRollback(e);
-                throw new GradleException("Failed to execute Db2DbStep: " + getName(), e);
+            } catch (Exception e) {
+                log.livecycle("Error in Db2DbTask!"+e);
+                throw new Exception();
             }
     }
 

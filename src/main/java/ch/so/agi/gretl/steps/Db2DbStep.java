@@ -50,6 +50,7 @@ public class Db2DbStep {
             }
             sourceDbConnection.commit();
             targetDbConnection.commit();
+            log.livecycle("Transfered all all Transfersets");
         } catch (Exception e) {
             if (sourceDb.getDbConnection()!=null) {
                 sourceDb.getDbConnection().rollback();
