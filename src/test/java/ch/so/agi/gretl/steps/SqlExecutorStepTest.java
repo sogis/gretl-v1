@@ -163,6 +163,7 @@ public class SqlExecutorStepTest {
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("DROP TABLE colors");
+        con.close();
     }
 
     private void createTestDb(TransactionContext sourceDb )
