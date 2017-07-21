@@ -15,7 +15,7 @@ public class SqlReader {
 
     private static GretlLogger log = LogEnvironment.getLogger(SqlReader.class);
 
-    
+
     public static String readSqlStmt(File sqlfile)
             throws IOException {
 
