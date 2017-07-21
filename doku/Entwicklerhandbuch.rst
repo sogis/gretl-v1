@@ -370,33 +370,184 @@ strangeFileNameExtension: Prüft, ob bei einem File mit folgendem Namen (c:\\fil
 
 ---- ToDo: Alles überarbeiten!!!! -----
 
-2.5.1.Logger
+2.5.1. Interface GretlLogger
 
-Package: 	ch.so.agi.gretl.logging
+Package: ch.so.agi.gretl.logging
 
-Beinhaltet die Methode log um Informationen zu loggen.
+Das Interface setzt die Methoden info, debug, error und livecycle voraus. Diese Methoden benötigen alle einen String.
 
-2.5.1.1. Methode log
+2.5.2. CoreJavaLogAdaptor  --- ToDo: Was genau passiert beim Objekt?
 
-Benötigt: 	LogLevel (int), Message (String)
-Die Methode log schreibt die übergebene Nachricht (Message) mit dem LogLevelhinweis (INFO, DEBUG, ERROR, LIVECYCLE), je nach Einstellung nach System.err. Die Standardeinstellung sieht vor, dass logmessages mit dem Info-Level nach System.err geschrieben werden, während die logmessages mit dem Debug-Level gar nicht erst geloggt werden.
-Folgende LogLevel gibt es: INFO_LEVEL, DEBUG_LEVEL
+Package: ch.so.agi.gretl.logging
 
-Beispiel::
+Die Klasse CoreJavaLogAdaptor implementiert das GretlLogger-Interface. Sie wird genutzt, wenn die Steps ohne gradle genutzt werden (z.B. unittest).
 
-   Logger.log(Logger.INFO_LEVEL,"Task start");
+2.5.2.1. Methode info
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode info gibt die Mitteilung an den Logger mit dem Loglevel fine weiter.
+
+2.5.2.2. Methode debug
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode debug gibt die Mitteilung an den Logger mit dem Loglevel finer weiter.
+
+2.5.2.3. error
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode error gibt die Mitteilung den den Logger mit dem Loglevel severe weiter.
+
+2.5.2.4. livecycle
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode livecycle gibt die Mitteilung an den Logger mit dem Loglvel config weiter.
+
+2.5.3. GradleLogAdaptor
+
+Package: ch.so.agi.gretl.logging
+
+Die Klasse GradleLogAdaptor implementiert das GretlLogger-Interface. Sie wird genutzt, wenn die Steps mit gradle ausgeführt werden (z.B. Tasks).
+
+2.5.3.1. info
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode info gibt die Mitteilung an den Logger mit dem Loglevel info weiter.
+
+2.5.3.2. debug
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode debug gibt die Mitteilung an den Logger mit dem Loglevel debug weiter.
+
+2.5.3.3. livecycle
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode livecycle gibt die Mitteilung an den Logger mit dem Loglevel lifecycle weiter.
+
+2.5.3.4. error
+
+Benötigt: msg (String)
+
+Liefert: nichts
+
+Die Methode error gibt die Mitteilung an den Logger mit dem Loglevel error weiter.
+
+2.5.4. Level  ---- ToDo: Was macht diese Klasse???? -----
+
+Package: ch.so.agi.gretl.logging
+
+In der Klasse Level werden die verschiedenen Konstanten ERROR, LIVECYCLE, INFO und DEBUG als Loglevel definiert.
+
+2.5.4.1. Methode getInnerLevel  ----ToDo: Was macht diese Methdode ???? ---
+
+Benötigt: nichts
+
+Liefert: java.util.logging.Level
+
+Die Methode getInnerLevel gibt das Loglevel zurück
+
+2.5.5. Interface LogFactory
+
+Package: ch.so.agi.gretl.logging
+
+Das Interface setzt die Methoden getLogger voraus. Diese Methoden benötigen alle eine Class.
+
+2.5.6. CoreJavaLogFactory  --- ToDo: Was genau macht diese Klasse?????? ----
+
+Package: ch.so.agi.gretl.logging
+
+Die Klasse CoreJavaLogFactory implementiert das Interface LogFactory. 
+
+2.5.6.1. Methode getLogger  --- ToDo: Was genau macht die Methode???? ---
+
+Benötigt: globalLogLevel (Level)
+
+Liefert: GretlLogger
+
+2.5.7. GradleLogFactory  --- ToDo: Was genau macht diese Klasse?????-----
+
+Package: ch.so.agi.gretl.logging
+
+Die Klasse GradleLogFactory implementiert das Interface LogFactory.
+
+2.5.7.1. Methode getLogger  --- ToDo: Was genau macht diese Methode???? ---
+
+Benötigt: logSource (Class)
+
+Liefert: GretlLogger
+
+2.5.8. LogEnvironment  --- ToDo: Was genau macht diese Klasse??? ----
+
+Package: ch.so.agi.gretl.logging
+
+2.5.8.1. Methode initGradleIntegrated  --- ToDo: Was genau macht diese Methode???  ----
+
+Benötigt: nichts 
+
+Liefert: nichts
+
+2.5.8.2. Methode initStandalone
+
+Benötigt: nichts
+
+Liefert: nichts
+
+Die Methode initStanalone ohne Übergabewerte führt die Methode initStandalone mit dem Loglevel Debug aus.
+
+2.5.8.3. Methode initStandalone  --- ToDo: Was genau macht diese Methode??? ----
+
+Benötigt: logLevel (Level)
+
+Liefert: nichts
+
+Prüft, ob die Logfactory null ist oder ob sie von der GradleLogFactory abstammt. Sollte dies der Fall sein, so wird eine neue CoreJavaLogFactory mit dem Loglevel Debug erzeugt.
+
+2.5.8.4. Methode getLogger  ----ToDo: Was genau macht diese Methode???? ----
+
+Benötigt: logSource (Class)
+
+Liefert: GretlLogger
 
 **2.6.	Logging - Test**
 
-2.6.1.	LoggerTest
+2.6.1. LoggerTest
 
-Package: 	ch.so.agi.gretl.logging
+Package: ch.so.agi.gretl.logging
 
 Mit der LoggerTest-Klasse wird die Funktionalität der Logger-Klasse überprüft. Dabei wird bevor irgendein Test ausgeführt wird eine PrintStream erzeugt und System.err wird so umgestellt, dass dieser den neu erzeugten PrintStream als Output nutzt. 
 Vor jedem Test wird zudem der PrintStream zurückgesetzt. Und am Ende aller Test wird System.err wieder zurückgesetzt.
-logInfoTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
-logDebugTest: Prüft, ob die in System.err geworfene Logmeldung der Erwartung entspricht.
-logErrorTest: Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
+
+2.6.1.1. Test logInfoTest
+
+Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
+
+2.6.1.2. Test logDebugTest
+
+Prüft, ob die in System.err geworfene Logmeldung der Erwartung entspricht.
+
+2.6.1.3. Test logErrorTest
+
+Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 
 **2.7.	Steps**
    
@@ -798,12 +949,12 @@ Die Methode createWrongSqlFiles erstellt eine SQL-Datei, welche mit einer fehler
 
 Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
-2.8.2.17. checkIfConnectionIsClosed
+2.8.2.17. Test checkIfConnectionIsClosed
 
 Prüft, ob nach dem Ausführen des Steps die Datenbankverbindung korrekt geschlossen wurde. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
 
-2.8.2.18. notClosedConnectionThrowsError
+2.8.2.18. Test notClosedConnectionThrowsError
 
 Prüft, ob eine Datenbankverbindung, welche nach dem Ausführen des Steps nicht erfolgreich geschlossen wurde, eine Fehler verursacht. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
@@ -875,17 +1026,17 @@ Um die Abhängigkeiten in der IDE festzulegen muss im Menü File > Project Struc
 
 Um zu prüfen, ob die Java-Klassen korrekt funktionieren wurden für (fast) jede Klasse Unittest definiert. Diese können einzeln oder alle zusammen ausgeführt werden.
 
-3.2.1.	Einzelne Tests ausführen
+3.2.1. Einzelne Tests ausführen
 
 Um die Tests ausführen zu können, wird in INTELLIJ IDEA die entsprechende Klasse, welche getestet werden soll geöffnet. Anschliessend kann mittels Rechtsklick auf den Testnamen (z.b. executeWithoutFiles()) im sich öffnenden Kontextmenü "Run *Testnamen()*" ausgewählt werden. Anschliessend wird der Test ausgeführt. Wenn er mit einem exit code 0 abschliesst ist der Test erfolgreich durchgelaufen.
 
-3.2.2.	Alle Tests ausführen
+3.2.2. Alle Tests ausführen
 
 Um alle Tests zu prüfen muss in der Konsole in den Ordner gewechselt werden, in welchem die Datei gradlew liegt (im trunk-Ordner). Anschliessend wird folgender Befehl ausgeführt:
 ./gradlew test
 Wird mit einem "BUILD FAILED" abgeschlossen, so sind nicht alle Tests erfolgreich durchgeführt worden.
 
-3.2.3.	Wo sind die Tests der Task?
+3.2.3. Wo sind die Tests der Task?
 
 Für die Tasks wurden keine Tests erstellt, da diese keine neuen Features prüfen würden, da die Tasks den Steps entsprechen und diese geprüft werden.
 
