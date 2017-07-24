@@ -42,11 +42,14 @@ public class SqlExecutorStep {
 
         Connection db = null;
 
+        //todo logeintrag hinter die asserts da der logeintrag auf die Parameter zugreift und darauf angewiesen ist dass diese nicht null sind
         log.livecycle("Start SqlExecutor with parameters DB-URL: "  + trans.getDbConnection().getMetaData().getURL() +
                 ", DB-User: " + trans.getDbConnection().getMetaData().getUserName() +
                 ", Files: " + sqlfiles);
 
-        checkIfAtLeastOneSqlFileIsGiven(sqlfiles);
+        assertAtLeastOneSqlFileIsGiven(sqlfiles);
+
+        //todo sicherstellen dass sqlfiles nicht null ist und die Liste keine null-elemente enthält; Falls ja IllegelArgumentException
 
         logPathToInputSqlFiles(sqlfiles);
 
@@ -81,11 +84,11 @@ public class SqlExecutorStep {
      * @param sqlfiles      Files with .sql-extension which contain queries
      * @throws Exception    if File is missing
      */
-    private void checkIfAtLeastOneSqlFileIsGiven(List<File> sqlfiles)
+    private void assertAtLeastOneSqlFileIsGiven(List<File> sqlfiles)
             throws Exception {
 
         if (sqlfiles==null || sqlfiles.size()<1){
-            throw new IllegalAccessException("Missing input files");
+            throw new IllegalAccessException("Missing input files");//todo IllegalArgumentException
         }
     }
 
@@ -110,6 +113,7 @@ public class SqlExecutorStep {
             String fileExtension = FileExtension.getFileExtension(file);
             if (!fileExtension.equalsIgnoreCase("sql")){
                 throw new Exception("incorrect file extension at file: " + file.getAbsolutePath());
+                //todo in exception nachricht gleich sagen was sache ist, also "file extension must be .sql or .SQL"
             }
         }
     }
@@ -131,6 +135,7 @@ public class SqlExecutorStep {
 
 
             } catch (Exception h) {
+                //todo Schulung zu Exceptions am Mittwoch abwarten und dann in allen Klassen korrigieren
                 throw new Exception("Error with File: " + sqlfile.getAbsolutePath() + " " + h.toString());
             }
         }
