@@ -13,7 +13,7 @@ import java.sql.SQLException;
 /**
  * Class which is used get a connection to the database
  */
-public class TransactionContext  {
+public class TransactionContext  { //todo: rename auf Connector oder so ähnlich, weil dies nun ist was die Klasse noch macht
 
     private String dbUri;
     private String dbUser;
@@ -29,6 +29,7 @@ public class TransactionContext  {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
+    //todo rename auf connect()
     public Connection getDbConnection() throws SQLException {
         if (dbConnection == null) {
             dbConnection = DbConnector.connect(dbUri, dbUser, dbPassword);

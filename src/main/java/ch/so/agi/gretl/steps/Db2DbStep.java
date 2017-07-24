@@ -33,13 +33,17 @@ public class Db2DbStep {
      * @throws Exception
      */
     public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws Exception {
-        checkIfListNotEmpty(transferSets);
+        assertListNotEmpty(transferSets);
         log.livecycle( "\n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
                 "sourceDb = "+sourceDb.getDbConnection().getMetaData().getURL()+", " +
                 "user = "+sourceDb.getDbConnection().getMetaData().getUserName()+", \n" +
                 "targetDb = "+targetDb.getDbConnection().getMetaData().getURL()+", " +
                 "user = "+targetDb.getDbConnection().getMetaData().getUserName()+"\n");
+
+        //todo Connections ausserhalb try deklarieren (Connection sourceDbConnection = null)
+
         try {
+            //todo hier Connection lediglich noch zuweisen
             Connection sourceDbConnection = sourceDb.getDbConnection();
             Connection targetDbConnection = targetDb.getDbConnection();
             for(TransferSet transferSet : transferSets){
@@ -50,15 +54,15 @@ public class Db2DbStep {
             }
             sourceDbConnection.commit();
             targetDbConnection.commit();
-            log.livecycle("Transfered all all Transfersets");
+            log.livecycle("Transfered all all Transfersets");//todo
         } catch (Exception e) {
-            if (sourceDb.getDbConnection()!=null) {
+            if (sourceDb.getDbConnection()!=null) { //todo hier die oben deklarierten connections behandeln
                 sourceDb.getDbConnection().rollback();
             }
             if (targetDb.getDbConnection() != null) {
                 targetDb.getDbConnection().rollback();
             }
-            throw new Exception("Failed!: "+e);
+            throw new Exception("Failed!: "+e);//todo verwendung und schachtelung von Exceptions... - Schulung Mittwoch abwarten und dann in allen Klassen bereinigen
         } finally {
             if (sourceDb.getDbConnection() != null) {
                 sourceDb.getDbConnection().close();
@@ -237,7 +241,7 @@ public class Db2DbStep {
      * @param transferSets
      * @throws EmptyListException
      */
-    private void checkIfListNotEmpty(List<TransferSet> transferSets) throws EmptyListException {
+    private void assertListNotEmpty(List<TransferSet> transferSets) throws EmptyListException {
         if(transferSets.size() == 0) {
             throw new EmptyListException();
         }

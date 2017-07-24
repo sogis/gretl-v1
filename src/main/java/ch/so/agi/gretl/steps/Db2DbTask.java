@@ -34,7 +34,7 @@ public class Db2DbTask extends DefaultTask {
                 new Db2DbStep().processAllTransferSets(sourceDb, targetDb, transferSet);
                 log.info("Task start");
             } catch (Exception e) {
-                log.livecycle("Error in Db2DbTask!"+e);
+                log.livecycle("Error in Db2DbTask!"+e); //todo log.error("Error in ...", e);
                 throw new Exception();
             }
     }
