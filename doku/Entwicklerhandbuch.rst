@@ -334,7 +334,7 @@ Beispiel::
 
 Package: ch.so.agi.gretl.util
 
------ ToDo: hier fehlt Text -----
+Die EmptyListException soll geworfen werden, wenn eine Liste, welche eigentlich nicht leer sein dürfte, trotzdem leer ist. Insbesondere ist dies im Db2DbStep bei den TransferSets der Fall. 
 
 2.3.6.	NotAllowedSqlExpressionException
 
@@ -549,7 +549,7 @@ Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 
 **2.7.	Steps**
    
-2.7.1. Db2DbStep  --> ToDo: Bitte überarbeiten/prüfen
+2.7.1. Db2DbStep 
 
 Package: ch.so.agi.gretl.steps
 
@@ -557,7 +557,7 @@ Die Db2DbStep-Klasse beinhaltet den Db2Db-Step. Sie dient dem Umformen und Kopie
 
 2.7.1.1. Methode processAllTransferSets
 
-Diese Methode ruft für jedes in der Liste aufgeführte Transferset die Methode processTransferSet auf.
+Diese Methode ruft für jedes in der Liste aufgeführte Transferset die Methode processTransferSet auf. Zuerst wird aber noch überprüft, ob die Liste der Transferets nicht leer ist und vor dem abarbeiten eines TransferSets wird auch die lesbarkeit der Input-SQL-Datei überprüft. Am Ende wird das Commit ausgeführt. Wird dabei irgend eine Exception geworfen, wird für alle Verbindungen ein rollback ausgeführt. Am Ende (egal ob erfolgreich oder Exception), werden die Verbindungen wieder geschlossen. 
 
 Beispiel::
 
