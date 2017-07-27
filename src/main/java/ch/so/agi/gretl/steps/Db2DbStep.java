@@ -19,11 +19,7 @@ import java.util.List;
  */
 public class Db2DbStep {
 
-    private GretlLogger log;
-
-    public Db2DbStep() {
-        this.log = LogEnvironment.getLogger(this.getClass());
-    }
+    private static GretlLogger log = LogEnvironment.getLogger(Db2DbStep.class);
 
     /**
      * Main method. Calls for each transferSet methode processTransferSet
@@ -54,7 +50,7 @@ public class Db2DbStep {
             }
             sourceDbConnection.commit();
             targetDbConnection.commit();
-            log.livecycle("Transfered all all Transfersets");//todo
+            log.livecycle("Transfered all Transfersets");
         } catch (Exception e) {
             if (sourceDb.getDbConnection()!=null) { //todo hier die oben deklarierten connections behandeln
                 sourceDb.getDbConnection().rollback();
@@ -62,7 +58,8 @@ public class Db2DbStep {
             if (targetDb.getDbConnection() != null) {
                 targetDb.getDbConnection().rollback();
             }
-            throw new Exception("Failed!: "+e);//todo verwendung und schachtelung von Exceptions... - Schulung Mittwoch abwarten und dann in allen Klassen bereinigen
+            log.error("Exception while executing processAllTransferSets()", e);
+            throw e;
         } finally {
             if (sourceDb.getDbConnection() != null) {
                 sourceDb.getDbConnection().close();
@@ -131,8 +128,7 @@ public class Db2DbStep {
             truncatestmt.execute();
             log.info( "DELETE succesfull!");
         } catch (SQLException e1) {
-            log.info( "DELETE FROM TABLE "+destTableName+" failed!");
-            log.debug(e1.getMessage());
+            log.error( "DELETE FROM TABLE "+destTableName+" failed.", e1);
             throw e1;
         }
     }
@@ -232,6 +228,7 @@ public class Db2DbStep {
             }
         } catch (IOException e2) {
             throw new IllegalStateException(e2);
+            //todo wieso catch und throw als IllegalStateException??
         }
         return firstline;
     }

@@ -1,17 +1,31 @@
 group 'gretl'
 version '0.9'
 
-apply plugin: 'java'
-apply plugin: 'maven'
-
-sourceCompatibility = 1.8
-
 repositories {
     mavenCentral()
 }
 
+apply plugin: 'java'
+
+apply plugin: 'maven'
+//apply plugin: 'findbugs'
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile files('./lib/ojdbc7.jar', './lib/postgresql-42.0.0.jar', './lib/sqljdbc42.jar', './lib/sqlite-jdbc-3.16.1.jar', './lib/derby.jar')
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.1.1'
+    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.8.11.2'
+    compile files('./lib/ojdbc7.jar', './lib/sqljdbc42.jar', './lib/derby.jar')
     compile gradleApi()
 }
+
+sourceCompatibility = 1.8
+
+/*
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+*/
+

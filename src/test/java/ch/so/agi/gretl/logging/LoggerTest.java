@@ -76,7 +76,7 @@ public class LoggerTest {
     @Test
     public void logErrorTest() throws Exception {
 
-        log.error("Error-Logger-Test");
+        log.error("Error-Logger-Test", new RuntimeException("Test Exception"));
 
         String LogMessage = baos.toString();
         String[] ArrayLogMessage = LogMessage.split(" -> ");

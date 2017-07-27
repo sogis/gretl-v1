@@ -14,10 +14,13 @@ import java.util.List;
  */
 public class Db2DbTask extends DefaultTask {
 
-    private GretlLogger log;
-    public Db2DbTask () {
+
+
+    private static GretlLogger log;
+
+    static {
         LogEnvironment.initGradleIntegrated();
-        this.log = LogEnvironment.getLogger(this.getClass());
+        log = LogEnvironment.getLogger(Db2DbTask.class);
     }
 
     @Input
@@ -31,14 +34,16 @@ public class Db2DbTask extends DefaultTask {
     public void db2DbTask() throws Exception {
 
             try {
-                new Db2DbStep().processAllTransferSets(sourceDb, targetDb, transferSet);
+                Db2DbStep step = new Db2DbStep();
+                step.processAllTransferSets(sourceDb, targetDb, transferSet);
                 log.info("Task start");
             } catch (Exception e) {
-                log.livecycle("Error in Db2DbTask!"+e); //todo log.error("Error in ...", e);
-                throw new Exception();
+                log.error("Exception in creating / invoking Db2DbStep in Db2DbTask", e);
+                throw e;
             }
     }
 
+    //todo weg damit, oder?
     private void dbRollback(Exception e) {
         try {
             sourceDb.getDbConnection().rollback();

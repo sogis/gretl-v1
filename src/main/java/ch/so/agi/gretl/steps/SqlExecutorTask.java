@@ -21,11 +21,10 @@ import java.util.List;
 public class SqlExecutorTask extends DefaultTask {
     private static GretlLogger log;
 
-    public SqlExecutorTask () {
+    static{
         LogEnvironment.initGradleIntegrated();
-        this.log = LogEnvironment.getLogger(this.getClass());
+        log = LogEnvironment.getLogger(SqlExecutorTask.class);
     }
-
 
     @Input
     public TransactionContext database;
@@ -45,12 +44,11 @@ public class SqlExecutorTask extends DefaultTask {
         List<File> files = convertToValidatedFileList(sqlFiles);
 
         try {
-
-            new SqlExecutorStep().execute(database, files);
+            SqlExecutorStep step = new SqlExecutorStep();
+            step.execute(database, files);
             log.info("Task start");
         } catch (Exception e) {
-            log.info("Exception: "+e.getMessage());
-            throw new GradleException("SqlExecutorStep: "+e.getMessage());
+            log.error("Exception in creating / invoking SqlExecutorStep.", e);
         }
     }
 

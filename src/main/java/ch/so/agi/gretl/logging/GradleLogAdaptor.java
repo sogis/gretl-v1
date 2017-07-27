@@ -26,7 +26,7 @@ public class GradleLogAdaptor implements GretlLogger {
         logger.lifecycle(msg);
     }
 
-    public void error(String msg){
-        logger.error(msg);
+    public void error(String msg, Throwable thrown){
+        logger.error(msg, thrown);
     }
 }

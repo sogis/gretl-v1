@@ -19,7 +19,7 @@ public interface GretlLogger {
 
     public void debug(String msg);
 
-    public void error(String msg);
+    public void error(String msg, Throwable thrown);
 
     public void livecycle(String msg);
 }
