@@ -2,7 +2,9 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.util.ExConverter;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
@@ -39,7 +41,9 @@ public class Db2DbTask extends DefaultTask {
                 log.info("Task start");
             } catch (Exception e) {
                 log.error("Exception in creating / invoking Db2DbStep in Db2DbTask", e);
-                throw e;
+
+                GradleException gradleEx = ExConverter.toGradleException(e);
+                throw gradleEx;
             }
     }
 

@@ -4,6 +4,7 @@ package ch.so.agi.gretl.steps;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
+import ch.so.agi.gretl.util.ExConverter;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
@@ -49,6 +50,9 @@ public class SqlExecutorTask extends DefaultTask {
             log.info("Task start");
         } catch (Exception e) {
             log.error("Exception in creating / invoking SqlExecutorStep.", e);
+
+            GradleException ge = ExConverter.toGradleException(e);
+            throw ge;
         }
     }
 

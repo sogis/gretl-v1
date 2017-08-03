@@ -3,7 +3,7 @@ package ch.so.agi.gretl.util;
 /**
  * Created by bjsvwsch on 18.05.17.
  */
-public class EmptyFileException extends Exception {
+public class EmptyFileException extends GretlException {
 
     public EmptyFileException() {
     }
