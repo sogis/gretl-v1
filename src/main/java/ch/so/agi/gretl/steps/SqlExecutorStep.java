@@ -192,7 +192,7 @@ public class SqlExecutorStep {
             throws Exception {
 
         try {
-            dbstmt.execute(statement);
+            dbstmt.executeUpdate(statement);
         } catch (SQLException ex) {
             throw new Exception("Error while executing the sqlstatement. " + ex);
         } finally {
