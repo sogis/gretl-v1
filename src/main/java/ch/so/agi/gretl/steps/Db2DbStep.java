@@ -30,7 +30,7 @@ public class Db2DbStep {
      */
     public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws Exception {
         assertListNotEmpty(transferSets);
-        log.livecycle( "\n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
+        log.lifecycle( "\n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
                 "sourceDb = "+sourceDb.getDbConnection().getMetaData().getURL()+", " +
                 "user = "+sourceDb.getDbConnection().getMetaData().getUserName()+", \n" +
                 "targetDb = "+targetDb.getDbConnection().getMetaData().getURL()+", " +
@@ -50,7 +50,7 @@ public class Db2DbStep {
             }
             sourceDbConnection.commit();
             targetDbConnection.commit();
-            log.livecycle("Transfered all Transfersets");
+            log.lifecycle("Transfered all Transfersets");
         } catch (Exception e) {
             if (sourceDb.getDbConnection()!=null) { //todo hier die oben deklarierten connections behandeln
                 sourceDb.getDbConnection().rollback();
