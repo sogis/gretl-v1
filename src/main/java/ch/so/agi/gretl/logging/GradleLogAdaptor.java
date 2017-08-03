@@ -22,7 +22,7 @@ public class GradleLogAdaptor implements GretlLogger {
         logger.debug(msg);
     }
 
-    public void livecycle(String msg){
+    public void lifecycle(String msg){
         logger.lifecycle(msg);
     }
 

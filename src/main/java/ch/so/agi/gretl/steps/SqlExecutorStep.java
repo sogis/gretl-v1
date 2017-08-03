@@ -43,7 +43,7 @@ public class SqlExecutorStep {
         Connection db = null;
 
         //todo logeintrag hinter die asserts da der logeintrag auf die Parameter zugreift und darauf angewiesen ist dass diese nicht null sind
-        log.livecycle("Start SqlExecutor with parameters DB-URL: "  + trans.getDbConnection().getMetaData().getURL() +
+        log.lifecycle("Start SqlExecutor with parameters DB-URL: "  + trans.getDbConnection().getMetaData().getURL() +
                 ", DB-User: " + trans.getDbConnection().getMetaData().getUserName() +
                 ", Files: " + sqlfiles);
 
@@ -64,7 +64,7 @@ public class SqlExecutorStep {
 
             db.commit();
 
-            log.livecycle("End SqlExecutor (successful)");
+            log.lifecycle("End SqlExecutor (successful)");
 
         } catch (Exception e){
             if (db!=null) {
