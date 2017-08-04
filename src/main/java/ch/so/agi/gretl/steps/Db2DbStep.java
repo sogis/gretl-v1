@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * The Db2DbStep Class is used as a step for transfer of tabulated data from one to anoter database.
- * It needs a sourceDb (TransactionContext), a targetDb (TransactionContext) and a list of transferSet, containing 1. a
+ * It needs a sourceDb (Connector), a targetDb (Connector) and a list of transferSet, containing 1. a
  * boolean paramterer concerning the emptying of the Targettable, 2. a SQL-file containing a SELECT-statement and
  * 3. a qualified target schema and table name (schema.table).
  */
@@ -28,7 +28,7 @@ public class Db2DbStep {
      * @param transferSets
      * @throws Exception
      */
-    public void processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets) throws Exception {
+    public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets) throws Exception {
         assertListNotEmpty(transferSets);
         log.lifecycle( "\n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
                 "sourceDb = "+sourceDb.getDbConnection().getMetaData().getURL()+", " +
@@ -83,7 +83,7 @@ public class Db2DbStep {
      */
     private void processTransferSet(Connection srcCon, Connection targetCon, TransferSet transferSet) throws SQLException, IOException, EmptyFileException, NotAllowedSqlExpressionException {
         if (transferSet.getDeleteAllRows() == true) {
-            deleteDestTableContents(targetCon, transferSet.getOutputQualifiedSchemaAndTableName());
+            deleteDestTableContents(targetCon, transferSet.getOutputQualifiedTableName());
         }
         String selectStatement = extractSingleStatement(transferSet.getInputSqlFile());
         ResultSet rs = createResultSet(srcCon, selectStatement);
@@ -91,7 +91,7 @@ public class Db2DbStep {
                 srcCon,
                 targetCon,
                 rs,
-                transferSet.getOutputQualifiedSchemaAndTableName());
+                transferSet);
 
         int columncount = rs.getMetaData().getColumnCount();
         while (rs.next()) {
@@ -149,13 +149,8 @@ public class Db2DbStep {
 
     /**
      * Creates woth the meta-data from the SelectStatement the Insert-Statement
-     * @param srcCon
-     * @param targetCon
-     * @param rs
-     * @param destTableName
-     * @throws SQLException
      */
-    private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, String destTableName) throws SQLException {
+    private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, TransferSet tSet) throws SQLException {
         ResultSetMetaData meta = null;
         Statement dbstmt = null;
         StringBuilder columnNames = null;
@@ -177,17 +172,28 @@ public class Db2DbStep {
                 columnNames.append(", ");
                 bindVariables.append(", ");
             }
-            columnNames.append(meta.getColumnName(j));
-            bindVariables.append("?");
-        }
-        log.debug("Transfering table with "+rs.getFetchSize()+" rows and "+meta.getColumnCount()+" columns to table "+destTableName);
 
-        String sql = "INSERT INTO " + destTableName + " ("
+            String colName = meta.getColumnName(j);
+            columnNames.append(colName);
+
+            if(tSet.isGeoColumn(colName)){
+                String func = tSet.wrapWithGeoTransformFunction(colName, "?");
+                bindVariables.append(func);
+            }
+            else {
+                bindVariables.append("?");
+            }
+        }
+        log.debug("Transfering table with " + rs.getFetchSize() + " rows and "+meta.getColumnCount() + " columns to table " + tSet.getOutputQualifiedTableName());
+
+        String sql = "INSERT INTO " + tSet.getOutputQualifiedTableName() + " ("
                 + columnNames
                 + ") VALUES ("
                 + bindVariables
                 + ")";
         PreparedStatement insertRowStatement = targetCon.prepareStatement(sql);
+
+        log.lifecycle(String.format("Sql insert statement: [%s]", sql));
 
         return insertRowStatement;
     }

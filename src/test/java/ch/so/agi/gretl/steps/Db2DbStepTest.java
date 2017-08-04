@@ -4,26 +4,25 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.gradle.internal.impldep.aQute.bnd.osgi.Processor;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by bjsvwsch on 03.05.17.
  */
 public class Db2DbStepTest {
+
+    private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
 
     //Konstruktor//
     public Db2DbStepTest () {
@@ -39,13 +38,13 @@ public class Db2DbStepTest {
 
     @After
     public void finalise() throws Exception {
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         clearTestDb(sourceDb);
     }
 
     @Test
     public void FaultFreeExecutionTest() throws Exception {
-        TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
             File sqlFile = createFile("SELECT * FROM colors; ", "query.sql");
@@ -53,18 +52,14 @@ public class Db2DbStepTest {
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(true),
-                    sqlFile.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)
             ));
             mylist.add(new TransferSet(
-                    new Boolean(false),
-                    sqlFile2.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile2.getAbsolutePath(), "colors_copy", new Boolean(false)
             ));
 
-            TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
@@ -84,20 +79,18 @@ public class Db2DbStepTest {
 
     @Test
     public void Db2DbEmptyFileTest() throws Exception {
-        TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
             File sqlFile = folder.newFile("query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(false),
-                    sqlFile.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)
             ));
 
-           TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-           TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+           Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+           Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
 
@@ -115,20 +108,18 @@ public class Db2DbStepTest {
 
     @Test
     public void SQLExceptionTest() throws Exception {
-        TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
             File sqlFile = createFile("SELECT BLABLABLA FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(false),
-                    sqlFile.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)
             ));
 
-            TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
 
@@ -166,13 +157,11 @@ public class Db2DbStepTest {
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(false),
-                    sqlFile.getAbsolutePath(),
-                "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)
             ));
 
-            TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
 
@@ -211,13 +200,11 @@ public class Db2DbStepTest {
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(false),
-                    sqlFile.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)
             ));
 
-            TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
 
@@ -234,20 +221,18 @@ public class Db2DbStepTest {
 
     @Test
     public void EmptyTableTest() throws Exception {
-        TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTableInTestDb(con.getDbConnection());
         try {
             File sqlFile = createFile("SELECT * FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(false),
-                    sqlFile.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)
             ));
 
-            TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
@@ -261,20 +246,18 @@ public class Db2DbStepTest {
     @Test
     public void NullSourceValueTest() throws Exception {
 
-        TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
             File sqlFile = createFile("SELECT * FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(false),
-                    sqlFile.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)
             ));
 
-            TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
@@ -288,20 +271,18 @@ public class Db2DbStepTest {
     @Test
     public void DeleteTest() throws Exception {
         //unittest
-        TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
             File sqlFile = createFile("SELECT rot, gruen, blau, farbname FROM (SELECT ROW_NUMBER() OVER() AS rownum, colors.* FROM colors) AS tmp WHERE rownum <= 1;", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(true),
-                    sqlFile.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)
             ));
 
-            TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
 
@@ -328,20 +309,18 @@ public class Db2DbStepTest {
     @Test
     public void CloseConnectionsTest() throws Exception {
 
-        TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
             File sqlFile = createFile("SELECT * FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(true),
-                    sqlFile.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)
             ));
 
-            TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
@@ -358,20 +337,18 @@ public class Db2DbStepTest {
     @Test
     public void CloseConnectionsAfterFailedTest() throws Exception {
 
-        TransactionContext con = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
             File sqlFile = createFile("SELECT güggeliblau FROM colors_copy", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
-                    new Boolean(true),
-                    sqlFile.getAbsolutePath(),
-                    "colors_copy"
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)
             ));
 
-            TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            TransactionContext targetDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
 
             Db2DbStep db2db = new Db2DbStep();
             try {
@@ -389,9 +366,170 @@ public class Db2DbStepTest {
         }
     }
 
+    @Ignore("Test is ignored as long as we do not have a standardized postgres db for unit testing")
+    @Test
+    public void canWriteGeomFromWkbTest() throws Exception {
+        String schemaName = "GeomFromWkbTest";
+
+        Connection con = null;
+
+        try{
+            con =  connectToPreparedPgDb(schemaName);
+            preparePgGeomSourceSinkTables(schemaName, con);
+
+            Db2DbStep step = new Db2DbStep();
+            File queryFile = createFile(
+                    String.format("select ST_AsBinary(geom) as geom from %s.source", schemaName),
+                    "select.sql");
+
+            Connector src = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
+            Connector sink = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
+            TransferSet tSet = new TransferSet(
+                    queryFile.getAbsolutePath(),
+                    schemaName + ".SINK",
+                    true,
+                    new String[]{"geom:wkb:2056"}
+            );
+
+            step.processAllTransferSets(src, sink, Arrays.asList(tSet));
+
+            assertEqualGeomInSourceAndSink(con, schemaName);
+
+            dropSchema(schemaName, con);
+        }
+        finally {
+            if(con != null)
+                con.close();
+        }
+    }
+
+    @Ignore("Test is ignored as long as we do not have a standardized postgres db for unit testing")
+    @Test
+    public void canWriteGeomFromWktTest() throws Exception {
+        String schemaName = "GeomFromWktTest";
+
+        Connection con = null;
+
+        try{
+            con = connectToPreparedPgDb(schemaName);
+            preparePgGeomSourceSinkTables(schemaName, con);
+
+
+            Db2DbStep step = new Db2DbStep();
+            File queryFile = createFile(
+                    String.format("select ST_AsText(geom) as geom from %s.source", schemaName),
+                    "select.sql");
+
+            Connector src = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
+            Connector sink = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
+            TransferSet tSet = new TransferSet(
+                    queryFile.getAbsolutePath(),
+                    schemaName + ".SINK",
+                    true,
+                    new String[]{"geom:wkt:2056"}
+            );
+
+            step.processAllTransferSets(src, sink, Arrays.asList(tSet));
+
+            assertEqualGeomInSourceAndSink(con, schemaName);
+
+            dropSchema(schemaName, con);
+        }
+        finally {
+            if(con != null)
+                con.close();
+        }
+    }
+
+    @Ignore("Test is ignored as long as we do not have a standardized postgres db for unit testing")
+    @Test
+    public void canWriteGeomFromGeoJsonTest() throws Exception {
+        String schemaName = "GeomFromGeoJsonTest";
+
+        Connection con = null;
+
+        try{
+            con = connectToPreparedPgDb(schemaName);
+            preparePgGeomSourceSinkTables(schemaName, con);
+
+
+            Db2DbStep step = new Db2DbStep();
+            File queryFile = createFile(
+                    String.format("select ST_AsGeoJSON(geom) as geom from %s.source", schemaName),
+                    "select.sql");
+
+            Connector src = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
+            Connector sink = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
+            TransferSet tSet = new TransferSet(
+                    queryFile.getAbsolutePath(),
+                    schemaName + ".SINK",
+                    true,
+                    new String[]{"geom:geojson:2056"}
+            );
+
+            step.processAllTransferSets(src, sink, Arrays.asList(tSet));
+
+            assertEqualGeomInSourceAndSink(con, schemaName);
+
+            dropSchema(schemaName, con);
+        }
+        finally {
+            if(con != null)
+                con.close();
+        }
+    }
+
+    private static void assertEqualGeomInSourceAndSink(Connection con, String schemaName) throws SQLException {
+        Statement check = con.createStatement();
+        ResultSet rs = check.executeQuery(
+                String.format("select ST_AsText(geom) as geom_text from %s.sink", schemaName));
+        rs.next();
+        String geomRes = rs.getString(1).trim().toUpperCase();
+
+        Assert.assertEquals("The transferred geometry is not equal to the geometry in the source table", GEOM_WKT, geomRes);
+    }
+
+    private static void preparePgGeomSourceSinkTables(String schemaName, Connection con) throws SQLException {
+        Statement prep = con.createStatement();
+        prep.addBatch(String.format("CREATE TABLE %s.SOURCE (geom geometry(LINESTRING,2056) );",schemaName));
+        prep.addBatch(String.format("CREATE TABLE %s.SINK (geom geometry(LINESTRING,2056) );",schemaName));
+        prep.addBatch(String.format("INSERT INTO %s.SOURCE VALUES ( ST_GeomFromText('%s', 2056) )", schemaName, GEOM_WKT));
+        prep.executeBatch();
+        con.commit();
+    }
+
+    private void dropSchema(String schemaName, Connection con) throws SQLException{
+        Statement s = con.createStatement();
+        s.execute(String.format("drop schema %s cascade", schemaName));
+    }
+
+    private Connection connectToPreparedPgDb(String schemaName) throws Exception {
+        Driver pgDriver = (Driver)Class.forName("org.postgresql.Driver").newInstance();
+        DriverManager.registerDriver(pgDriver);
+
+        Connection con = DriverManager.getConnection(
+            "jdbc:postgresql://192.168.56.6:5432/datenbasis",
+            "godfather",
+            "rehtaf");
+
+        con.setAutoCommit(false);
+
+        Statement s = con.createStatement();
+        s.addBatch(String.format("drop schema if exists %s cascade", schemaName));
+        s.addBatch("create schema " + schemaName);
+        s.executeBatch();
+        con.commit();
+
+        return con;
+    }
+
+
+
+
+
     //HILFSFUNKTIONEN FÜR DIE TESTS! ////
 
-    private void clearTestDb(TransactionContext sourceDb) throws Exception {
+    private void clearTestDb(Connector sourceDb) throws Exception {
         Connection con = sourceDb.getDbConnection();
         con.setAutoCommit(true);
         try {
@@ -416,7 +554,7 @@ public class Db2DbStepTest {
         return sqlFile;
     }
 
-    private void createTestDb(TransactionContext sourceDb )
+    private void createTestDb(Connector sourceDb )
             throws Exception{
         Connection con = sourceDb.getDbConnection();
         createTableInTestDb(con);

@@ -26,18 +26,18 @@ public class Db2DbTask extends DefaultTask {
     }
 
     @Input
-    public TransactionContext sourceDb;
+    public Connector sourceDb;
     @Input
-    public TransactionContext targetDb;
+    public Connector targetDb;
     @Input
-    public List<TransferSet> transferSet;
+    public List<TransferSet> transferSets;
 
     @TaskAction
     public void db2DbTask() throws Exception {
 
             try {
                 Db2DbStep step = new Db2DbStep();
-                step.processAllTransferSets(sourceDb, targetDb, transferSet);
+                step.processAllTransferSets(sourceDb, targetDb, transferSets);
                 log.info("Task start");
             } catch (Exception e) {
                 log.error("Exception in creating / invoking Db2DbStep in Db2DbTask", e);
