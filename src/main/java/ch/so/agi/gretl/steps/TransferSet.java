@@ -1,20 +1,19 @@
 package ch.so.agi.gretl.steps;
 
+import ch.so.agi.gretl.util.GretlException;
+
 import java.io.File;
+import java.util.HashMap;
 
-/**
- * Created by bjsvwsch on 04.05.17.
- */
+
 public class TransferSet {
-
 
     private boolean deleteAllRows;
     private File inputSqlFile;
-    private String outputQualifiedSchemaAndTableName;
+    private String outputQualifiedTableName;
+    private HashMap<String,GeometryTransform> geoColumns;
 
-
-    public TransferSet(boolean deleteAllRows, String inputSqlFilePath, String outputQualifiedSchemaAndTableName){
-        this.deleteAllRows = deleteAllRows;
+    public TransferSet(String inputSqlFilePath, String outputQualifiedSchemaAndTableName, boolean outputDeleteAllRows, String[] geoColumns){
 
         if(inputSqlFilePath == null || inputSqlFilePath.length() == 0)
             throw new IllegalArgumentException("inputSqlFilePath must not be null or empty");
@@ -24,9 +23,33 @@ public class TransferSet {
             throw new IllegalArgumentException("Can not read the file: " + inputSqlFilePath);
 
         if(outputQualifiedSchemaAndTableName == null || outputQualifiedSchemaAndTableName.length() == 0)
-            throw new IllegalArgumentException("outputQualifiedSchemaAndTableName must not be null or empty");
+            throw new IllegalArgumentException("outputQualifiedTableName must not be null or empty");
 
-        this.outputQualifiedSchemaAndTableName = outputQualifiedSchemaAndTableName;
+        this.outputQualifiedTableName = outputQualifiedSchemaAndTableName;
+
+        this.deleteAllRows = deleteAllRows;
+
+        initGeoColumnHash(geoColumns);
+    }
+
+    private void initGeoColumnHash(String[] colList)
+    {
+        geoColumns = new HashMap<String, GeometryTransform>();
+
+        if(colList != null){
+            for (String colDef : colList){
+                if(colDef == null)
+                    throw new GretlException("Geometry column definition array must not contain null values");
+
+                GeometryTransform trans = GeometryTransform.createFromString(colDef);
+
+                geoColumns.put(trans.getColNameUpperCase(), trans);
+            }
+        }
+    }
+
+    public TransferSet(String inputSqlFilePath, String outputQualifiedSchemaAndTableName, boolean outputDeleteAllRows){
+        this(inputSqlFilePath, outputQualifiedSchemaAndTableName, outputDeleteAllRows, null);
     }
 
     public boolean getDeleteAllRows() {
@@ -35,7 +58,24 @@ public class TransferSet {
 
     public File getInputSqlFile() { return inputSqlFile; }
 
-    public String getOutputQualifiedSchemaAndTableName() {
-        return outputQualifiedSchemaAndTableName;
+    public String getOutputQualifiedTableName() {
+        return outputQualifiedTableName;
+    }
+
+    public boolean isGeoColumn(String colName){
+        return geoColumns.containsKey(colName.toUpperCase());
+    }
+
+    public String wrapWithGeoTransformFunction(String colName, String valuePlaceHolder){
+        String res = null;
+
+        GeometryTransform trans = geoColumns.get(colName.toUpperCase());
+
+        if(trans == null)
+            throw new GretlException("Given colName was not defined / configured as geometry column");
+
+        res = trans.wrapWithGeoTransformFunction(valuePlaceHolder);
+
+        return res;
     }
 }

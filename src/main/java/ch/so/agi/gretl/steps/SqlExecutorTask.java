@@ -28,7 +28,7 @@ public class SqlExecutorTask extends DefaultTask {
     }
 
     @Input
-    public TransactionContext database;
+    public Connector database;
 
 
     @Input

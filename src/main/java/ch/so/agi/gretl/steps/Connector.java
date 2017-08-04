@@ -13,7 +13,7 @@ import java.sql.SQLException;
 /**
  * Class which is used get a connection to the database
  */
-public class TransactionContext  { //todo: rename auf Connector oder so ähnlich, weil dies nun ist was die Klasse noch macht
+public class Connector {
 
     private String dbUri;
     private String dbUser;
@@ -21,8 +21,15 @@ public class TransactionContext  { //todo: rename auf Connector oder so ähnlich
     private GretlLogger log;
     private Connection dbConnection = null;
 
+    public Connector(String dbUri) {
+        this(dbUri, null, null);
+    }
 
-    public TransactionContext(String dbUri, String dbUser, String dbPassword) {
+    public Connector(String dbUri, String dbUser) {
+        this(dbUri, dbUri, null);
+    }
+
+    public Connector(String dbUri, String dbUser, String dbPassword) {
         this.dbUri = dbUri;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;

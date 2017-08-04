@@ -32,13 +32,13 @@ public class SqlExecutorStepTest {
 
     @Before
     public void initialize() throws Exception {
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
         createTestDb(sourceDb);
     }
 
     @After
     public void finalise() throws Exception {
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
         clearTestDb(sourceDb);
     }
 
@@ -48,7 +48,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executeWithoutFiles() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
         List<File> sqlListe = new ArrayList<>();
 
@@ -63,7 +63,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executeWithoutDb() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        TransactionContext sourceDb = null;
+        Connector sourceDb = null;
 
         List<File> sqlListe = createCorrectSqlFiles();
 
@@ -80,7 +80,7 @@ public class SqlExecutorStepTest {
     public void executeDifferentExtensions() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
 
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
         List<File> sqlListe = createCorrectSqlFiles();
         sqlListe.add(createSqlFileWithWrongExtension());
@@ -98,7 +98,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executeEmptyFile() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
         List<File>sqlListe = createCorrectSqlFiles();
         sqlListe.add(createEmptySqlFile());
@@ -110,7 +110,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executeWrongQuery() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
         List<File> sqlListe = createWrongSqlFiles();
 
@@ -127,7 +127,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executePositiveTest() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
         List<File> sqlListe = createCorrectSqlFiles();
 
@@ -138,7 +138,7 @@ public class SqlExecutorStepTest {
     @Test
     public void checkIfConnectionIsClosed() throws Exception{
         SqlExecutorStep x = new SqlExecutorStep();
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
         List<File> sqlListe = createCorrectSqlFiles();
 
@@ -149,7 +149,7 @@ public class SqlExecutorStepTest {
     @Test
     public void notClosedConnectionThrowsError() throws Exception{
         SqlExecutorStep x = new SqlExecutorStep();
-        TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
         List<File> sqlListe = createCorrectSqlFiles();
 
@@ -158,7 +158,7 @@ public class SqlExecutorStepTest {
     }
 
 
-    private void clearTestDb(TransactionContext sourceDb) throws Exception {
+    private void clearTestDb(Connector sourceDb) throws Exception {
         Connection con = sourceDb.getDbConnection();
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
@@ -166,7 +166,7 @@ public class SqlExecutorStepTest {
         con.close();
     }
 
-    private void createTestDb(TransactionContext sourceDb )
+    private void createTestDb(Connector sourceDb )
             throws Exception{
         Connection con = sourceDb.getDbConnection();
         con.setAutoCommit(true);
