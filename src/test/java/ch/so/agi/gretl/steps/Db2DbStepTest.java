@@ -4,7 +4,7 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
-import org.gradle.internal.impldep.aQute.bnd.osgi.Processor;
+import ch.so.agi.gretl.util.GretlException;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -65,13 +64,13 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
 
 
-            ResultSet rs = con.getDbConnection().createStatement().executeQuery("SELECT * FROM colors_copy WHERE farbname = 'blau'");
+            ResultSet rs = con.connect().createStatement().executeQuery("SELECT * FROM colors_copy WHERE farbname = 'blau'");
             while(rs.next()) {
-                if (!rs.getObject("rot").equals(0)) throw new Exception(e);
-                if (!rs.getObject("farbname").equals("blau")) throw new Exception(e);
+                if (!rs.getObject("rot").equals(0)) throw new GretlException(e);
+                if (!rs.getObject("farbname").equals("blau")) throw new GretlException(e);
             }
         } finally {
-            con.getDbConnection().close();
+            con.connect().close();
         }
 
 
@@ -101,7 +100,7 @@ public class Db2DbStepTest {
         } catch (Exception e) {
 
         } finally {
-            con.getDbConnection().close();
+            con.connect().close();
         }
 
     }
@@ -130,7 +129,7 @@ public class Db2DbStepTest {
         } catch (Exception e) {
             log.debug("Got Exception as expected");
         } finally{
-            con.getDbConnection().close();
+            con.connect().close();
         }
     }
 
@@ -222,7 +221,7 @@ public class Db2DbStepTest {
     @Test
     public void EmptyTableTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        createTableInTestDb(con.getDbConnection());
+        createTableInTestDb(con.connect());
         try {
             File sqlFile = createFile("SELECT * FROM colors", "query.sql");
 
@@ -237,9 +236,9 @@ public class Db2DbStepTest {
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
         } catch (SQLException e) {
-            throw new Exception(e);
+            throw new GretlException(e);
         } finally {
-            con.getDbConnection().close();
+            con.connect().close();
         }
     }
 
@@ -262,9 +261,9 @@ public class Db2DbStepTest {
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
         } catch (SQLException e) {
-            throw new Exception(e);
+            throw new GretlException(e);
         } finally {
-            con.getDbConnection().close();
+            con.connect().close();
         }
     }
 
@@ -287,7 +286,7 @@ public class Db2DbStepTest {
             Db2DbStep db2db = new Db2DbStep();
 
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
-            ResultSet rs = con.getDbConnection().createStatement().executeQuery("SELECT * FROM colors_copy");
+            ResultSet rs = con.connect().createStatement().executeQuery("SELECT * FROM colors_copy");
 
             int count = 0;
             while(rs.next()) {
@@ -295,10 +294,10 @@ public class Db2DbStepTest {
             }
             if(count > 1) {
                 log.info("Got "+count+" rows! Very sad!");
-                throw new Exception();
+                throw new GretlException();
             }
         } finally {
-            con.getDbConnection().close();
+            con.connect().close();
         }
     }
     //TEST with ORACLE and PostgreSQL ////////////////////////////////
@@ -325,12 +324,12 @@ public class Db2DbStepTest {
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
 
-            Assert.assertTrue("SourceConnection is not closed", sourceDb.getDbConnection().isClosed());
-            Assert.assertTrue("TargetConnection is not closed", targetDb.getDbConnection().isClosed());
+            Assert.assertTrue("SourceConnection is not closed", sourceDb.connect().isClosed());
+            Assert.assertTrue("TargetConnection is not closed", targetDb.connect().isClosed());
 
-            con.getDbConnection().close();
+            con.connect().close();
         } finally {
-            con.getDbConnection().close();
+            con.connect().close();
         }
     }
 
@@ -359,10 +358,10 @@ public class Db2DbStepTest {
                 log.debug("Got Exception as expected");
             }
 
-            Assert.assertTrue("SourceConnection is not closed", sourceDb.getDbConnection().isClosed());
-            Assert.assertTrue("TargetConnection is not closed", targetDb.getDbConnection().isClosed());
+            Assert.assertTrue("SourceConnection is not closed", sourceDb.connect().isClosed());
+            Assert.assertTrue("TargetConnection is not closed", targetDb.connect().isClosed());
         } finally {
-            con.getDbConnection().close();
+            con.connect().close();
         }
     }
 
@@ -530,7 +529,7 @@ public class Db2DbStepTest {
     //HILFSFUNKTIONEN FÜR DIE TESTS! ////
 
     private void clearTestDb(Connector sourceDb) throws Exception {
-        Connection con = sourceDb.getDbConnection();
+        Connection con = sourceDb.connect();
         con.setAutoCommit(true);
         try {
             Statement stmt = con.createStatement();
@@ -556,7 +555,7 @@ public class Db2DbStepTest {
 
     private void createTestDb(Connector sourceDb )
             throws Exception{
-        Connection con = sourceDb.getDbConnection();
+        Connection con = sourceDb.connect();
         createTableInTestDb(con);
         writeExampleDataInTestDB(con);
 

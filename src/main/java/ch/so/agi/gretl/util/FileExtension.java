@@ -35,7 +35,7 @@ public class FileExtension {
         if (arrayLength >=2) {
             return splittedFilePath[arrayLength - 1];
         } else  {
-            throw new Exception("Error: File without Fileextension");
+            throw new GretlException("Error: File without Fileextension");
         }
     }
 }

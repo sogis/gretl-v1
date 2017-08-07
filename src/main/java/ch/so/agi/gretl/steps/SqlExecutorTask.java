@@ -7,6 +7,7 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.ExConverter;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.Task;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
@@ -38,14 +39,21 @@ public class SqlExecutorTask extends DefaultTask {
     @TaskAction
     public void executeSQLExecutor() {
 
+        //List<Task> bla =  getProject().getGradle().getTaskGraph().getAllTasks() ;
+        //log.lifecycle(getProject().getGradle().getTaskGraph().getAllTasks().toString());
+        //log.lifecycle(bla.iterator().next().toString());
+        //log.lifecycle(getProject().getGradle().getStartParameter().getTaskNames().toString());
+        String taskName = this.getName();
+
         if (sqlFiles==null) {
             throw new GradleException("sqlFiles is null");
         }
 
+
         List<File> files = convertToValidatedFileList(sqlFiles);
 
         try {
-            SqlExecutorStep step = new SqlExecutorStep();
+            SqlExecutorStep step = new SqlExecutorStep(taskName);
             step.execute(database, files);
             log.info("Task start");
         } catch (Exception e) {

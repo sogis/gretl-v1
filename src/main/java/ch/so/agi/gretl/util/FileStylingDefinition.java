@@ -40,7 +40,6 @@ public class FileStylingDefinition {
 
         int lineBytes = bufferedInputFileStream.read(buffer);
         while (lineBytes != fileEnd) {
-            System.out.println(lineBytes);
             try {
                 decoder.decode(ByteBuffer.wrap(buffer));
                 lineBytes = bufferedInputFileStream.read(buffer);
