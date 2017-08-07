@@ -31,17 +31,17 @@ public class Db2DbStep {
     public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets) throws Exception {
         assertListNotEmpty(transferSets);
         log.lifecycle( "\n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
-                "sourceDb = "+sourceDb.getDbConnection().getMetaData().getURL()+", " +
-                "user = "+sourceDb.getDbConnection().getMetaData().getUserName()+", \n" +
-                "targetDb = "+targetDb.getDbConnection().getMetaData().getURL()+", " +
-                "user = "+targetDb.getDbConnection().getMetaData().getUserName()+"\n");
+                "sourceDb = "+sourceDb.connect().getMetaData().getURL()+", " +
+                "user = "+sourceDb.connect().getMetaData().getUserName()+", \n" +
+                "targetDb = "+targetDb.connect().getMetaData().getURL()+", " +
+                "user = "+targetDb.connect().getMetaData().getUserName()+"\n");
 
         //todo Connections ausserhalb try deklarieren (Connection sourceDbConnection = null)
 
         try {
             //todo hier Connection lediglich noch zuweisen
-            Connection sourceDbConnection = sourceDb.getDbConnection();
-            Connection targetDbConnection = targetDb.getDbConnection();
+            Connection sourceDbConnection = sourceDb.connect();
+            Connection targetDbConnection = targetDb.connect();
             for(TransferSet transferSet : transferSets){
                 if(!transferSet.getInputSqlFile().canRead()) {
                     throw new IllegalArgumentException("File"+transferSet.getInputSqlFile().getName()+" not found or not readable");
@@ -52,20 +52,20 @@ public class Db2DbStep {
             targetDbConnection.commit();
             log.lifecycle("Transfered all Transfersets");
         } catch (Exception e) {
-            if (sourceDb.getDbConnection()!=null) { //todo hier die oben deklarierten connections behandeln
-                sourceDb.getDbConnection().rollback();
+            if (sourceDb.connect()!=null) { //todo hier die oben deklarierten connections behandeln
+                sourceDb.connect().rollback();
             }
-            if (targetDb.getDbConnection() != null) {
-                targetDb.getDbConnection().rollback();
+            if (targetDb.connect() != null) {
+                targetDb.connect().rollback();
             }
             log.error("Exception while executing processAllTransferSets()", e);
             throw e;
         } finally {
-            if (sourceDb.getDbConnection() != null) {
-                sourceDb.getDbConnection().close();
+            if (sourceDb.connect() != null) {
+                sourceDb.connect().close();
             }
-            if (targetDb.getDbConnection() != null) {
-                targetDb.getDbConnection().close();
+            if (targetDb.connect() != null) {
+                targetDb.connect().close();
             }
         }
 

@@ -103,7 +103,12 @@ public class SqlExecutorStepTest {
         List<File>sqlListe = createCorrectSqlFiles();
         sqlListe.add(createEmptySqlFile());
 
-        x.execute(sourceDb,sqlListe);
+        try {
+            x.execute(sourceDb, sqlListe);
+            Assert.fail();
+        } catch (Exception e) {
+
+        }
     }
 
 
@@ -143,7 +148,7 @@ public class SqlExecutorStepTest {
         List<File> sqlListe = createCorrectSqlFiles();
 
         x.execute(sourceDb,sqlListe);
-        Assert.assertTrue(sourceDb.getDbConnection().isClosed());
+        Assert.assertTrue(sourceDb.connect().isClosed());
     }
 
     @Test
@@ -154,12 +159,12 @@ public class SqlExecutorStepTest {
         List<File> sqlListe = createCorrectSqlFiles();
 
         x.execute(sourceDb,sqlListe);
-        Assert.assertFalse(!sourceDb.getDbConnection().isClosed());
+        Assert.assertFalse(!sourceDb.connect().isClosed());
     }
 
 
     private void clearTestDb(Connector sourceDb) throws Exception {
-        Connection con = sourceDb.getDbConnection();
+        Connection con = sourceDb.connect();
         con.setAutoCommit(true);
         Statement stmt = con.createStatement();
         stmt.execute("DROP TABLE colors");
@@ -168,7 +173,7 @@ public class SqlExecutorStepTest {
 
     private void createTestDb(Connector sourceDb )
             throws Exception{
-        Connection con = sourceDb.getDbConnection();
+        Connection con = sourceDb.connect();
         con.setAutoCommit(true);
         createTableInTestDb(con);
         con.close();
@@ -195,13 +200,8 @@ public class SqlExecutorStepTest {
     private File createSqlFileWithWrongExtension() throws Exception{
         File sqlFile =  folder.newFile("query.txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
-        writer.write(" SELECT \n" +
-                "  colors.rot,\n" +
-                "  gruen,\n" +
-                "  colors.blau,\n" +
-                "  colors.farbname\n" +
-                "FROM colors\n" +
-                "WHERE farbname = 'rot'");
+        writer.write(" INSERT INTO colors\n" +
+                "VALUES (124,252,0,'LawnGreen')");
         writer.close();
         return sqlFile;
     }
@@ -217,13 +217,8 @@ public class SqlExecutorStepTest {
     private List<File> createWrongSqlFiles() throws Exception {
         File sqlFile =  folder.newFile("query.sql");
         BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
-        writer.write(" SELECT \n" +
-                "  colors1.rot,\n" +
-                "  gruen,\n" +
-                "  colors1.blau,\n" +
-                "  colors1.farbname\n" +
-                "FROM color1\n" +
-                "WHERE farbname = 'rot'");
+        writer.write(" INSERT INTO colors1\n" +
+                "VALUES (124,252,0,'LawnGreen')");
         writer.close();
         List<File> sqlListe = new ArrayList<>();
         sqlListe.add(sqlFile);
@@ -233,21 +228,16 @@ public class SqlExecutorStepTest {
     private List<File> createCorrectSqlFiles() throws Exception {
         File sqlFile =  folder.newFile("query.sql");
         BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
-        writer.write(" SELECT \n" +
-                "  colors.rot,\n" +
-                "  gruen,\n" +
-                "  colors.blau,\n" +
-                "  colors.farbname\n" +
-                "FROM colors\n" +
-                "WHERE farbname = 'rot'   ;    SELECT farbname FROM colors WHERE gruen=0 GROUP BY farbname");
+        writer.write(" INSERT INTO colors\n" +
+                "VALUES (124,252,0,'LawnGreen')"+
+                " ;    DELETE FROM colors WHERE gruen=0 ");
         writer.close();
 
         File sqlFile1 =  folder.newFile("query1.sql");
         BufferedWriter writer1 = new BufferedWriter(new FileWriter(sqlFile1));
-        writer1.write("SELECT farbname\n" +
-                "FROM colors\n" +
-                "WHERE gruen=0\n" +
-                "GROUP BY farbname");
+        writer1.write("UPDATE colors\n" +
+                "set farbname='grün'\n" +
+                "WHERE farbname='LawnGreen'\n");
         writer1.close();
         List<File> sqlListe = new ArrayList<>();
         sqlListe.add(sqlFile);

@@ -36,8 +36,7 @@ public class Connector {
         this.log = LogEnvironment.getLogger(this.getClass());
     }
 
-    //todo rename auf connect()
-    public Connection getDbConnection() throws SQLException {
+    public Connection connect() throws SQLException {
         if (dbConnection == null) {
             dbConnection = DbConnector.connect(dbUri, dbUser, dbPassword);
             dbConnection.setAutoCommit(false);
