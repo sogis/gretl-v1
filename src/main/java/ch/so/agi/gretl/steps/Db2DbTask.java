@@ -35,6 +35,8 @@ public class Db2DbTask extends DefaultTask {
     @TaskAction
     public void db2DbTask() throws Exception {
 
+        String taskName = this.getName();
+
             try {
                 Db2DbStep step = new Db2DbStep();
                 step.processAllTransferSets(sourceDb, targetDb, transferSets);

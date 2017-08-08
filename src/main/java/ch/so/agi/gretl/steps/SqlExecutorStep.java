@@ -218,7 +218,10 @@ public class SqlExecutorStep {
                 log.lifecycle(taskName + ": " + modifiedLines + " Line has been modified.");
             } else if (modifiedLines>1) {
                 log.lifecycle(taskName +": " + modifiedLines + " Lines have been modified.");
+            } else if (modifiedLines<1){
+                log.lifecycle(taskName + ": No Line has been modified.");
             }
+
 
         } catch (SQLException ex) {
             throw new GretlException("Error while executing the sqlstatement. " + ex);
