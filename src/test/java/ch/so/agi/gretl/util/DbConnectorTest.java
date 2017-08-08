@@ -25,7 +25,9 @@ public class DbConnectorTest {
 
         DbConnector x = new DbConnector();
         try {
-            con =x.connect("jdbc:derby:memory:myInMemDB;create=true", null, null);
+            con = x.connect("jdbc:derby:memory:myInMemDB;create=true", null, null);
+
+            //todo Assert.assertFalse(..., con.isClosed(), ...)
             if (con.isClosed()) {
                 Assert.fail();}
         } catch (Exception e){
@@ -43,6 +45,8 @@ public class DbConnectorTest {
         DbConnector x = new DbConnector();
         try {
             con =x.connect("jdbc:derby:memory:myInMemDB;create=true", null, null);
+
+            //todo Assert.assertFalse(..., con.getAutoCommit(), ...)
             if (con.getAutoCommit()) {
                 Assert.fail();
             }

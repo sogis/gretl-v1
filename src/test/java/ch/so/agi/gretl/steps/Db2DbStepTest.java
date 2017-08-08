@@ -66,7 +66,10 @@ public class Db2DbStepTest {
 
 
             ResultSet rs = con.getDbConnection().createStatement().executeQuery("SELECT * FROM colors_copy WHERE farbname = 'blau'");
+
+
             while(rs.next()) {
+                //todo assertEquals(...)
                 if (!rs.getObject("rot").equals(0)) throw new Exception(e);
                 if (!rs.getObject("farbname").equals("blau")) throw new Exception(e);
             }
@@ -99,7 +102,7 @@ public class Db2DbStepTest {
         } catch (EmptyFileException e) {
 
         } catch (Exception e) {
-
+            //todo wieso catch exception? Dann gibt der test ok zurück obwohl gar nicht ok.
         } finally {
             con.getDbConnection().close();
         }
@@ -125,6 +128,9 @@ public class Db2DbStepTest {
 
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             Assert.fail("EmptyFileException müsste geworfen werden");
+
+            //todo wie kann als Resultat eines Tests zwei Exception-Typen erwartet werden? Wie kann "catch all" jemals
+            //richtig sein bei einem spezifischen test?
         } catch (SQLException e) {
             log.debug("Got SQLException as expected");
         } catch (Exception e) {
@@ -141,6 +147,8 @@ public class Db2DbStepTest {
         Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         try {
+            //todo Erstellen und füllen der Testtabelle ist bei Noemi schon als utilmethode vorhanden
+            //utilmethode in entsprechende utilklasse rausmanufakteren und gemeinsam nutzen...
             Statement stmt = con.createStatement();
             stmt.execute("CREATE TABLE colors ( " +
                     "  rot integer, " +
@@ -167,6 +175,8 @@ public class Db2DbStepTest {
 
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
+
+            //todo welche Exception wird erwartet? nur genau diese abfangen.
         } catch (SQLException e) {
             log.debug("Got SQLException as expected");
         } catch (Exception e) {
@@ -210,6 +220,8 @@ public class Db2DbStepTest {
 
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
+
+            //todo welche ex?
         } catch (SQLException e) {
             log.debug("Got SQLException as expected");
         } catch (Exception e) {
@@ -219,6 +231,7 @@ public class Db2DbStepTest {
         }
     }
 
+    //todo namen: was testet diese Testmethode genau?
     @Test
     public void EmptyTableTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
@@ -237,12 +250,14 @@ public class Db2DbStepTest {
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
         } catch (SQLException e) {
+            //todo wieso catch und throw?
             throw new Exception(e);
         } finally {
             con.getDbConnection().close();
         }
     }
 
+    //todo namen...
     @Test
     public void NullSourceValueTest() throws Exception {
 
@@ -262,6 +277,7 @@ public class Db2DbStepTest {
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
         } catch (SQLException e) {
+            //todo wieso catch und throw?
             throw new Exception(e);
         } finally {
             con.getDbConnection().close();
@@ -289,11 +305,14 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             ResultSet rs = con.getDbConnection().createStatement().executeQuery("SELECT * FROM colors_copy");
 
+            //todo assertEquals(rs.getFetchSize(), 0)?
+
             int count = 0;
             while(rs.next()) {
                 ++count;
             }
             if(count > 1) {
+                //todo trumpscher logeintrag ist lustig, muss aber zwecks verständlicherer Meldungen ersetzt werden ;-)
                 log.info("Got "+count+" rows! Very sad!");
                 throw new Exception();
             }
@@ -328,6 +347,7 @@ public class Db2DbStepTest {
             Assert.assertTrue("SourceConnection is not closed", sourceDb.getDbConnection().isClosed());
             Assert.assertTrue("TargetConnection is not closed", targetDb.getDbConnection().isClosed());
 
+            //todo entfernen - ist aufgrund finally redundant
             con.getDbConnection().close();
         } finally {
             con.getDbConnection().close();
@@ -452,7 +472,8 @@ public class Db2DbStepTest {
             con = connectToPreparedPgDb(schemaName);
             preparePgGeomSourceSinkTables(schemaName, con);
 
-
+            //grant insert , delete on all tables in schema [schema] to [user] ..dml_user
+            //grant select on all tables in schema [schema] to [user] ..reader_user.
             Db2DbStep step = new Db2DbStep();
             File queryFile = createFile(
                     String.format("select ST_AsGeoJSON(geom) as geom from %s.source", schemaName),
