@@ -84,7 +84,10 @@ public class LoggerTest {
         String LogMessage = baos.toString();
         String[] ArrayLogMessage = LogMessage.split(" -> ");
 
-        if (!ArrayLogMessage[1].equals("Error-Logger-Test\n")) {
+        String[] ArrayMessage = ArrayLogMessage[1].split("\n");
+
+
+        if (!ArrayMessage[0].equals("Error-Logger-Test")) {
             assertFalse("Logger is not working properly: " + baos.toString(), true);
         }
 

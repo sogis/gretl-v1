@@ -31,7 +31,7 @@ public class DbConnectorTest {
             if (con.isClosed()) {
                 Assert.fail();}
         } catch (Exception e){
-            throw new Exception("Could not connect to database");
+            throw new GretlException("Could not connect to database");
         } finally {
             if (con!=null){
                 con.close();
@@ -51,7 +51,7 @@ public class DbConnectorTest {
                 Assert.fail();
             }
         } catch (Exception e) {
-            throw new Exception("Auto Commit on");
+            throw new GretlException("Auto Commit on");
         }finally {
             if (con!=null){
                 con.close();
