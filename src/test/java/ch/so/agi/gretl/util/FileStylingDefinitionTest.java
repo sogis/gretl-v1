@@ -8,7 +8,7 @@ import java.io.File;
 public class FileStylingDefinitionTest {
 
     @Test
-    public void wrongEncoding() throws Exception {
+    public void wrongEncodingThrowsException() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File inputfile = new File(classLoader.getResource("test.txt").getFile());
         try {
@@ -28,7 +28,7 @@ public class FileStylingDefinitionTest {
     }
 
     @Test
-    public void failingOnFileWithBOM() throws Exception {
+    public void FileWithBOMThrowsException() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         File inputfile = new File(classLoader.getResource("query_with_bom.sql").getFile());
         try {

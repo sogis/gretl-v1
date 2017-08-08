@@ -27,9 +27,8 @@ public class DbConnectorTest {
         try {
             con = x.connect("jdbc:derby:memory:myInMemDB;create=true", null, null);
 
-            //todo Assert.assertFalse(..., con.isClosed(), ...)
-            if (con.isClosed()) {
-                Assert.fail();}
+            Assert.assertFalse("connectToDerbyDb-Test could not connect to database", con.isClosed());
+
         } catch (Exception e){
             throw new GretlException("Could not connect to database");
         } finally {
@@ -46,10 +45,8 @@ public class DbConnectorTest {
         try {
             con =x.connect("jdbc:derby:memory:myInMemDB;create=true", null, null);
 
-            //todo Assert.assertFalse(..., con.getAutoCommit(), ...)
-            if (con.getAutoCommit()) {
-                Assert.fail();
-            }
+            Assert.assertFalse("connectionAutoCommit has auto commit on", con.getAutoCommit());
+
         } catch (Exception e) {
             throw new GretlException("Auto Commit on");
         }finally {
