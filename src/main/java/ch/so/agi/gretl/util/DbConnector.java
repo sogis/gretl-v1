@@ -25,27 +25,27 @@ public class DbConnector {
     }
 
     /**
-     * Returns the connection to a specific database. The database is specified by the arguments ConnectionUrl,
-     * UserName and Password.
+     * Returns the connection to a specific database. The database is specified by the arguments connectionUrl,
+     * userName and password.
      *
-     * @param ConnectionUrl database specific JDBC-Connection-URL
-     * @param UserName      database user
-     * @param Password      password of given database user
+     * @param connectionUrl database specific JDBC-Connection-URL
+     * @param userName      database user
+     * @param password      password of given database user
      * @return              the connection to the specific database
      */
-    public static Connection connect(String ConnectionUrl, String UserName, String Password) {
+    public static Connection connect(String connectionUrl, String userName, String password) {
         try {
 
-            String[] splits = ConnectionUrl.split(":");
+            String[] splits = connectionUrl.split(":");
             if (splits.length < 3)
-                throw new IllegalArgumentException("Connection string is malformed: " + ConnectionUrl);
+                throw new IllegalArgumentException("Connection string is malformed: " + connectionUrl);
 
             String driverType = splits[1];
             //hash
             String driverClassName = jdbcDriverClasses.get(driverType);
             if(driverClassName == null)
                 throw new IllegalArgumentException(
-                        "Configuration error. ConnectionUrl contains unsupported driver type: " + driverType + "(" + ConnectionUrl + ")");
+                        "Configuration error. ConnectionUrl contains unsupported driver type: " + driverType + "(" + connectionUrl + ")");
 
 
             Driver driver = null;
@@ -60,12 +60,12 @@ public class DbConnector {
             DriverManager.registerDriver(driver);
 
             con = DriverManager.getConnection(
-                    ConnectionUrl,UserName,Password);
+                    connectionUrl,userName,password);
             con.setAutoCommit(false);
 
-            log.debug("DB connected with these Parameters:  ConnectionURL:" + ConnectionUrl +
-                    " Username: " + UserName +
-                    " Password: " + Password);
+            log.debug("DB connected with these Parameters:  ConnectionURL:" + connectionUrl +
+                    " Username: " + userName +
+                    " Password: " + password);
 
         } catch (SQLException e) {
             if (con!=null) {
@@ -77,8 +77,8 @@ public class DbConnector {
                     log.info(f.toString());
                 }
             }
-            log.error("Could not connect to: " + ConnectionUrl, e);
-            throw new GretlException("Could not connect to: " + ConnectionUrl, e);
+            log.error("Could not connect to: " + connectionUrl, e);
+            throw new GretlException("Could not connect to: " + connectionUrl, e);
         }
         return con;
     }
