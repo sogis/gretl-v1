@@ -1008,6 +1008,130 @@ NotAllowedSqlExpressionInScriptTest(): Dieser Test überprüft, ob bei der Verwe
 Db2DbEmptyFileTest(): Überprüft, ob bei einem leeren File eine EmptyFileException geworfen wird.
 SQLExceptionTest(): Überprüft, ob bei einem fehlerhaften SQL-Stetement eine SQLException geworfen wird.
 
+2.7.1.1. Test FaultFreeExecutionTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.2. Test Db2DbEmptyFileTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.3. Test SQLExceptionTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.4. Test columnNumberTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.5. Test IncompatibleDataTypeTest
+
+--> todo: Test beschreiben <--
+
+2.7.1.6. Test EmptyTableTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.7. Test NullSourceValueTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.8. Test DeleteTest
+
+--> Todo: Test beschreiben <---
+
+2.7.1.9. Test CloseConnectionsTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.10. Test CloseConnectionsAfterFailedTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.11. Test canWriteGeomFromWkbTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.12. Test canWriteGeomFromWktText
+
+--> Todo: Test beschreiben <--
+
+2.7.1.13. Test canWriteGeomFromGeoJsonTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.14. Method assertEqualGeomInSourceAndSing
+
+Benötigt: con (Connection), schemaName (String)
+
+Liefert: nichts 
+
+--> Todo: Beschreibung <--
+
+2.7.1.15. Method preparePgGeomSourceSinkTables
+
+Benötigt: schemaName (String), con (Connection)
+
+Liefert: nichts
+
+--> Todo: Beschreibung <--
+
+2.7.1.16. Methode dropSchema
+
+Benötigt: schemaName (String), con (Connection)
+
+Liefert: nichts
+
+--> Todo: Beschreibung <--
+
+2.7.1.17. Methode connectToPreparedPgDb
+
+Benötigt: schemaName (String)
+
+Liefert: Connection
+
+--> Todo: Beschreibung <--
+
+2.7.1.18. Methode clearTestDb
+
+Benötigt: sourceDb (Connector)
+
+Liefert: nichts
+
+--> Todo: Beschreibung <--
+
+2.7.1.19. Methode createFile
+
+Benötigt: stm (String), fileName (String)
+
+Liefert: File
+
+--> Todo: Beschreibung <--
+
+2.7.1.20. Methode createTestDb
+
+Benötigt: sourceDb (Connector)
+
+Liefert: nichts
+
+--> Todo: Beschreibung <--
+
+2.7.1.21. Methode createTableInTestDb
+
+Benötigt: con (Connection)
+
+Liefert: nichts
+
+--> Todo: Beschreibung <--
+
+2.7.1.22. Methode writeExampleDataInTestDB
+
+Benötigt: con (Connection)
+
+Liefert: nichts 
+
+--> Todo: Beschreibung <--
+
 2.7.2. Klasse SqlExecutorStepTest
 
 Package: ch.so.agi.gretl.steps
