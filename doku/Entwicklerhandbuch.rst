@@ -811,24 +811,24 @@ Beispiel::
    filePaths = ["/path/to/file/filename.sql"]
    List<File> files = convertToValidatedFileList(filePaths)
 
-2.7.5. TransactionContext
+2.7.5. Connector
 
 Package: ch.so.agi.gretl.steps
 
 Erstellt eine Verbindung zur Datenbank.
 
-2.7.5.1.	Methode getDbConnection
+2.7.5.1.	Methode connect
 
 Benötigt: 	dbUri (String), dbUser (String), dbPassword (String)
 
 Liefert: 	Connection
 
-Die Methode führt die Methode DbConnector.connect mit den oben erwähnten Parametern aus. Von dieser Methode wird eine Connection zurückgeliefert, welche auch die getDbConnection zurückliefert. Die Connection wird mit dem AutoCommit False geöffnet.
+Die Methode führt die Methode Connector.connect mit den oben erwähnten Parametern aus. Von dieser Methode wird eine Connection zurückgeliefert, welche mit dem AutoCommit False geöffnet wird.
 
 Beispiel::
 
-   public TransactionContext sourceDb;
-   Connection con = sourceDb.getDbConnection();
+   public Connector sourceDb;
+   Connection con = sourceDb.connect();
 
 2.7.6. TransferSet
 
@@ -874,6 +874,23 @@ Die Methode getOutputQualifiedSchemaAndTableName gibt die Instanzvariable output
 Beispiel::
 
    getOutputQualifiedSchemaAndTableName();
+   
+2.7.7.   GeometryTransform -->ToDo: was macht diese Klasse?
+
+Package: ch.so.agi.gretl.steps
+
+2.7.8.   GeometryTransformGeoJson --> ToDo: was macht diese Klasse?
+
+Package: ch.so.agi.gretl.steps
+
+2.7.9.   GeometryTransformWkb --> ToDo: was macht diese Klasse?
+
+Package: ch.so.agi.gretl.steps
+
+2.7.10.  GeometryTransformWkt --> ToDo: was macht diese Klasse?
+
+Package: ch.so.agi.gretl.steps
+
 
 **2.8.	Steps – Test**
 
