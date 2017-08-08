@@ -42,7 +42,8 @@ public class SqlExecutorStepTest {
         clearTestDb(sourceDb);
     }
 
-
+//todo generell: Die Namen der Testmethoden refactoren - diese dürfen auch wirklich laaaaang werden - dies stört niemanden.
+// Beispiel: anstatt executeWithoutFiles() executeWithoutFilesThrowsGretlException()
 
 
     @Test
@@ -56,7 +57,10 @@ public class SqlExecutorStepTest {
             x.execute(sourceDb,sqlListe);
             Assert.fail();
         } catch (Exception e) {
-
+            //todo welche art der Exception wird erwartet? diese mit assert.equals sicherstellen und eventuell zwecks stabiler testbarkeit eine eigene exception machen
+            // (eine Subklasse von GretlException)
+            // Hier kann nicht einfach pauschal jede beiliebige Exception eingefangen werden - so wissen wir nicht ob der Programmcode
+            // wegen den fehlenden sql-Dateien oder wegen irgendeinem anderen Fehler abgebrochen wurde.
         }
     }
 
@@ -71,7 +75,7 @@ public class SqlExecutorStepTest {
             x.execute(sourceDb,sqlListe);
             Assert.fail();
         } catch (Exception e) {
-
+        //todo siehe executeWithoutFiles()
         }
     }
 
@@ -145,6 +149,8 @@ public class SqlExecutorStepTest {
         x.execute(sourceDb,sqlListe);
         Assert.assertTrue(sourceDb.getDbConnection().isClosed());
     }
+
+    //todo Unterschied zwischen checkIfConnectionIsClosed() und notClosedConnectionThrowsError()?
 
     @Test
     public void notClosedConnectionThrowsError() throws Exception{

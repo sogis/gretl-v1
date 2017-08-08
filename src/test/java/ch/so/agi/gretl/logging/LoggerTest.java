@@ -33,6 +33,9 @@ public class LoggerTest {
 
         PrintStream ps = new PrintStream(baos);
         System.setErr(ps);
+        //todo System.setOut auch notwendig
+        //todo Es ist kritisch dass die Streams nach einem Test in jedem fall zurückgesetzt werden --> im finally der jeweiligen Testmethode,
+        // nicht im  @AfterClass der ganzen Testklasse....
 
     }
 
@@ -60,14 +63,14 @@ public class LoggerTest {
         String LogMessage = baos.toString();
         String[] ArrayLogMessage = LogMessage.split(" -> ");
 
-
+        //todo direkt Assert.assertEquals verwenden....
         if (!ArrayLogMessage[1].equals("Info-Logger-Test\n")) {
             assertFalse("Logger is not working properly: " + baos.toString(), true);
         }
     }
 
     @Test
-    public void testOutputsLogSource() throws Exception
+    public void loggerOutputsCallingClassAsLogSource() throws Exception
     {
         Logger jlog = ((CoreJavaLogAdaptor)log).getInnerLogger();
         assertEquals("The logSource must be equal to the name of this test class", jlog.getName(), this.getClass().getName());
