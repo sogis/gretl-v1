@@ -20,6 +20,21 @@ import java.util.List;
 public class Db2DbStep {
 
     private static GretlLogger log = LogEnvironment.getLogger(Db2DbStep.class);
+    private String taskName;
+
+
+    public Db2DbStep() {
+        this(null);
+    }
+
+    public Db2DbStep(String taskName){
+        if (taskName==null){
+            taskName=Db2DbStep.class.getSimpleName();
+        } else {
+            this.taskName = taskName;
+        }
+        this.log = LogEnvironment.getLogger(this.getClass());
+    }
 
     /**
      * Main method. Calls for each transferSet methode processTransferSet
@@ -30,7 +45,7 @@ public class Db2DbStep {
      */
     public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets) throws Exception {
         assertListNotEmpty(transferSets);
-        log.lifecycle( "\n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
+        log.lifecycle( taskName + ": \n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
                 "sourceDb = "+sourceDb.connect().getMetaData().getURL()+", " +
                 "user = "+sourceDb.connect().getMetaData().getUserName()+", \n" +
                 "targetDb = "+targetDb.connect().getMetaData().getURL()+", " +
@@ -50,7 +65,7 @@ public class Db2DbStep {
             }
             sourceDbConnection.commit();
             targetDbConnection.commit();
-            log.lifecycle("Transfered all Transfersets");
+            log.lifecycle(taskName + ": Transfered all Transfersets");
         } catch (Exception e) {
             if (sourceDb.connect()!=null) { //todo hier die oben deklarierten connections behandeln
                 sourceDb.connect().rollback();
@@ -193,7 +208,7 @@ public class Db2DbStep {
                 + ")";
         PreparedStatement insertRowStatement = targetCon.prepareStatement(sql);
 
-        log.lifecycle(String.format("Sql insert statement: [%s]", sql));
+        log.lifecycle(String.format(taskName + ": Sql insert statement: [%s]", sql));
 
         return insertRowStatement;
     }
