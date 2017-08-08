@@ -763,7 +763,7 @@ Die SqlExecutorStep-Klasse beinhaltet den Step SQLExecutor und führt dementspre
 
 2.6.3.1. Methode execute
 
-Benötigt: trans (TransactionContext), sqlfiles (List<File>)
+Benötigt: trans (Connector), sqlfiles (List<File>)
 
 Liefert: nichts
 
@@ -1192,7 +1192,7 @@ Damit keine Änderungen (beabsichtigte/versehentliche) vorgenommen werden könne
 Der Aufbau eines solchen separaten Task-Projekt könnte wie folgt aussehen.
 Build.gradle::
 
-   import ch.so.agi.gretl.core.TransactionContext
+   import ch.so.agi.gretl.steps.Connector
    import ch.so.agi.gretl.steps.Db2DbStepTask
    import ch.so.agi.gretl.steps.TransferSet
    import ch.so.agi.gretl.steps.SqlExecutorStepTask
