@@ -60,44 +60,38 @@ Starten von IDEA mittels idea.sh im Verzeichnis ~/idea-IC-171.4073.35/bin
 
 **2.1.	Aufbau**
 
-Das Projekt GRETL ist in drei Packages aufgeteilt: logging, steps und util. Im Package logging befinden sich Java-Klassen, welche zum loggen eingesetzt werden. Im Modul steps befinden sich die Java-Klassen der Steps und die dazugehörigen Tasks. Im Package util befinden sich Klassen, welche verschiedene Aufgaben übernehmen (z.B. DbConnector, versch. Exceptions, SqlReader etc.)
+Das Projekt GRETL ist in drei Packages aufgeteilt: logging, steps und util. Im Package logging befinden sich Java-Klassen, welche zum loggen eingesetzt werden. Im Modul steps befinden sich die Java-Klassen der Steps, die dazugehörigen Tasks und einige weitere Klassen. Im Package util befinden sich Klassen, welche verschiedene Aufgaben übernehmen (z.B. DbConnector, verschiedene Exceptions, SqlReader etc.)
 
-
-
-**2.2.	Lib**
-
-Im Verzeichnis lib (gretl/lib) sind die benötigten Bibliotheken abgelegt. Darunter sind vor allem jdbc-Treiber für die unterschiedlichen Datenbanktypen.
-
-**2.3.	Util**
+**2.2.	Util**
 
 Die folgenden Java-Klassen befinden sich im Package "util".
 
-2.3.1.	DbConnector
+2.2.1.	Klasse DbConnector
 
 Package: 	ch.so.agi.gretl.util
 
 Bei der DbConnector-Klasse handelt es ich um eine Utility-Class, welche nur eine Methode (connect) aufweist. Diese erstellt eine Connection.
 
-2.3.1.1.	Methode connect
+2.2.1.1.	Methode connect
 
-Benötigt:  	ConnectionURL (String), UserName (String), Password (String)
+Benötigt:  	connectionURL (String), userName (String), password (String)
 
 Liefert: 	Connection
 
-Die Methode erstellt mittels der ConnectionURI, de, Benutzername und dem dazugehörigen Passwort eine Verbindung zur angegebenen Datenbank und liefert diese als returnvalue zurück.
+Die Methode erstellt mittels der ConnectionURI, dem Benutzername und dem dazugehörigen Passwort eine Verbindung zur angegebenen Datenbank und liefert diese als Rückgabewert zurück.
 
 Beispiel::
 
    DbConnector x = new DbConnector();
    Connection xcon = x.connect("jdbc:derby:memory:myInMemDB;create=true", "public", null);
 
-2.3.2.	FileExtension
+2.2.2.	Klasse FileExtension
 
 Package:	 ch.so.agi.gretl.util
 
 Die FileExtension-Klasse ist darauf ausgelegt, dass sie von einem beliebigen File die File-Extension ermittelt.
 
-2.3.2.1.	Methode getFileExtension
+2.2.2.1.	Methode getFileExtension
 
 Benötigt: 	inputFile (File)
 
@@ -110,13 +104,13 @@ Beispiel::
    String fileExtension = FileExtension.getFileExtension(file);
    if (!fileExtension.equals("sql")){ Do something }
 
-2.3.3.	SqlReader
+2.2.3.	Klasse SqlReader
 
 Package: 	ch.so.agi.gretl.util
 
 Der SqlReader liest Statement für Statement die SQL-Statements aus einem File aus. 
 
-2.3.3.1.	Methode readSqlStmt
+2.2.3.1.	Methode readSqlStmt
 
 Benötigt: sqlfile (File)
 
@@ -130,7 +124,7 @@ Beispiel::
    List<File> sqlfiles = [new File("/Path/to/File/Filename.sql")]
    readSqlStmt(sqlfiles, db)
 
-2.3.3.2. Methode createPushbackReader
+2.2.3.2. Methode createPushbackReader
 
 Benötigt: sqlfile (File)
 
@@ -143,13 +137,13 @@ Beispiel::
    sqlfile = new File("/Path/to/File/Filename.sql")
    createPushbackReader(sqlfile)
 
-2.3.3.3. Methode createStatement
+2.2.3.3. Methode createStatement
 
 Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
 Liefert: StringBuffer
 
-Mit der Methode createStatement werden die Chars, welche aus dem File ausgelesen werden zu einem Statement zusammengefügt und als StringBuffer zurück gegeben. Dafür wird jedes Char geprüft, ob es nicht das Ende des Files ist oder ein Semikolon ";" und anschliessen mit der Methode handlingGivenCharacters weiterverarbeitet. Das Resultat wird als StringBuffer gespeichert und es wird das nächste char gelesen. Ist entweder das Ende des Files erreicht oder ist das Char ein Semikolon, so wird das nächste Char gelesen und anschliessend das Statement als StringBuffer zurückgegeben.
+Mit der Methode createStatement werden die Chars, welche aus dem File ausgelesen werden zu einem Statement zusammengefügt und als StringBuffer zurückgegeben. Dafür wird jedes Char geprüft, ob es nicht das Ende des Files ist oder ein Semikolon ";" und anschliessen mit der Methode handlingGivenCharacters weiterverarbeitet. Das Resultat wird als StringBuffer gespeichert und es wird das nächste char gelesen. Ist entweder das Ende des Files erreicht oder ist das Char ein Semikolon, so wird das nächste Char gelesen und anschliessend das Statement als StringBuffer zurückgegeben.
 
 Beispiel::
 
@@ -164,7 +158,7 @@ Beispiel::
    stmt = createStatement(c, reader, stmt)
    
 
-2.3.3.4. Methode handlingGivenCharacters
+2.2.3.4. Methode handlingGivenCharacters
 
 Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
@@ -196,7 +190,7 @@ Beispiel::
    
    stmt = handlingGivenCharacters(c,reader,stmt);
 
-2.3.3.5. checkCharacterAfterHyphen
+2.2.3.5. Methode checkCharacterAfterHyphen
 
 Benötigt: reader (PushbackReader), stmt (StringBuffer)
 
@@ -216,14 +210,14 @@ Beispiel::
    
    stmt = checkCharacterAfterHyphen(reader,stmt);
 
-2.3.3.6. ignoreCommentsUntilLinebreak
+2.2.3.6. Methode ignoreCommentsUntilLinebreak
 
 Benötigt: reader (PushbackReader)
 
 Liefert: nichts
 
 Die Methode ignoreCommentsUntilLinebreak liest das nächste Char vom PushbackReader. Solange das Ende des Files nicht erreicht ist wird geprüft, ob das Char einen Zeilenumbruch ("\\n" oder "\\r") repräsentiert. Wenn dies der Fall ist, so wird das nächste Char gelesen. Wenn es sich dabei weder um einen weiteren Zeilenumbruch noch um das Ende des Files handelt, wird das Lesen des Chars rückgängig gemacht und es wird aus der Methode ausgetreten. Ansonsten wird das Char nicht ungelesen gemacht, sondern direkt aus der Methode ausgetreten. 
-Sollte es sich aber nicht um einen Zeilenumbruch gehandlet haben, so wird das nächste Char gelesen.
+Sollte es sich aber nicht um einen Zeilenumbruch gehandelt haben, so wird das nächste Char gelesen.
 
 Beispiel::
 
@@ -235,7 +229,7 @@ Beispiel::
    
    ignoreCommentsUntilLinebreak(reader);
 
-2.3.3.7. addingQuotedString
+2.2.3.7. Methode addingQuotedString
 
 Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
@@ -255,14 +249,14 @@ Beispiel::
    
    stmt = addingQuotedString(c, reader, stmt);
 
-2.3.3.8. splitStatement
+2.2.3.8. Methode splitStatement
 
 Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
 Liefert: StringBuffer
 
 Als erstes wird in der Methode splitStatement das übergebene Char an den übergebenen StringBuffer angefügt. Anschliessend wird das nächste Char gelesen. Handelt es sich um einen Zeilenumbruch ("\\n" oder "\\r"), so wird das nächste Char gelesen. Repräsentiert diese Char weder einen weiteren Zeilenumbruch noch das Ende des Files so wird das Lesen des Chars wieder rückgängig gemacht.
-Handelte es sich beidem gelesenen Char um keinen Zeilenumbruch, so wird geprüft, ob es sich um das Fileende handelt. Sollte dies nicht der Fall sein, so wird das Lesen des Chars wieder rückgängig gemacht.
+Handelte es sich bei dem gelesenen Char nicht um einen Zeilenumbruch, so wird geprüft, ob es sich um das Fileende handelt. Sollte dies nicht der Fall sein, so wird das Lesen des Chars wieder rückgängig gemacht.
 
 Beispiel::
 
@@ -276,7 +270,7 @@ Beispiel::
    
    stmt = splitStatement(c, reader, stmt);
 
-2.3.3.9. replaceLineBreakCharacter
+2.2.3.9. Methode replaceLineBreakCharacter
 
 Benötigt: c (int), reader (PushbackReader), stmt (StringBuffer)
 
@@ -296,7 +290,7 @@ Beispiel::
    
    stmt = replaceLineBreakCharacter(c, reader, stmt);
 
-2.3.3.10. Methode nextSqlStmt 
+2.2.3.10. Methode nextSqlStmt 
 
 Benötigt: nichts
 
@@ -308,7 +302,7 @@ Beispiel::
 
    String statement = SqlReader.nextSqlStmt(sqlfile);
 
-2.3.3.11. Methode closePushbackReader
+2.2.3.11. Methode closePushbackReader
 
 Benötigt: nichts
 
@@ -320,13 +314,13 @@ Beispiel::
 
    closePushbackReader();
    
-2.3.4.   FileStylingDefinition
+2.2.4.  Klasse FileStylingDefinition
 
 Package: ch.so.agi.gretl.util
 
-In der Klasse FileStylingDefinition kann das File auf UTF-8 und auf das beinhalten einer BOM (Byte-Order-Mark) geprüft werden.
+In der Klasse FileStylingDefinition kann das File auf UTF-8 und auf das Beinhalten einer BOM (Byte-Order-Mark) geprüft werden.
 
-2.3.4.1. Methode checkForUtf8
+2.2.4.1. Methode checkForUtf8
 
 Benötigt: inputfile (File)
 
@@ -338,7 +332,7 @@ Beispiel::
 
    checkForUtf8(new File("test/test.txt"))
    
-2.3.4.2. Methode createCharsetDecoder
+2.2.4.2. Methode createCharsetDecoder
 
 Benötigt: nichts
 
@@ -350,9 +344,9 @@ Beispiel::
 
    CharsetDecoder decoder = createCharsetDecoder()
 
-2.3.4.3. Methode checkForBOMInFile
+2.2.4.3. Methode checkForBOMInFile
 
-Benötigt: inputfile(Filde)
+Benötigt: inputfile (File)
 
 Liefert: nichts
 
@@ -362,15 +356,15 @@ Beispiel::
 
    checkForBOMInFile(new File("test/test.txt")
 
-2.3.5.   ExConverter  ---> ToDo: Was macht diese Klasse?
+2.2.5.   Klasse ExConverter  ---> ToDo: Was macht diese Klasse?
 
 Package: ch.so.agi.gretl.util
 
-2.3.6.   GretlException ---> ToDo: Was macht diese Klasse?
+2.2.6.   Klasse GretlException ---> ToDo: Was macht diese Klasse?
 
 Package: ch.so.agi.gretl.util
 
-2.3.7.   EmptyFileException
+2.2.7.   Klasse EmptyFileException
 
 Package: ch.so.agi.gretl.util
 
@@ -380,13 +374,16 @@ Beispiel::
 
    throw new EmptyFileException("EmptyFile: "+targetFile.getName());
    
-2.3.8. EmptyListException
+2.2.8. Klasse EmptyListException
 
 Package: ch.so.agi.gretl.util
 
 Die EmptyListException soll geworfen werden, wenn eine Liste, welche eigentlich nicht leer sein dürfte, trotzdem leer ist. Insbesondere ist dies im Db2DbStep bei den TransferSets der Fall. 
 
-2.3.9.	NotAllowedSqlExpressionException
+Beispiel::
+   throw new EmptyListException("List is empty!")
+
+2.2.9.	Klasse NotAllowedSqlExpressionException
 
 Package: ch.so.agi.gretl.util
 
@@ -396,52 +393,82 @@ Beispiel::
 
    throw new NotAllowedSqlExpressionException();
 
-**2.4.	Util – Test**
+**2.3.	Util – Test**
 
-2.4.1.	DbConnectorTest
+2.3.1.	Klasse DbConnectorTest
 
 Package: 	ch.so.agi.gretl.util
 
 Die Klasse DbConnectorTest testet gewisse Funktionalitäten der DbConnector-Klasse.
-connectToDerbyDb: Testet, ob eine Verbindung zur lokalen Derby-Db herstellen kann.
-connectionAutoCommit: Testet, ob AutoCommit wirklich off ist.
 
-2.4.2.	FileExtensionTest
+2.3.1.1. Test connectToDerbyDb
+
+Testet, ob eine Verbindung zur lokalen Derby-Db herstellen kann.
+
+2.3.1.2. Test connectionAutoCommit
+
+Testet, ob AutoCommit wirklich off ist.
+
+2.3.2.	Klasse FileExtensionTest
 
 Package: 	ch.so.agi.gretl.util
 
 Die Klasse FileExtensionTest überprüft die Funktionalitäten der FileExtension-Klasse. Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird.
-getFileExtension: Prüft, ob die Methode bei einem File mit der Endung .sql auch die Endung sql ermittelt wird.
-missingFileExtension: Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegeben wird.
-mutipleFileExtension: Prüft, ob bei einem File mit mehreren Endungen (file.ext1.ext2) auch wirklich die letzte Fileendung ausgegeben wird.
-strangeFileNameExtension: Prüft, ob bei einem File mit folgendem Namen (c:\\file) auch wirklich eine Fehlermeldung ausgeworfen wird.
 
-2.4.3.   FileStylingDefinitionTest
+2.3.2.1. Test getFileExtension
+
+Prüft, ob die Methode bei einem File mit der Endung .sql auch die Endung sql ermittelt wird.
+
+2.3.2.2. Test missingFileExtension
+
+Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegeben wird.
+
+2.3.2.3. Test mutipleFileExtension
+
+Prüft, ob bei einem File mit mehreren Endungen (file.ext1.ext2) auch wirklich die letzte Fileendung ausgegeben wird.
+
+2.3.2.4. Test strangeFileNameExtension
+
+Prüft, ob bei einem File mit folgendem Namen (c:\\file) auch wirklich eine Fehlermeldung ausgeworfen wird.
+
+2.3.3.   Klasse FileStylingDefinitionTest
 
 Package:    ch.so.agi.gretl.util
 
 Die Klasse FileStylingDefinitionTest überprüft die Funktionalitäten der FileStylingDefinition-Klasse.
-wrongEncodingThrowsException: Prüft, ob die Methode checkForUtf8 eine Exception wirft, wenn ein File mit einer anderen Kodierung als UTF-8 übergeben wird.
-rightEncoding: Prüft, ob die Methode checkForUtf8 keine Exception wirft, wenn ein File mit der korrekten Kodierung (UTF-8) übergeben wird.
-FileWithBOMThrowsException: Prüft, ob die Methode checkForBOMInFile eine Exception wirft, wenn ein File mit BOM übergeben wird.
-passingOnFileWithoutBOM: Prüft, ob die Methode checkForBOMInFile keine Exception wirft, wenn ein File ohne BOM übergeben wird.
+
+2.3.3.1. Test wrongEncodingThrowsException
+
+Prüft, ob die Methode checkForUtf8 eine Exception wirft, wenn ein File mit einer anderen Kodierung als UTF-8 übergeben wird.
+
+2.3.3.2. Test rightEncoding
+
+Prüft, ob die Methode checkForUtf8 keine Exception wirft, wenn ein File mit der korrekten Kodierung (UTF-8) übergeben wird.
+
+2.3.3.3. Test FileWithBOMThrowsException
+
+Prüft, ob die Methode checkForBOMInFile eine Exception wirft, wenn ein File mit BOM übergeben wird.
+
+2.3.3.4. Test passingOnFileWithoutBOM
+
+Prüft, ob die Methode checkForBOMInFile keine Exception wirft, wenn ein File ohne BOM übergeben wird.
 
 
-**2.5.	Logging**
+**2.4.	Logging**
 
-2.5.1. Interface GretlLogger
+2.4.1. Interface GretlLogger
 
 Package: ch.so.agi.gretl.logging
 
 Das Interface setzt die Methoden info, debug, error und livecycle voraus. Diese Methoden benötigen alle einen String.
 
-2.5.2. CoreJavaLogAdaptor 
+2.4.2. Klasse CoreJavaLogAdaptor 
 
 Package: ch.so.agi.gretl.logging
 
 Die Klasse CoreJavaLogAdaptor implementiert das GretlLogger-Interface. Sie wird genutzt, wenn die Steps ohne gradle genutzt werden (z.B. unittest). Zuerst wird dabei der Java-Logger geholt (getLogger), wobei ihm der Name der aufrufenden Klasse übergeben wird, danach wird das Loglevel gesetzt. 
 
-2.5.2.1. info
+2.4.2.1. Methode info
 
 Benötigt: msg (String)
 
@@ -449,7 +476,7 @@ Liefert: nichts
 
 Die Methode info gibt die Mitteilung an den Logger mit dem Loglevel fine weiter.
 
-2.5.2.2. debug
+2.4.2.2. Methode debug
 
 Benötigt: msg (String)
 
@@ -457,7 +484,7 @@ Liefert: nichts
 
 Die Methode debug gibt die Mitteilung an den Logger mit dem Loglevel finer weiter.
 
-2.5.2.3. error
+2.4.2.3. Methode error
 
 Benötigt: msg (String)
 
@@ -465,21 +492,21 @@ Liefert: nichts
 
 Die Methode error gibt die Mitteilung den den Logger mit dem Loglevel severe weiter.
 
-2.5.2.4. livecycle
+2.4.2.4. Methode lifecycle
 
 Benötigt: msg (String)
 
 Liefert: nichts
 
-Die Methode livecycle gibt die Mitteilung an den Logger mit dem Loglvel config weiter.
+Die Methode lifecycle gibt die Mitteilung an den Logger mit dem Loglevel config weiter.
 
-2.5.3. GradleLogAdaptor
+2.4.3. Klasse GradleLogAdaptor
 
 Package: ch.so.agi.gretl.logging
 
 Die Klasse GradleLogAdaptor implementiert das GretlLogger-Interface. Sie wird genutzt, wenn die Steps mit gradle ausgeführt werden (z.B. Tasks).
 
-2.5.3.1. info
+2.4.3.1. Methode info
 
 Benötigt: msg (String)
 
@@ -487,7 +514,7 @@ Liefert: nichts
 
 Die Methode info gibt die Mitteilung an den Logger mit dem Loglevel info weiter.
 
-2.5.3.2. debug
+2.4.3.2. Methode debug
 
 Benötigt: msg (String)
 
@@ -495,15 +522,15 @@ Liefert: nichts
 
 Die Methode debug gibt die Mitteilung an den Logger mit dem Loglevel debug weiter.
 
-2.5.3.3. livecycle
+2.4.3.3. Methode lifecycle
 
 Benötigt: msg (String)
 
 Liefert: nichts
 
-Die Methode livecycle gibt die Mitteilung an den Logger mit dem Loglevel lifecycle weiter.
+Die Methode lifecycle gibt die Mitteilung an den Logger mit dem Loglevel lifecycle weiter.
 
-2.5.3.4. error
+2.4.3.4. Methode error
 
 Benötigt: msg (String)
 
@@ -511,13 +538,13 @@ Liefert: nichts
 
 Die Methode error gibt die Mitteilung an den Logger mit dem Loglevel error weiter.
 
-2.5.4. Level  ---- ToDo: Was macht diese Klasse???? -----
+2.4.4. Klasse Level  ---- ToDo: Was macht diese Klasse???? -----
 
 Package: ch.so.agi.gretl.logging
 
-In der Klasse Level werden die verschiedenen Konstanten ERROR, LIVECYCLE, INFO und DEBUG als Loglevel definiert.
+In der Klasse Level werden die verschiedenen Konstanten ERROR, LIFECYCLE, INFO und DEBUG als Loglevel definiert.
 
-2.5.4.1. Methode getInnerLevel  ----ToDo: Was macht diese Methdode ???? ---
+2.4.4.1. Methode getInnerLevel  ----ToDo: Was macht diese Methdode ???? ---
 
 Benötigt: nichts
 
@@ -525,47 +552,47 @@ Liefert: java.util.logging.Level
 
 Die Methode getInnerLevel gibt das Loglevel zurück
 
-2.5.5. Interface LogFactory
+2.4.5. Interface LogFactory
 
 Package: ch.so.agi.gretl.logging
 
 Das Interface setzt die Methoden getLogger voraus. Diese Methoden benötigen alle eine Class.
 
-2.5.6. CoreJavaLogFactory  --- ToDo: Was genau macht diese Klasse?????? ----
+2.4.6. Klasse CoreJavaLogFactory  --- ToDo: Was genau macht diese Klasse?????? ----
 
 Package: ch.so.agi.gretl.logging
 
 Die Klasse CoreJavaLogFactory implementiert das Interface LogFactory. 
 
-2.5.6.1. Methode getLogger  --- ToDo: Was genau macht die Methode???? ---
+2.4.6.1. Methode getLogger  --- ToDo: Was genau macht die Methode???? ---
 
 Benötigt: globalLogLevel (Level)
 
 Liefert: GretlLogger
 
-2.5.7. GradleLogFactory  --- ToDo: Was genau macht diese Klasse?????-----
+2.4.7. Klasse GradleLogFactory  --- ToDo: Was genau macht diese Klasse?????-----
 
 Package: ch.so.agi.gretl.logging
 
 Die Klasse GradleLogFactory implementiert das Interface LogFactory.
 
-2.5.7.1. Methode getLogger  --- ToDo: Was genau macht diese Methode???? ---
+2.4.7.1. Methode getLogger  --- ToDo: Was genau macht diese Methode???? ---
 
 Benötigt: logSource (Class)
 
 Liefert: GretlLogger
 
-2.5.8. LogEnvironment  --- ToDo: Was genau macht diese Klasse??? ----
+2.4.8. Klasse LogEnvironment  --- ToDo: Was genau macht diese Klasse??? ----
 
 Package: ch.so.agi.gretl.logging
 
-2.5.8.1. Methode initGradleIntegrated  --- ToDo: Was genau macht diese Methode???  ----
+2.4.8.1. Methode initGradleIntegrated  --- ToDo: Was genau macht diese Methode???  ----
 
 Benötigt: nichts 
 
 Liefert: nichts
 
-2.5.8.2. Methode initStandalone
+2.4.8.2. Methode initStandalone
 
 Benötigt: nichts
 
@@ -573,7 +600,7 @@ Liefert: nichts
 
 Die Methode initStanalone ohne Übergabewerte führt die Methode initStandalone mit dem Loglevel Debug aus.
 
-2.5.8.3. Methode initStandalone  --- ToDo: Was genau macht diese Methode??? ----
+2.4.8.3. Methode initStandalone  --- ToDo: Was genau macht diese Methode??? ----
 
 Benötigt: logLevel (Level)
 
@@ -581,61 +608,76 @@ Liefert: nichts
 
 Prüft, ob die Logfactory null ist oder ob sie von der GradleLogFactory abstammt. Sollte dies der Fall sein, so wird eine neue CoreJavaLogFactory mit dem Loglevel Debug erzeugt.
 
-2.5.8.4. Methode getLogger  ----ToDo: Was genau macht diese Methode???? ----
+2.4.8.4. Methode getLogger  ----ToDo: Was genau macht diese Methode???? ----
 
 Benötigt: logSource (Class)
 
 Liefert: GretlLogger
 
-**2.6.	Logging - Test**
+**2.5.	Logging - Test**
 
-2.6.1. LoggerTest
+2.5.1. Klasse LoggerTest
 
 Package: ch.so.agi.gretl.logging
 
 Mit der LoggerTest-Klasse wird die Funktionalität der Logger-Klasse überprüft. Dabei wird bevor irgendein Test ausgeführt wird eine PrintStream erzeugt und System.err wird so umgestellt, dass dieser den neu erzeugten PrintStream als Output nutzt. 
 Vor jedem Test wird zudem der PrintStream zurückgesetzt. Und am Ende aller Test wird System.err wieder zurückgesetzt.
 
-2.6.1.1. Test logInfoTest
+2.5.1.1. Test logInfoTest
 
 Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 
-2.6.1.2. Test logDebugTest
+2.5.1.2. Test logDebugTest
 
 Prüft, ob die in System.err geworfene Logmeldung der Erwartung entspricht.
 
-2.6.1.3. Test logErrorTest
+2.5.1.3. Test logErrorTest
 
 Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 
-**2.7.	Steps**
+2.5.1.4. Test loggerOutputsCallingClassAsLogSource  --> ToDo: Was macht dieser Test????
+
+
+**2.6.	Steps**
    
-2.7.1. Db2DbStep 
+2.6.1. Klasse Db2DbStep 
 
 Package: ch.so.agi.gretl.steps
 
 Die Db2DbStep-Klasse beinhaltet den Db2Db-Step. Sie dient dem Umformen und Kopieren von einer Datenbank in eine andere. In einem SQL-File wird dabei das SQL-Statement für den Input-Datensatz erstellt, der dann in die Output-Datenbank geschrieben werden soll.
 
-2.7.1.1. Methode processAllTransferSets
+2.6.1.1. Methode processAllTransferSets
 
-Diese Methode ruft für jedes in der Liste aufgeführte Transferset die Methode processTransferSet auf. Zuerst wird aber noch überprüft, ob die Liste der Transferets nicht leer ist und vor dem abarbeiten eines TransferSets wird auch die lesbarkeit der Input-SQL-Datei überprüft. Am Ende wird das Commit ausgeführt. Wird dabei irgend eine Exception geworfen, wird für alle Verbindungen ein rollback ausgeführt. Am Ende (egal ob erfolgreich oder Exception), werden die Verbindungen wieder geschlossen. 
+Benötigt: sourceDb (Connector), targetDb (Connector), transferSets (List<TransferSet>)
+
+Liefert: nichts
+
+Diese Methode ruft für jedes in der Liste aufgeführte Transferset die Methode processTransferSet auf. Zuerst wird aber noch überprüft, ob die Liste der TransferSets nicht leer ist und vor dem Abarbeiten eines TransferSets wird auch die Lesbarkeit der Input-SQL-Datei überprüft. Am Ende wird das Commit ausgeführt. Wird dabei irgendeine Exception geworfen, wird für alle Verbindungen ein rollback ausgeführt. Am Ende werden, ob  erfolgreich oder Exception, die Verbindungen wieder geschlossen. 
 
 Beispiel::
 
-   processAllTransferSets(TransactionContext sourceDb, TransactionContext targetDb, List<TransferSet> transferSets)
+   processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets)
 
-2.7.1.2	Methode processTransferSet
+2.6.1.2	Methode processTransferSet
 
-Dies ist nun die Methode, welche ein TransferSet abarbeitet. Dabei werden verschiedene andere Methoden aufgerufen.
-Als erstes wird überprüft, ob im TransferSet die Option getDeleteAllRows auf True gesetzt ist. Ist das der Fall, wird die Methode deleteDestTableContents aufgerufen, welche den Inhalt der ZielTtabelle löscht.
-Danach wird mit der Methode extractSingleStatement ein Statement aus dem SQL-File, welches im TransferSet definiert ist, extrahiert und gleich auf unerlaubte Ausdrücke (Delete, Insert, Update etc.) überprüft. Danach wird mit der Methode createResultSet das Statement ausgeführt und anschliessend wird mit der Methode createInsertRowStatement ein SQL-INSERT-Statement vorbereitet. Dieses wird in der Methode transferRow mit den Werten aus dem ResultSet abgefüllt.
+Benötigt: srcCon (Connection), targetCon (Connection), transferSet (TransferSet)
+
+Liefert: nichts
+
+Diese Methode arbeitet ein TransferSet ab. Dabei werden verschiedene weitere Methoden aufgerufen.
+Als erstes wird überprüft, ob im TransferSet die Option getDeleteAllRows auf True gesetzt ist. Ist das der Fall, wird die Methode deleteDestTableContents aufgerufen, welche den Inhalt der Zieltabelle löscht.
+Danach wird mit der Methode extractSingleStatement ein Statement aus dem SQL-File, welches im TransferSet definiert ist, extrahiert und gleich auf unerlaubte Ausdrücke (Delete, Insert, Update etc. --> Todo: genauer definieren! <--) überprüft. Danach wird mit der Methode createResultSet das Statement ausgeführt und anschliessend wird mit der Methode createInsertRowStatement ein SQL-INSERT-Statement vorbereitet. Dieses wird in der Methode transferRow mit den Werten aus dem ResultSet abgefüllt.
 
 Beispiel::
 
    processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
 
 
-2.7.1.3. Methode deleteDestTableContents
+2.6.1.3. Methode deleteDestTableContents
+
+Benötigt: targetCon (Connection), destTableName (String)
+
+Liefert: nichts
 
 Diese Methode löscht alle Einträge in der Ziel-Tabelle. Dies geschieht nicht mit "truncate", sondern mit "DELETE FROM". Der Grund dafür ist, dass ein Truncate alleine in einer Transaktion stehen müsste und nicht zusammen mit anderen Querys übermittelt (commited) werden kann.
 
@@ -643,80 +685,99 @@ Beispiel::
 
    deleteDestTableContents(targetCon, transferSet.getOutputQualifiedSchemaAndTableName());
 
-2.7.1.4. Methode createResultSet
+2.6.1.4. Methode createResultSet
 
-Diese Methode führt das sqlSelectStatement aus und liefert ein ResultSet (rs) zurück)
+Benötigt: srcCon (Connection), sqlSelectStatement (String)
+
+Liefert: ResultSet
+
+Diese Methode führt das sqlSelectStatement aus und liefert ein ResultSet (rs) zurück.
 
 Beispiel::
 
    ResultSet rs = createResultSet(srcCon, selectStatement);
 
-2.7.1.5. Methode createInsertRowStatement
+2.6.1.5. Methode createInsertRowStatement
 
-Diese Methode erstellt das Insert Statement. Dazu werden über die Funktion getMetaData die Metadaten, konkret die columnNames (Spaltennamen) ausgelesen. Die Spaltennamen werden dann zusammengesetzt und im Insert-Statement eingesetzt. Gleichzeitig werden der Anzahl Spalten entsprechend Fragezeichen in die VALUES geschrieben, welche in einer späteren Methode durch die entsprechenden Werten ersetzt werden.
+Benötigt: srcCon (Connection), targetCon (Connection), rs (ResultSet), tSet (TransferSet)
+
+Liefert: PreparedStatement
+
+Diese Methode erstellt das Insert-Statement. Dazu werden über die Funktion getMetaData die Metadaten, konkret die columnNames (Spaltennamen), ausgelesen. Die Spaltennamen werden dann zusammengesetzt und im Insert-Statement eingesetzt. Gleichzeitig werden der Anzahl Spalten entsprechend Fragezeichen in die VALUES geschrieben, welche in einer späteren Methode durch die entsprechenden Werten ersetzt werden.
 
 Beispiel::
 
    createInsertRowStatement(srcCon,rs,transferSet.getOutputQualifiedSchemaAndTableName());
 
-2.7.1.6. Methode extractSingleStatement
+2.6.1.6. Methode extractSingleStatement
 
-Benötigt: File targetFile
+Benötigt: targetFile (File)
 
-Diese Methode extrahiert aus einem definierten File ein SQL Statement. Dabei wird auch auch überprüft ob das File nur ein Statement enthält, oder ob es eventuell auch weitere gibt. Des Weiteren wird auch überprüft, ob eventuelle nicht erlaubte Ausdrücke im Statement vorkommen (z.B. DELETE, INSERT oder UPDATE).
+Liefert: String
+
+Diese Methode extrahiert aus einem definierten File ein SQL Statement. Dabei wird auch auch überprüft, ob das File nur ein Statement enthält, oder ob es eventuell auch weitere Statements enthält. Des Weiteren wird auch überprüft, ob eventuelle nicht erlaubte Ausdrücke im Statement vorkommen (z.B. DELETE, INSERT oder UPDATE).
 
 Beispiel::
 
    extractSingleStatement(transferSet.getInputSqlFile());
 
-2.7.1.7. Methode transferRow
+2.6.1.7. Methode transferRow
 
-Benötigt: ResultSet rs, PreparedStatement insertRowStatement, int columncount
+Benötigt: rs (ResultSet), insertRowStatement (PreparedStatement), columncount (int)
 
-Diese Methode ersetzt die "?" vominsertRowStatement mit den Werten, die das ResultSet zurückliefert. Im Anschluss wird dieses Statement ausgeführt.
+Liefert: nichts
+
+Diese Methode ersetzt die "?" vom insertRowStatement mit den Werten, die das ResultSet zurückliefert. Im Anschluss wird dieses Statement ausgeführt.
 
 Beispiel::
 
    while (rs.next()) {transferRow(rs, insertRowStatement, columncount);}
 
+2.6.1.8. Methode assertListNotEmpty
 
-2.7.2. Db2DbStepTask  --> ToDo: bitte überarbeiten/prüfen
+Benötigt: transferSets (List<TransferSet>)
+
+Liefert: nichts
+
+Die Methode assertListNotEmpty prüft, ob die Liste grösser als 0 ist, also mindestens ein Transferset vorhanden ist.
+
+2.6.2. Klasse Db2DbTask  --> ToDo: bitte überarbeiten/prüfen
 
 Package: 	ch.so.agi.gretl.steps
 
-Die Klasse Db2DbStepTask repräsentiert den Task zum Db2DbStep. Diese Klasse verlangt nach drei Inputs; der sourceDb, der targetDb und eines oder mehrerer TransferSets. Ein Beispiel wie ein solcher Task aussehen könnte:
+Die Klasse Db2DbTask repräsentiert den Task zum Db2DbStep. Diese Klasse verlangt nach drei Inputs; der sourceDb, der targetDb und eines oder mehrerer TransferSets. Ein Beispiel wie ein solcher Task aussehen könnte:
 ::
 
    task TestTask(type: Db2DbStepTask, dependsOn: 'TestTask2') {
-       sourceDb =  new TransactionContext("jdbc:postgresql://host:port/db","user",null);
-       targetDb = new TransactionContext("jdbc:postgresql://host:port/db","user",null);
+       sourceDb =  new Connector("jdbc:postgresql://host:port/db","user",null);
+       targetDb = new Connector("jdbc:postgresql://host:port/db","user",null);
        transferSet = [new TransferSet(true,new java.io.File('path/to/file'),'schema.table')];
    }
 
 
-2.7.3. SqlExecutorStep
+2.6.3. Klasse SqlExecutorStep
 
 Package: ch.so.agi.gretl.steps
 
 Die SqlExecutorStep-Klasse beinhaltet den Step SQLExecutor und führt dementsprechend die übergebenen sql-Statements auf der übergebenen Datenbank aus.
 
-2.7.3.1. Methode execute
+2.6.3.1. Methode execute
 
 Benötigt: trans (TransactionContext), sqlfiles (List<File>)
 
 Liefert: nichts
 
-Die Methode execute führt zuerst die Methode checkIfAtLeastOneSqlFileIsGiven aus und anschliessend führt sie logPathToInputSqlFiles aus. Danach wird versucht mit dem TransactionContext eine Verbindung zur Datenbank zu erstellen. Danach werden die Methoden checkFileExtensionsForSqlExtension und readSqlFiles ausgeführt. Zum Abschluss wird ein Commit auf der Datenbank ausgeführt. Falls eine Exception geworfen wurde, so wird ein Rollback auf der Datenbank ausgeführt. Am Schluss wird sowohl bei einem Commit wie auch bei einem Rollbakc die Verbindung zur Datenbank geschlossen.
+Die Methode execute führt zuerst die Methode assertAtLeastOneSqlFileIsGiven aus und anschliessend führt sie logPathToInputSqlFiles aus. Danach wird versucht mit dem Connector eine Verbindung zur Datenbank zu erstellen. Danach werden die Methoden checkFileExtensionsForSqlExtension und readSqlFiles ausgeführt. Zum Abschluss wird ein Commit auf der Datenbank ausgeführt. Falls eine Exception geworfen wurde, so wird ein Rollback auf der Datenbank ausgeführt. Am Schluss wird sowohl bei einem Commit wie auch bei einem Rollback die Verbindung zur Datenbank geschlossen.
 
 Beispiel::
 
    SqlExecutorStep x = new SqlExecutorStep();
-   TransactionContext sourceDb = new TransactionContext("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+   Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
    sqlfiles = [new File("/Path/to/File/Filename.sql")]:
 
    x.execute(sourceDb, sqlListe);
    
-2.7.3.2. Methode checkIfAtLeastOneSqlFileIsGiven
+2.6.3.2. Methode assertAtLeastOneSqlFileIsGiven
 
 Benötigt: sqlFiles (List<File>)
 
@@ -727,9 +788,22 @@ Die Methode prüfte, ob mindestens ein File übergeben wurde.
 Beispiel::
 
    sqlfiles = [new File("/Path/to/File/Filename.sql")]:
-   checkFileExtensionsForSqlExtension(sqlfiles);
+   assertAtLeastOneSqlFileIsGiven(sqlfiles);
    
-2.7.3.3. Methode readSqlFiles
+2.6.3.3. Methode logPathToInputSqlFiles
+
+Benötigt: sqlfiles (List<File>)
+
+Liefert: nichts
+
+Diese Methode schreibt die absoluten Pfade der übergebenen Files ins log.info.
+
+Beispiel::
+
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]:
+   logPathToInputSqlFiles(sqlfiles);
+   
+2.6.3.4. Methode readSqlFiles
 
 Benötigt: sqlfiles (List<File>), db (Connection)
 
@@ -743,7 +817,7 @@ Beispiel::
    Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
    readSqlFiles(sqlfiles, db);
    
-2.7.3.4. Methode executeAllSqlStatements
+2.6.3.5. Methode executeAllSqlStatements
 
 Benötigt: conn (Connection), sqlfile (File)
 
@@ -757,24 +831,22 @@ Beispiel::
    Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
    executeAllSqlStatements(sqlfile, db);
 
-2.7.3.5. Methode prepareSqlStatement
+2.6.3.6. Methode prepareSqlStatement
 
 Benötigt: conn (Connection), statement (String)
 
 Liefert: nichts
 
-In einem ersten Schritt werden die unnötigen Blankspaces am Anfang und am Ende des Statementstrings entfernt. Anschliessend wird, sofern die Länge des Strings grösser 0 ist, ein Statement für den Statementstring kreiert und die Methode executeSqlStatement.
+In einem ersten Schritt werden die unnötigen Blankspaces am Anfang und am Ende des Statementstrings entfernt. Anschliessend wird, sofern die Länge des Strings grösser 0 ist, ein Statement für den Statementstring kreiert und die Methode executeSqlStatement aufgerufen.
 
 Beispiel::
 
    Connection con = Drivermanager.getConnection(ConnectionUrl, Username, Password);
-   Statement dbstmt = null;
-   dbstmt = conn.createStatement();
    String statement = "SQL-Query-Statement"
    
-   executeSqlStatement(dbstmt, statement);
+   prepareSqlStatement(conn, statement);
    
-2.7.3.6. Methode executeSqlStatement
+2.6.3.7. Methode executeSqlStatement
 
 Benötigt: dbstmt (Statement), statement (String)
 
@@ -791,13 +863,13 @@ Beispiel::
    
    executeSqlStatement(dbstmt, statement)
    
-2.7.4. SqlExecutorTask
+2.6.4. Klasse SqlExecutorTask
 
 Package: ch.so.agi.gretl.steps
 
-Die Klasse SqlExecutorStepTask repräsentiert den Task zum SqlExecutorStep. Sie verlangen einen TransactionContext (sourceDb) und und eine Liste mit Pfaden zu den(SQL-)Files (sqlFiles). In der TaskAction werden die beiden Inputs (sourceDb, sqlFiles) an die Methode execute des SqlExecutorStep übergeben und die Methode ausgeführt.
+Die Klasse SqlExecutorTask repräsentiert den Task zum SqlExecutorStep. Sie verlangt einen Connector (sourceDb) und und eine Liste mit Pfaden zu den(SQL-)Files (sqlFiles). In der TaskAction werden die beiden Inputs (sourceDb, sqlFiles) an die Methode execute des SqlExecutorStep übergeben und diese ausgeführt.
 
-2.7.4.1. Methode executeSqlExecutor
+2.6.4.1. Methode executeSqlExecutor
 
 Benötigt: nichts 
 
@@ -809,26 +881,26 @@ Beispiel::
 
    executeSQLExecutor()
    
-2.7.4.2. Methode convertToValidatedFileList
+2.6.4.2. Methode convertToValidatedFileList
 
 Benötigt: filePaths (List<String>)
 
 Liefert: List<File>
 
-Die Methode erzeugt in einem ersten Schrit ein Arraylist für Files. Danach werden die übergebenen filePaths einzeln durchgegangen und für jeden Dateipfad wird geprüft, ob er weder null noch eine Länge von 0 hat. Trifft dies nicht zu so wird aus dem Dateipfad ein File erzeugt und geprüft, ob dieses lesbar ist. Zum Abschluss wird das File der Arraylist hinzugefügt.
+Die Methode erzeugt in einem ersten Schritt eine leere Arraylist für Files. Danach werden die übergebenen filePaths einzeln durchgegangen und für jeden Dateipfad wird geprüft, ob er weder null noch eine Länge von 0 hat. Ist dies der Fall, so wird aus dem Dateipfad ein File erzeugt und geprüft, ob dieses lesbar ist. Zum Abschluss wird das File der Arraylist hinzugefügt.
 
 Beispiel::
 
    filePaths = ["/path/to/file/filename.sql"]
    List<File> files = convertToValidatedFileList(filePaths)
 
-2.7.5. Connector
+2.6.5. Klasse Connector
 
 Package: ch.so.agi.gretl.steps
 
 Erstellt eine Verbindung zur Datenbank.
 
-2.7.5.1.	Methode connect
+2.6.5.1.	Methode connect
 
 Benötigt: 	dbUri (String), dbUser (String), dbPassword (String)
 
@@ -841,16 +913,19 @@ Beispiel::
    public Connector sourceDb;
    Connection con = sourceDb.connect();
 
-2.7.6. TransferSet
+2.6.6. Klasse TransferSet
 
 Package: ch.so.agi.gretl.steps
 
 Die Klasse TransferSet definiert die Gestalt eines TransferSets. Es besteht aus drei Parametern:
-- Ein Boolean-Wert, der definiert, ob der Inhalt der Zieltabelle vorgängig gelöscht werden soll.
-- Ein Input-File, in welchem ein SELECT_Statement die Struktur der Input-Daten definiert.
-- Ein String, bestehend aus Schema und Tabelle des gewünschten Outputs.
 
-2.7.6.1. Methode getDeleteAllRows
+ - Ein Boolean-Wert, der definiert, ob der Inhalt der Zieltabelle vorgängig gelöscht werden soll.
+  
+ - Ein Input-File, in welchem ein SELECT_Statement die Struktur der Input-Daten definiert.
+
+ - Ein String, bestehend aus Schema und Tabelle des gewünschten Outputs.
+
+2.6.6.1. Methode getDeleteAllRows
 
 Benötigt: nichts
 
@@ -862,11 +937,11 @@ Beispiel::
   
    getDeleteAllRows();
    
-2.7.6.2. Methode getInputSqlFile
+2.6.6.2. Methode getInputSqlFile
 
 Benötigt: nichts
 
-Liefert: file
+Liefert: File
 
 Die Methode getInputSqlFile gibt die Instanzvariable insputSqlfile, welche an die Klasse TransferSet übergeben wurde, zurück.
 
@@ -874,7 +949,7 @@ Beispiel::
 
    getInputSqlFile();
    
-2.7.6.3. Methode getOutputQualifiedSchemaAndTableName
+2.6.6.3. Methode getOutputQualifiedSchemaAndTableName
 
 Benötigt: nichts
 
@@ -886,26 +961,44 @@ Beispiel::
 
    getOutputQualifiedSchemaAndTableName();
    
-2.7.7.   GeometryTransform -->ToDo: was macht diese Klasse?
+2.6.6.4. Methode initGeoColumnHash  --> Todo: Was macht diese Methode???? <--
+
+Benötigt: colList (String[])
+
+Liefert: nichts
+
+2.6.6.5. Methode isGeoColumn  --> Todo: Was macht diese Methode???' <--
+
+Benötigt: colName (String)
+
+Liefert: boolean
+
+2.6.6.6. Methode wrapWithGeoTransformFunction --> Todo: Was macht diese Methode????? <--
+
+Benötigt: colName (String), valuePlaceHolder (String)
+
+Liefert: String
+   
+2.6.7.   GeometryTransform -->ToDo: was macht diese Klasse?
 
 Package: ch.so.agi.gretl.steps
 
-2.7.8.   GeometryTransformGeoJson --> ToDo: was macht diese Klasse?
+2.6.8.   GeometryTransformGeoJson --> ToDo: was macht diese Klasse?
 
 Package: ch.so.agi.gretl.steps
 
-2.7.9.   GeometryTransformWkb --> ToDo: was macht diese Klasse?
+2.6.9.   GeometryTransformWkb --> ToDo: was macht diese Klasse?
 
 Package: ch.so.agi.gretl.steps
 
-2.7.10.  GeometryTransformWkt --> ToDo: was macht diese Klasse?
+2.6.10.  GeometryTransformWkt --> ToDo: was macht diese Klasse?
 
 Package: ch.so.agi.gretl.steps
 
 
-**2.8.	Steps – Test**
+**2.7.	Steps – Test**
 
-2.8.1. Db2DbStepTest   ----> ToDo: überarbeiten/prüfen
+2.7.1. Klasse Db2DbStepTest   ----> ToDo: überarbeiten/prüfen
 
 Package: ch.so.agi.gretl.steps
 
@@ -915,29 +1008,29 @@ NotAllowedSqlExpressionInScriptTest(): Dieser Test überprüft, ob bei der Verwe
 Db2DbEmptyFileTest(): Überprüft, ob bei einem leeren File eine EmptyFileException geworfen wird.
 SQLExceptionTest(): Überprüft, ob bei einem fehlerhaften SQL-Stetement eine SQLException geworfen wird.
 
-2.8.2. SqlExecutorStepTest
+2.7.2. Klasse SqlExecutorStepTest
 
 Package: ch.so.agi.gretl.steps
 
 Die Klasse SqlExecutorStepTest überprüft die Funktionalitäten der SqlExecutorStep-Klasse. Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird (Rule). Anschliessend wird eine Testdatenbank mit Testdaten angelegt (Before). Diese wird nach dem Abschluss der Tests wieder verworfen (After).
 
-2.8.2.1. Methode initialize
+2.7.2.1. Methode initialize
 
 Benötigt: nichts
 
 Liefert: nichts
 
-Die initialize-Methode wird vor allen anderen Methoden und Tests ausgeführt. Sie beinhaltet einen TransactionContext zu einer Derby-DB, welchen sie an die Methode createTestDb übergibt.
+Die initialize-Methode wird vor allen anderen Methoden und Tests ausgeführt. Sie beinhaltet einen Connector zu einer Derby-DB, welchen sie an die Methode createTestDb übergibt.
 
-2.8.2.2. Methode createTestDb
+2.7.2.2. Methode createTestDb
 
-Benötigt: sourceDb (TransactionContext)
+Benötigt: sourceDb (Connector)
 
 Liefert: nichts
 
-Die Methode erstellt eine Verbindung zu der im TransactionContext übergebenen Datenbank, führt anschliessend die Methode create TableInTestDb aus und schliesst die Verbindung zur Datenbank.
+Die Methode erstellt eine Verbindung zu der im Connector übergebenen Datenbank, führt anschliessend die Methode createTableInTestDb aus und schliesst die Verbindung zur Datenbank.
 
-2.8.2.3. Methode createTableInTestDb
+2.7.2.3. Methode createTableInTestDb
 
 Benötigt: con (Connection)
 
@@ -945,7 +1038,7 @@ Liefert: nichts
 
 Die Methode createTableInTestDb erstellt in der übergebenen Datenbank eine Tabelle und führt anschliessend die Methode writeExampleDataInTestDB aus.
 
-2.8.2.4. Methode writeExampleDataInTestDB
+2.7.2.4. Methode writeExampleDataInTestDB
 
 Benötigt: con (Connection)
 
@@ -953,55 +1046,55 @@ Liefert: nichts
 
 Die Methode writeExampleDataInTestDB fügt mehrere Testdatensätze in die mit createTableInTestDb erstellten Tabelle ein.
 
-2.8.2.5. Methode finalise
+2.7.2.5. Methode finalise
 
 Benötigt: nichts
 
 Liefert: nichts
 
-Die finalise-Methode wird nach allen Methoden und Test ausgeführt. Sie beinhlatet einen TransactionContext zu einer Derby-DB, welchen sie an die Methode clearTestDb übergibt.
+Die finalise-Methode wird nach allen Methoden und Test ausgeführt. Sie beinhaltet einen Connector zu einer Derby-DB, welchen sie an die Methode clearTestDb übergibt.
 
-2.8.2.6. Methode clearTestDb
+2.7.2.6. Methode clearTestDb
 
-Benötigt: sourceDb (TransactionContext)
+Benötigt: sourceDb (Connector)
 
 Liefert: nichts
 
-Die Methode erstellt eine Verbindung zu der im TransactionContext übergebenen Datenbank, löscht die Tabelle in createTableInTestDb erstellte Tabelle und schliesst die Verbindung zur Datenbank.
+Die Methode erstellt eine Verbindung zu der im Connector übergebenen Datenbank, löscht die in createTableInTestDb erstellte Tabelle und schliesst die Verbindung zur Datenbank.
 
-2.8.2.7. Test executeWithoutFiles
+2.7.2.7. Test executeWithoutFiles
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn keine Files aber eine Datenbankconnection angegeben werden.
 
-2.8.2.8. Test executeWithoutDb
+2.7.2.8. Test executeWithoutDb
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar ein sqlFile übergeben wird, aber keine Datenbankconnection. Der Test verwendet die Methode createCorrectSqlFiles für die Erstellung der sqlFiles
 
-2.8.2.9. Methode createCorrectSqlFiles
+2.7.2.9. Methode createCorrectSqlFiles
 
 Benötigt: nichts
 
 Liefert: List<File>
 
-Mit der Methode createCorrectSqlFiles werden zwei SQL-Dateien (query.sql, query1.sql) erzeugt, welche sogleich mit Queries abgefüllt werden und schliessend als Liste zurückgegeben werden.
+Mit der Methode createCorrectSqlFiles werden zwei SQL-Dateien (query.sql, query1.sql) erzeugt, welche sogleich mit Queries abgefüllt werden und anschliessend als File-Liste zurückgegeben werden.
 
-2.8.2.10. Test executeDifferentExtensions
+2.7.2.10. Test executeDifferentExtensions
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn eine Datenbankverbindung und in der Fileliste ein SQL-File und ein txt-File übergeben werden. Für die Erzeugung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet. Anschliessend wird mit der Methode createSqlFileWithWrongExtension ein txt-Datei erstellt.
 
-2.8.2.11. Methode createSqlFileWithWrongExtension
+2.7.2.11. Methode createSqlFileWithWrongExtension
 
 Benötigt: nichts
 
 Liefert: File
 
-Die Methode createSqlFileWithWrongExtension erzeugt eine txt-Datei, in welche eine Query geschrieben wird. Diese Datei wird als File zurückgegeben.
+Die Methode createSqlFileWithWrongExtension erzeugt eine txt-Datei, in welche eine korrekte Query geschrieben wird. Diese Datei wird als File zurückgegeben.
 
-2.8.2.12. Test executeEmptyFile
+2.7.2.12. Test executeEmptyFile
 
-Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung, ein sql-File mit einer Query und ein sql-File ohne Query übergeben werden. Die korrekten SQL-Files werden mit der Methode createCeorrectSqlFiles erzeugt. Das leere SQL-File wird mit der Methode createEmptySqlFile erzeugt.
+Prüft, ob eine Fehlermeldung geworfen wird, wenn eine Datenbankverbindung, ein sql-File mit einer Query und ein sql-File ohne Query übergeben werden. Die korrekten SQL-Files werden mit der Methode createCorrectSqlFiles erzeugt. Das leere SQL-File wird mit der Methode createEmptySqlFile erzeugt.
 
-2.8.2.13. Methode createEmptySqlFile
+2.7.2.13. Methode createEmptySqlFile
 
 Benötigt: nichts
 
@@ -1009,11 +1102,11 @@ Liefert: File
 
 Die Methode createEmptySqlFile erzeugt ein leeres SQL-File, welches dann zurückgegeben wird.
 
-2.8.2.14. Test executeWrongQuery
+2.7.2.14. Test executeWrongQuery
 
-Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query falsch ist. Mit der Methode createWrongSqlFiles werden fehlerhafte SQL-Files erzeugt
+Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query im SQL-File falsch ist. Mit der Methode createWrongSqlFiles wird ein fehlerhaftes SQL-File erzeugt
 
-2.8.2.15. Methode createWrongSqlFiles
+2.7.2.15. Methode createWrongSqlFiles
 
 Benötigt: nichts
 
@@ -1021,21 +1114,21 @@ Liefert: List<File>
 
 Die Methode createWrongSqlFiles erstellt eine SQL-Datei, welche mit einer fehlerbehafteten Query abgefüllt wird, und gibt dieses File im Anschluss in einer Liste zurück.
 
-2.8.2.16. Test executePositiveTest
+2.7.2.16. Test executePositiveTest
 
 Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
-2.8.2.17. Test checkIfConnectionIsClosed
+2.7.2.17. Test checkIfConnectionIsClosed
 
 Prüft, ob nach dem Ausführen des Steps die Datenbankverbindung korrekt geschlossen wurde. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
 
-2.8.2.18. Test notClosedConnectionThrowsError
+2.7.2.18. Test notClosedConnectionThrowsError
 
 Prüft, ob eine Datenbankverbindung, welche nach dem Ausführen des Steps nicht erfolgreich geschlossen wurde, eine Fehler verursacht. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
 
-**2.9.	Build.gradle**
+**2.8.	Build.gradle**
 
 In den build.gradle-Files werden alle Einstellungen für gradle festgelegt.
 
@@ -1048,13 +1141,13 @@ Das build.gradle des Moduls gretl sieht wie folgt aus::
    apply plugin: 'maven'
    
    sourceCompatibility = 1.8
-   repositories {
-      mavenCentral()
-   }
+
    
    dependencies {
       testCompile group: 'junit', name: 'junit', version: '4.12'
-      compile files('./lib/ojdbc7.jar', './lib/postgresql-42.0.0.jar', './lib/sqljdbc42.jar', './lib/sqlite-jdbc-3.16.1.jar', './lib/derby.jar')
+      compile group: 'org.postgresql', name:'postgresql', version: '42.1.3'
+      compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.8.11.2'
+      compile group: 'org.apache.derby', name: 'derby', version: '10.13.1.1'
       compile gradleApi()
    }
 
@@ -1066,57 +1159,25 @@ Group legt fest zu welcher Gruppe/Projekt das Modul gretl gehört und welche Ver
 
 **3.	GRETL - Einstellungen**
 
-**3.1.	Dependencies – Abhängigkeiten**
-
-Abhängigkeiten müssen sowohl im build.gradle wie auch in INTELLIJ IDEA definiert werden.
-
-3.1.1.	Build.gradle
-
-Folgende Abhängigkeiten müssen im build.gradle des cores definiert sein:
-
-•	Junit Version 4.12 (testCompile)
-•	Files: './lib/ojdbc7.jar', './lib/postgresql-42.0.0.jar', './lib/sqljdbc42.jar', './lib/sqlite-jdbc-3.16.1.jar', './lib/derby.jar' (compile)
-•	gradleApi() (compile)
-
-Für die Tests wird Junit benötigt. Da es aber lediglich dort benötigt und verwendet wird, wird es nicht mit compile in den dependencies aufgeführt sondern mit testCompile.
-Sämtliche Files werden für die Erstellung der verschiedenen Datenbankverbindungen benötigt. Da diese sowohl im main wie auch im test benötigt werden, werden sie mit compile in den dependencies aufgeführt.
-gradleApi() wird benötigt um die java-Klassen mit gradle zu komplieren.
-
-3.1.2.	INTELLIJ IDEA
-
-Um die Abhängigkeiten in der IDE festzulegen muss im Menü File > Project Structure ausgewählt werden. Anschliessend in Modules und dort in core wechseln. Im core_main und core_test sind anschliessend im Reiter Dependencies folgende Abhängigkeiten festzulegen:
-
--	derby.jar (main, test)
--	sqlite-jdbc-3.16.1.jar (main, test)
--	sqljdbc42.jar (main, test)
--	ojdbc7.jar (main, test)
--	postgresql-42.0.0.jar (main, test)
--	gradle-installation-baecon-3.3.jar (main, test)
--	gradle-api-3.3.jar (main, test)
--  groovy-all-2.4.7.jar (main, test)
--	gretl_main (test)
--	Gradle:junit:junit:4.12 (test)
--	Gradle:org.hamcrest:hamcrest-core:1.3 (test)
-
-**3.2.	Tests ausführen**
+**3.1.	Tests ausführen**
 
 Um zu prüfen, ob die Java-Klassen korrekt funktionieren wurden für (fast) jede Klasse Unittest definiert. Diese können einzeln oder alle zusammen ausgeführt werden.
 
-3.2.1. Einzelne Tests ausführen
+3.1.1. Einzelne Tests ausführen
 
 Um die Tests ausführen zu können, wird in INTELLIJ IDEA die entsprechende Klasse, welche getestet werden soll geöffnet. Anschliessend kann mittels Rechtsklick auf den Testnamen (z.b. executeWithoutFiles()) im sich öffnenden Kontextmenü "Run *Testnamen()*" ausgewählt werden. Anschliessend wird der Test ausgeführt. Wenn er mit einem exit code 0 abschliesst ist der Test erfolgreich durchgelaufen.
 
-3.2.2. Alle Tests ausführen
+3.1.2. Alle Tests ausführen
 
 Um alle Tests zu prüfen muss in der Konsole in den Ordner gewechselt werden, in welchem die Datei gradlew liegt (im trunk-Ordner). Anschliessend wird folgender Befehl ausgeführt:
 ./gradlew test
 Wird mit einem "BUILD FAILED" abgeschlossen, so sind nicht alle Tests erfolgreich durchgeführt worden.
 
-3.2.3. Wo sind die Tests der Task?
+3.1.3. Wo sind die Tests der Task?
 
 Für die Tasks wurden keine Tests erstellt, da diese keine neuen Features prüfen würden, da die Tasks den Steps entsprechen und diese geprüft werden.
 
-**3.3.	Umbenennen - Refactor**
+**3.2.	Umbenennen - Refactor**
 
 Um den Namen einer Variable, Methode o.ä. zu ändern. muss der Name markiert und mit Rechtsklick darauf geklickt werden. Anschliessend muss Refactor > Rename ausgewählt werden und der neue Name eingegeben werden. Mit Enter werden die Änderungen überall, wo die Variable resp Methode verwendet wird, vorgenommen.
 
@@ -1168,31 +1229,30 @@ Build.gradle::
 
 
    task TestTask(type: Db2DbStepTask, dependsOn: 'sqlExecutorTask') {
-       sourceDb =  new TransactionContext(
-                    "jdbc:postgresql://geodb-t.verw.rootso.org:5432/sogis",
-                 "bjsvwsch",
+       sourceDb =  new Connector(
+                    "jdbc:postgresql://testdb.so.ch:5432/sogis",
+                 "testuser",
                  null);
-    targetDb = new TransactionContext(
-                 "jdbc:postgresql://10.36.54.200:54321/sogis",
-                 "bjsvwsch",
+    targetDb = new Connector(
+                 "jdbc:postgresql://10.36.54.200:5432/sogis",
+                 "testuser",
                  null);
     transferSet = [new TransferSet(
                  true,
                  new java.io.File(
-                       '/home/bjsvwsch/codebasis_test/sql_test.sql'),
+                       '/testdaten/sql_test.sql'),
                        'public.geo_gemeinden')];
    }
 
-   task SqlExecutorTask(type: SqlExecutorStepTask){
-       sourceDb = new ch.so.agi.gretl.core.TransactionContext(
+   task sqlExecutorTask(type: SqlExecutorTask){
+       sourceDb = new Connector(
                     "jdbc:postgresql://10.36.54.198:54321/sogis",
                     "barpastu",
                     null);
-       sqlFiles = [new File(
-                  "/home/barpastu/IdeaProjects/gretlDemo/query_farben.sql")];
+       sqlFiles = ["/testdaten/test.sql"];
    }
 
-   task endTask(dependsOn: ['TestTask','SqlExecutorTask']) {
+   task endTask(dependsOn: ['TestTask','sqlExecutorTask']) {
 
    }
 
@@ -1210,24 +1270,24 @@ Wie muss vorgegangen werden?
 
 Hierfür müssen in einem gradle-Projekt die eigenen gewünschten Tasks aufgeführt werden. Ein Task, der auf dem Db2Db-Step aufbauen soll, hat immer folgende Struktur::
 
-   Task Name_des_Db2Db_Tasks (type: Db2DbStepTask) {
-       sourceDb =  new TransactionContext("jdbc:postgresql://mydb:5432/sogis","user","pw");
-       targetDb = new TransactionContext("jdbc:postgresql://mydb2:5432/sogis","user","pw");
+   Task Name_des_Db2Db_Tasks (type: Db2DbTask) {
+       sourceDb =  new Connector("jdbc:postgresql://mydb:5432/sogis","user","pw");
+       targetDb = new Connector("jdbc:postgresql://mydb2:5432/sogis","user","pw");
        transferSet = [new TransferSet(true,new java.io.File('test/sql_test.sql'),'schema.tabelle')];
    }
 
 Hingegen hat ein Task, welche auf dem SQLExecutor-Step aufbauen soll, immer folgende Struktur::
 
-   Task Name_des_SQLExecutor_Tasks (type: SQLExecutorStepTask) {
-       database =  new TransactionContext("jdbc:postgresql://mydb:5432/sogis","user","pw");
+   Task Name_des_SQLExecutor_Tasks (type: SQLExecutorTask) {
+       database =  new Connecotr("jdbc:postgresql://mydb:5432/sogis","user","pw");
        sqlFiles = ["/home/test.sql"];
    }
 
 Jeder Task muss entweder vom Typ SQLExecutorTask oder vom Typ Db2DbStepTask sein. Wobei mehrere Tasks den gleichen Typ aufweisen können. Zwingend jedoch ist, dass jeder Task einen eindeutigen Namen aufweist.
 
-4.3.1. Datenbankverbindungen - TransactionContext
+4.3.1. Datenbankverbindungen - Connector
 
-Wobei sowohl beim Db2Db-Task wie auch beim SQLExecutorTask verschiedene Datenbanktypen verwendet werden können. Hierfür muss bei sourceDb resp. targetDb folgende Connectionstrings dem TransactionContext als erster Parameterwert mitgegeben werden.
+Sowohl beim Db2Db-Task wie auch beim SQLExecutorTask können verschiedene Datenbanktypen verwendet werden. Hierfür muss bei sourceDb resp. targetDb folgende Connectionstrings dem Connector als erster Parameterwert mitgegeben werden.
 ::
 
    Postgres: "jdbc:postgresql://mydb:5432/db"
@@ -1250,21 +1310,25 @@ Im auf dem SQLExecutor-Step aufbauenden Task muss nebst einer Datenbankverbindun
 
 Wenn Tasks davon abhängig sind, dass andere Tasks zuvor ausgeführt werden, so kann dies in den Tasks definiert werden. Es ist möglich einen Task von einem oder mehreren Tasks abhängig zu machen. Folgende Beispiele zeigen, wie ein Task von einem oder mehreren Tasks abhängig gemacht wird::
 
-   task SqlExecutorTask1(type: SqlExecutorStepTask, dependsOn: ['SqlExecutorTask', 'SqlExecutorTask3']){
+   task sqlExecutorTask1(type: SqlExecutorTask, dependsOn: ['sqlExecutorTask', 'sqlExecutorTask3']){
    …
    }
 
-   task SqlExecutorTask1(type: SqlExecutorStepTask, dependsOn: 'SqlExecutorTask'){
+   task sqlExecutorTask3(type: SqlExecutorTask, dependsOn: 'sqlExecutorTask'){
+   …
+   }
+   
+   task sqlExecutorTask(type: SqlExecutorTask){
    …
    }
 
-Bevor der Task SqlExecutorTask1 ausgeführt wird muss der Task SqlExecutorTask (und SqlExecutorTask3) ausgeführt werden.
+Bevor der Task sqlExecutorTask1 ausgeführt wird muss der Task sqlExecutorTask (und sqlExecutorTask3) ausgeführt werden.
 
 4.3.5. EndTask
 
 Beim Endtask werden alle Task, welche in einem Schritt ausgeführt werden sollen, als Abhängigkeiten aufgeführt. Die Reihenfolge der Definition entspricht, sofern es keine Abhängigkeiten gibt, der Reihenfolge der Ausführung. Ein Beispiel für einen solchen Endtask::
 
-   task endTask(dependsOn: ['SqlExecutorTask','SqlExecutorTask1']) {
+   task endTask(dependsOn: ['sqlExecutorTask','sqlExecutorTask1']) {
 
    }
 
