@@ -308,7 +308,7 @@ Beispiel::
 
    String statement = SqlReader.nextSqlStmt(sqlfile);
 
-2.3.3.11. closePushbackReader
+2.3.3.11. Methode closePushbackReader
 
 Benötigt: nichts
 
@@ -320,7 +320,57 @@ Beispiel::
 
    closePushbackReader();
    
-2.3.4.	EmptyFileException
+2.3.4.   FileStylingDefinition
+
+Package: ch.so.agi.gretl.util
+
+In der Klasse FileStylingDefinition kann das File auf UTF-8 und auf das beinhalten einer BOM (Byte-Order-Mark) geprüft werden.
+
+2.3.4.1. Methode checkForUtf8
+
+Benötigt: inputfile (File)
+
+Liefert: nichts
+
+Die Methode checkForUtf8 prüft Byte für Byte das übergebene File auf UTF-8-Characters.
+
+Beispiel::
+
+   checkForUtf8(new File("test/test.txt"))
+   
+2.3.4.2. Methode createCharsetDecoder
+
+Benötigt: nichts
+
+Liefert: CharsetDecoder
+
+Die Methode erstellt einen CharsetDecoder welcher für die Überprüfung des Encodings benötigt wird.
+
+Beispiel::
+
+   CharsetDecoder decoder = createCharsetDecoder()
+
+2.3.4.3. Methode checkForBOMInFile
+
+Benötigt: inputfile(Filde)
+
+Liefert: nichts
+
+Mit der Methode checkForBOMInFile wird geprüft, ob in dem übergebenen File ein BOM (Byte-Order-Mark) vorhanden ist. Sollte dem so sein, so wird eine Exception geworfen.
+
+Beispiel::
+
+   checkForBOMInFile(new File("test/test.txt")
+
+2.3.5.   ExConverter  ---> ToDo: Was macht diese Klasse?
+
+Package: ch.so.agi.gretl.util
+
+2.3.6.   GretlException ---> ToDo: Was macht diese Klasse?
+
+Package: ch.so.agi.gretl.util
+
+2.3.7.   EmptyFileException
 
 Package: ch.so.agi.gretl.util
 
@@ -330,13 +380,13 @@ Beispiel::
 
    throw new EmptyFileException("EmptyFile: "+targetFile.getName());
    
-2.3.5. EmptyListException
+2.3.8. EmptyListException
 
 Package: ch.so.agi.gretl.util
 
 Die EmptyListException soll geworfen werden, wenn eine Liste, welche eigentlich nicht leer sein dürfte, trotzdem leer ist. Insbesondere ist dies im Db2DbStep bei den TransferSets der Fall. 
 
-2.3.6.	NotAllowedSqlExpressionException
+2.3.9.	NotAllowedSqlExpressionException
 
 Package: ch.so.agi.gretl.util
 
@@ -350,7 +400,7 @@ Beispiel::
 
 2.4.1.	DbConnectorTest
 
-Package: 	ch.so.agi.gretl.core
+Package: 	ch.so.agi.gretl.util
 
 Die Klasse DbConnectorTest testet gewisse Funktionalitäten der DbConnector-Klasse.
 connectToDerbyDb: Testet, ob eine Verbindung zur lokalen Derby-Db herstellen kann.
@@ -358,13 +408,24 @@ connectionAutoCommit: Testet, ob AutoCommit wirklich off ist.
 
 2.4.2.	FileExtensionTest
 
-Package: 	ch.so.agi.gretl.core
+Package: 	ch.so.agi.gretl.util
 
 Die Klasse FileExtensionTest überprüft die Funktionalitäten der FileExtension-Klasse. Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird.
 getFileExtension: Prüft, ob die Methode bei einem File mit der Endung .sql auch die Endung sql ermittelt wird.
 missingFileExtension: Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegeben wird.
 mutipleFileExtension: Prüft, ob bei einem File mit mehreren Endungen (file.ext1.ext2) auch wirklich die letzte Fileendung ausgegeben wird.
 strangeFileNameExtension: Prüft, ob bei einem File mit folgendem Namen (c:\\file) auch wirklich eine Fehlermeldung ausgeworfen wird.
+
+2.4.3.   FileStylingDefinitionTest
+
+Package:    ch.so.agi.gretl.util
+
+Die Klasse FileStylingDefinitionTest überprüft die Funktionalitäten der FileStylingDefinition-Klasse.
+wrongEncodingThrowsException: Prüft, ob die Methode checkForUtf8 eine Exception wirft, wenn ein File mit einer anderen Kodierung als UTF-8 übergeben wird.
+rightEncoding: Prüft, ob die Methode checkForUtf8 keine Exception wirft, wenn ein File mit der korrekten Kodierung (UTF-8) übergeben wird.
+FileWithBOMThrowsException: Prüft, ob die Methode checkForBOMInFile eine Exception wirft, wenn ein File mit BOM übergeben wird.
+passingOnFileWithoutBOM: Prüft, ob die Methode checkForBOMInFile keine Exception wirft, wenn ein File ohne BOM übergeben wird.
+
 
 **2.5.	Logging**
 
@@ -761,24 +822,24 @@ Beispiel::
    filePaths = ["/path/to/file/filename.sql"]
    List<File> files = convertToValidatedFileList(filePaths)
 
-2.7.5. TransactionContext
+2.7.5. Connector
 
 Package: ch.so.agi.gretl.steps
 
 Erstellt eine Verbindung zur Datenbank.
 
-2.7.5.1.	Methode getDbConnection
+2.7.5.1.	Methode connect
 
 Benötigt: 	dbUri (String), dbUser (String), dbPassword (String)
 
 Liefert: 	Connection
 
-Die Methode führt die Methode DbConnector.connect mit den oben erwähnten Parametern aus. Von dieser Methode wird eine Connection zurückgeliefert, welche auch die getDbConnection zurückliefert. Die Connection wird mit dem AutoCommit False geöffnet.
+Die Methode führt die Methode Connector.connect mit den oben erwähnten Parametern aus. Von dieser Methode wird eine Connection zurückgeliefert, welche mit dem AutoCommit False geöffnet wird.
 
 Beispiel::
 
-   public TransactionContext sourceDb;
-   Connection con = sourceDb.getDbConnection();
+   public Connector sourceDb;
+   Connection con = sourceDb.connect();
 
 2.7.6. TransferSet
 
@@ -824,6 +885,23 @@ Die Methode getOutputQualifiedSchemaAndTableName gibt die Instanzvariable output
 Beispiel::
 
    getOutputQualifiedSchemaAndTableName();
+   
+2.7.7.   GeometryTransform -->ToDo: was macht diese Klasse?
+
+Package: ch.so.agi.gretl.steps
+
+2.7.8.   GeometryTransformGeoJson --> ToDo: was macht diese Klasse?
+
+Package: ch.so.agi.gretl.steps
+
+2.7.9.   GeometryTransformWkb --> ToDo: was macht diese Klasse?
+
+Package: ch.so.agi.gretl.steps
+
+2.7.10.  GeometryTransformWkt --> ToDo: was macht diese Klasse?
+
+Package: ch.so.agi.gretl.steps
+
 
 **2.8.	Steps – Test**
 
