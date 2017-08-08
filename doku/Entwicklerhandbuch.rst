@@ -308,7 +308,7 @@ Beispiel::
 
    String statement = SqlReader.nextSqlStmt(sqlfile);
 
-2.3.3.11. closePushbackReader
+2.3.3.11. Methode closePushbackReader
 
 Benötigt: nichts
 
@@ -320,7 +320,54 @@ Beispiel::
 
    closePushbackReader();
    
-2.3.4.	EmptyFileException
+2.3.4.   FileStylingDefinition
+
+Package: ch.so.agi.gretl.util
+
+In der Klasse FileStylingDefinition kann das File auf UTF-8 und auf das beinhalten einer BOM (Byte-Order-Mark) geprüft werden.
+
+2.3.4.1. Methode checkForUtf8
+
+Benötigt: inputfile (File)
+
+Liefert: nichts
+
+Die Methode checkForUtf8 prüft Byte für Byte das übergebene File auf UTF-8-Characters.
+
+Beispiel:
+
+   checkForUtf8(new File("test/test.txt"))
+   
+2.3.4.2. Methode createCharsetDecoder
+
+Benötigt: nichts
+
+Liefert: CharsetDecoder
+
+Die Methode erstellt einen CharsetDecoder welcher für die Überprüfung des Encodings benötigt wird.
+
+Beispiel:
+
+   CharsetDecoder decoder = createCharsetDecoder()
+
+2.3.4.3. Methode checkForBOMInFile
+
+Benötigt: inputfile(Filde)
+
+Liefert: nichts
+
+Mit der Methode checkForBOMInFile wird geprüft, ob in dem übergebenen File ein BOM (Byte-Order-Mark) vorhanden ist. Sollte dem so sein, so wird eine Exception geworfen.
+
+Beispiel:
+
+   checkForBOMInFile(new File("test/test.txt")
+
+
+2.3.5.   ExConverter
+
+2.3.6.   GretlException
+
+2.3.7.   EmptyFileException
 
 Package: ch.so.agi.gretl.util
 
@@ -330,13 +377,13 @@ Beispiel::
 
    throw new EmptyFileException("EmptyFile: "+targetFile.getName());
    
-2.3.5. EmptyListException
+2.3.8. EmptyListException
 
 Package: ch.so.agi.gretl.util
 
 Die EmptyListException soll geworfen werden, wenn eine Liste, welche eigentlich nicht leer sein dürfte, trotzdem leer ist. Insbesondere ist dies im Db2DbStep bei den TransferSets der Fall. 
 
-2.3.6.	NotAllowedSqlExpressionException
+2.3.9.	NotAllowedSqlExpressionException
 
 Package: ch.so.agi.gretl.util
 
