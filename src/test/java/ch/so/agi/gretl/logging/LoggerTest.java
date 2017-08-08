@@ -63,10 +63,10 @@ public class LoggerTest {
         String LogMessage = baos.toString();
         String[] ArrayLogMessage = LogMessage.split(" -> ");
 
-        //todo direkt Assert.assertEquals verwenden....
-        if (!ArrayLogMessage[1].equals("Info-Logger-Test\n")) {
-            assertFalse("Logger is not working properly: " + baos.toString(), true);
-        }
+        Assert.assertEquals("Logger is not working properly: " + baos.toString(),
+                "Info-Logger-Test\n",
+                ArrayLogMessage[1]);
+
     }
 
     @Test
@@ -86,10 +86,9 @@ public class LoggerTest {
 
         String[] ArrayMessage = ArrayLogMessage[1].split("\n");
 
-
-        if (!ArrayMessage[0].equals("Error-Logger-Test")) {
-            assertFalse("Logger is not working properly: " + baos.toString(), true);
-        }
+        Assert.assertEquals("Logger is not working properly: " + baos.toString(),
+                "Error-Logger-Test",
+                ArrayMessage[0]);
 
     }
 
@@ -102,9 +101,9 @@ public class LoggerTest {
         String LogMessage = baos.toString();
         String[] ArrayLogMessage = LogMessage.split(" -> ");
 
-        if (!ArrayLogMessage[1].equals("Debug-Logger-Test\n")) {
-            assertFalse("Logger is not working properly: " + baos.toString(), true);
-        }
+        Assert.assertEquals("Logger is not working properly: " + baos.toString(),
+                "Debug-Logger-Test\n",
+                ArrayLogMessage[1]);
 
     }
 

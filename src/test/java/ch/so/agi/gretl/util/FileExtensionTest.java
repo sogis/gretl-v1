@@ -20,12 +20,8 @@ public class FileExtensionTest {
     public void getFileExtension() throws Exception {
         File sqlFile =  folder.newFile("query.sql");
 
-        //todo Assert.assertEquals(....)
-        if(FileExtension.getFileExtension(sqlFile).equals("sql")){
+        Assert.assertEquals("getFileExtension causes Exception","sql",FileExtension.getFileExtension(sqlFile) );
 
-        }  else {
-            assertFalse("FileExtension not working properly", true);
-        }
     }
 
     @Test
@@ -44,14 +40,7 @@ public class FileExtensionTest {
     public void multipleFileExtension() throws Exception {
         File sqlFile = folder.newFile("file.ext1.ext2");
 
-        //todo Assert.assertEquals(....)
-
-        if(FileExtension.getFileExtension(sqlFile).equals("ext2")){
-
-        } else {
-            assertFalse("FileExtension not working properly", true);
-        }
-
+        Assert.assertEquals("multipleFileExtension causes Exception","ext2",FileExtension.getFileExtension(sqlFile));
     }
 
     @Test

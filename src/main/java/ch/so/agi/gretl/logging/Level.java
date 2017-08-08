@@ -10,7 +10,7 @@ package ch.so.agi.gretl.logging;
 public class Level {
 
     public static final Level ERROR = new Level(java.util.logging.Level.SEVERE);
-    public static final Level LIVECYCLE = new Level(java.util.logging.Level.CONFIG);
+    public static final Level LIFECYCLE = new Level(java.util.logging.Level.CONFIG);
     public static final Level INFO = new Level(java.util.logging.Level.FINE);
     public static final Level DEBUG = new Level(java.util.logging.Level.FINER);
 
