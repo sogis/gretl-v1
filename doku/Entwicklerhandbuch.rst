@@ -400,7 +400,7 @@ Beispiel::
 
 2.4.1.	DbConnectorTest
 
-Package: 	ch.so.agi.gretl.core
+Package: 	ch.so.agi.gretl.util
 
 Die Klasse DbConnectorTest testet gewisse Funktionalitäten der DbConnector-Klasse.
 connectToDerbyDb: Testet, ob eine Verbindung zur lokalen Derby-Db herstellen kann.
@@ -408,13 +408,24 @@ connectionAutoCommit: Testet, ob AutoCommit wirklich off ist.
 
 2.4.2.	FileExtensionTest
 
-Package: 	ch.so.agi.gretl.core
+Package: 	ch.so.agi.gretl.util
 
 Die Klasse FileExtensionTest überprüft die Funktionalitäten der FileExtension-Klasse. Hierfür wird in einem ersten Schritt einen temporären Ordner angelegt, welcher nach den Tests wieder gelöscht wird.
 getFileExtension: Prüft, ob die Methode bei einem File mit der Endung .sql auch die Endung sql ermittelt wird.
 missingFileExtension: Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegeben wird.
 mutipleFileExtension: Prüft, ob bei einem File mit mehreren Endungen (file.ext1.ext2) auch wirklich die letzte Fileendung ausgegeben wird.
 strangeFileNameExtension: Prüft, ob bei einem File mit folgendem Namen (c:\\file) auch wirklich eine Fehlermeldung ausgeworfen wird.
+
+2.4.3.   FileStylingDefinitionTest
+
+Package:    ch.so.agi.gretl.util
+
+Die Klasse FileStylingDefinitionTest überprüft die Funktionalitäten der FileStylingDefinition-Klasse.
+wrongEncodingThrowsException: Prüft, ob die Methode checkForUtf8 eine Exception wirft, wenn ein File mit einer anderen Kodierung als UTF-8 übergeben wird.
+rightEncoding: Prüft, ob die Methode checkForUtf8 keine Exception wirft, wenn ein File mit der korrekten Kodierung (UTF-8) übergeben wird.
+FileWithBOMThrowsException: Prüft, ob die Methode checkForBOMInFile eine Exception wirft, wenn ein File mit BOM übergeben wird.
+passingOnFileWithoutBOM: Prüft, ob die Methode checkForBOMInFile keine Exception wirft, wenn ein File ohne BOM übergeben wird.
+
 
 **2.5.	Logging**
 
