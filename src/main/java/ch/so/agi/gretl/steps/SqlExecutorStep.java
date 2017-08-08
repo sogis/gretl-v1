@@ -1,6 +1,8 @@
 package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.util.FileExtension;
+import ch.so.agi.gretl.util.FileStylingDefinition;
+import ch.so.agi.gretl.util.GretlException;
 import ch.so.agi.gretl.util.SqlReader;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
@@ -20,12 +22,20 @@ import java.util.List;
 public class SqlExecutorStep {
 
     private GretlLogger log;
+    private String taskName;
 
 
     public SqlExecutorStep() {
+        this(null);
+    }
 
+    public SqlExecutorStep(String taskName){
+        if (taskName==null){
+            taskName=SqlExecutorStep.class.getSimpleName();
+        } else {
+            this.taskName = taskName;
+        }
         this.log = LogEnvironment.getLogger(this.getClass());
-
     }
 
 
@@ -42,29 +52,32 @@ public class SqlExecutorStep {
 
         Connection db = null;
 
-        //todo logeintrag hinter die asserts da der logeintrag auf die Parameter zugreift und darauf angewiesen ist dass diese nicht null sind
-        log.lifecycle("Start SqlExecutor with parameters DB-URL: "  + trans.getDbConnection().getMetaData().getURL() +
-                ", DB-User: " + trans.getDbConnection().getMetaData().getUserName() +
-                ", Files: " + sqlfiles);
+        log.lifecycle(taskName + ": Start SqlExecutor");
 
         assertAtLeastOneSqlFileIsGiven(sqlfiles);
 
-        //todo sicherstellen dass sqlfiles nicht null ist und die Liste keine null-elemente enthält; Falls ja IllegelArgumentException
+        log.lifecycle(taskName +": Given parameters DB-URL: "  + trans.connect().getMetaData().getURL() +
+                ", DB-User: " + trans.connect().getMetaData().getUserName() +
+                ", Files: " + sqlfiles);
+
 
         logPathToInputSqlFiles(sqlfiles);
 
 
 
         try{
-            db = trans.getDbConnection();
+            db = trans.connect();
 
-            checkFileExtensionsForSqlExtension(sqlfiles);
+            checkFilesExtensionsForSqlExtension(sqlfiles);
+
+            checkFilesForUTF8WithoutBOM(sqlfiles);
 
             readSqlFiles(sqlfiles, db);
 
             db.commit();
 
-            log.lifecycle("End SqlExecutor (successful)");
+
+            log.lifecycle(taskName + ": End SqlExecutor (successful)");
 
         } catch (Exception e){
             if (db!=null) {
@@ -88,7 +101,7 @@ public class SqlExecutorStep {
             throws Exception {
 
         if (sqlfiles==null || sqlfiles.size()<1){
-            throw new IllegalAccessException("Missing input files");//todo IllegalArgumentException
+            throw new IllegalArgumentException("Inputfile are either null or there is no inputfile");
         }
     }
 
@@ -106,15 +119,23 @@ public class SqlExecutorStep {
      * @param sqlfiles      Files with .sql-extension which contain queries
      * @throws Exception    if no correct file extension
      */
-    private void checkFileExtensionsForSqlExtension(List<File> sqlfiles)
+    private void checkFilesExtensionsForSqlExtension(List<File> sqlfiles)
             throws Exception {
 
         for (File file: sqlfiles) {
             String fileExtension = FileExtension.getFileExtension(file);
             if (!fileExtension.equalsIgnoreCase("sql")){
-                throw new Exception("incorrect file extension at file: " + file.getAbsolutePath());
-                //todo in exception nachricht gleich sagen was sache ist, also "file extension must be .sql or .SQL"
+                throw new GretlException("File extension must be .sql. Error at File: " + file.getAbsolutePath());
             }
+        }
+    }
+
+    private void checkFilesForUTF8WithoutBOM(List<File> sqlfiles)
+            throws Exception {
+
+        for (File file: sqlfiles) {
+            FileStylingDefinition.checkForUtf8(file);
+            FileStylingDefinition.checkForBOMInFile(file);
         }
     }
 
@@ -133,10 +154,9 @@ public class SqlExecutorStep {
 
                 executeAllSqlStatements(db, sqlfile);
 
-
             } catch (Exception h) {
                 //todo Schulung zu Exceptions am Mittwoch abwarten und dann in allen Klassen korrigieren
-                throw new Exception("Error with File: " + sqlfile.getAbsolutePath() + " " + h.toString());
+                throw new GretlException("Error with File: " + sqlfile.getAbsolutePath() + " " + h);
             }
         }
     }
@@ -192,9 +212,16 @@ public class SqlExecutorStep {
             throws Exception {
 
         try {
-            dbstmt.executeUpdate(statement);
+            int modifiedLines = dbstmt.executeUpdate(statement);  //only allows SQL INSERT, UPDATE or DELETE
+
+            if (modifiedLines==1) {
+                log.lifecycle(taskName + ": " + modifiedLines + " Line has been modified.");
+            } else if (modifiedLines>1) {
+                log.lifecycle(taskName +": " + modifiedLines + " Lines have been modified.");
+            }
+
         } catch (SQLException ex) {
-            throw new Exception("Error while executing the sqlstatement. " + ex);
+            throw new GretlException("Error while executing the sqlstatement. " + ex);
         } finally {
             dbstmt.close();
         }

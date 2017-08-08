@@ -50,7 +50,7 @@ public class Db2DbTask extends DefaultTask {
     //todo weg damit, oder?
     private void dbRollback(Exception e) {
         try {
-            sourceDb.getDbConnection().rollback();
+            sourceDb.connect().rollback();
         } catch (SQLException e1) {
             log.debug( "Failed to rollback "+e.getMessage());
         }

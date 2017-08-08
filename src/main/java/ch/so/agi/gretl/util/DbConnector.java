@@ -54,7 +54,7 @@ public class DbConnector {
                 driver = (Driver)Class.forName(driverClassName).newInstance();
             }
             catch(Exception e){
-                throw new RuntimeException("Could not find and load jdbc Driver Class " + driverClassName, e);
+                throw new GretlException("Could not find and load jdbc Driver Class " + driverClassName, e);
             }
 
             DriverManager.registerDriver(driver);
@@ -78,7 +78,7 @@ public class DbConnector {
                 }
             }
             log.error("Could not connect to: " + ConnectionUrl, e);
-            throw new RuntimeException("Could not connect to: " + ConnectionUrl, e);
+            throw new GretlException("Could not connect to: " + ConnectionUrl, e);
         }
         return con;
     }
