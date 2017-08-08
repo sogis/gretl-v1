@@ -39,10 +39,6 @@ public class SqlExecutorTask extends DefaultTask {
     @TaskAction
     public void executeSQLExecutor() {
 
-        //List<Task> bla =  getProject().getGradle().getTaskGraph().getAllTasks() ;
-        //log.lifecycle(getProject().getGradle().getTaskGraph().getAllTasks().toString());
-        //log.lifecycle(bla.iterator().next().toString());
-        //log.lifecycle(getProject().getGradle().getStartParameter().getTaskNames().toString());
         String taskName = this.getName();
 
         if (sqlFiles==null) {
