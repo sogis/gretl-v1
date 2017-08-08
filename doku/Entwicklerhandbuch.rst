@@ -334,7 +334,7 @@ Liefert: nichts
 
 Die Methode checkForUtf8 prüft Byte für Byte das übergebene File auf UTF-8-Characters.
 
-Beispiel:
+Beispiel::
 
    checkForUtf8(new File("test/test.txt"))
    
@@ -346,7 +346,7 @@ Liefert: CharsetDecoder
 
 Die Methode erstellt einen CharsetDecoder welcher für die Überprüfung des Encodings benötigt wird.
 
-Beispiel:
+Beispiel::
 
    CharsetDecoder decoder = createCharsetDecoder()
 
@@ -358,14 +358,17 @@ Liefert: nichts
 
 Mit der Methode checkForBOMInFile wird geprüft, ob in dem übergebenen File ein BOM (Byte-Order-Mark) vorhanden ist. Sollte dem so sein, so wird eine Exception geworfen.
 
-Beispiel:
+Beispiel::
 
    checkForBOMInFile(new File("test/test.txt")
 
+2.3.5.   ExConverter  ---> ToDo: Was macht diese Klasse?
 
-2.3.5.   ExConverter
+Package: ch.so.agi.gretl.util
 
-2.3.6.   GretlException
+2.3.6.   GretlException ---> ToDo: Was macht diese Klasse?
+
+Package: ch.so.agi.gretl.util
 
 2.3.7.   EmptyFileException
 
