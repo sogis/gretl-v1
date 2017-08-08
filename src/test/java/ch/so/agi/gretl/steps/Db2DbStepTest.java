@@ -23,6 +23,18 @@ public class Db2DbStepTest {
 
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
 
+    private static final String[] PG_WRITER_CONNECTION = {
+            "jdbc:postgresql://192.168.56.31:5432/automatedtest",
+            "dmluser",
+            "dmluser"
+    };
+
+    private static final String[] PG_READER_CONNECTION = {
+            "jdbc:postgresql://192.168.56.31:5432/automatedtest",
+            "readeruser",
+            "readeruser"
+    };
+
     //Konstruktor//
     public Db2DbStepTest () {
         LogEnvironment.initStandalone();
@@ -398,8 +410,8 @@ public class Db2DbStepTest {
                     String.format("select ST_AsBinary(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
-            Connector src = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
-            Connector sink = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
+            Connector src = new Connector(PG_READER_CONNECTION[0], PG_READER_CONNECTION[1], PG_READER_CONNECTION[2]);
+            Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".SINK",
@@ -436,8 +448,8 @@ public class Db2DbStepTest {
                     String.format("select ST_AsText(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
-            Connector src = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
-            Connector sink = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
+            Connector src = new Connector(PG_READER_CONNECTION[0], PG_READER_CONNECTION[1], PG_READER_CONNECTION[2]);
+            Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".SINK",
@@ -475,8 +487,8 @@ public class Db2DbStepTest {
                     String.format("select ST_AsGeoJSON(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
-            Connector src = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
-            Connector sink = new Connector("jdbc:postgresql://192.168.56.6:5432/datenbasis", "godfather", "rehtaf");
+            Connector src = new Connector(PG_READER_CONNECTION[0], PG_READER_CONNECTION[1], PG_READER_CONNECTION[2]);
+            Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".SINK",
@@ -511,6 +523,10 @@ public class Db2DbStepTest {
         prep.addBatch(String.format("CREATE TABLE %s.SOURCE (geom geometry(LINESTRING,2056) );",schemaName));
         prep.addBatch(String.format("CREATE TABLE %s.SINK (geom geometry(LINESTRING,2056) );",schemaName));
         prep.addBatch(String.format("INSERT INTO %s.SOURCE VALUES ( ST_GeomFromText('%s', 2056) )", schemaName, GEOM_WKT));
+
+        prep.addBatch(String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO READERUSER", schemaName));
+        prep.addBatch(String.format("GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO DMLUSER", schemaName));
+
         prep.executeBatch();
         con.commit();
     }
@@ -525,9 +541,9 @@ public class Db2DbStepTest {
         DriverManager.registerDriver(pgDriver);
 
         Connection con = DriverManager.getConnection(
-            "jdbc:postgresql://192.168.56.6:5432/datenbasis",
-            "godfather",
-            "rehtaf");
+            "jdbc:postgresql://192.168.56.31:5432/automatedtest",
+            "ddluser",
+            "ddluser");
 
         con.setAutoCommit(false);
 
