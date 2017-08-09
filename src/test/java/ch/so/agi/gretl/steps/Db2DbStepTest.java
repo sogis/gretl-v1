@@ -259,7 +259,7 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
         } catch (SQLException e) {
             //todo wieso catch und throw?
-            throw new GretlException(e);
+            throw new GretlException(e.getMessage());
         } finally {
             con.connect().close();
         }
@@ -286,7 +286,7 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
         } catch (SQLException e) {
             //todo wieso catch und throw?
-            throw new GretlException(e);
+            throw new GretlException(e.getMessage());
         } finally {
             con.connect().close();
         }

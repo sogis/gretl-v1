@@ -15,11 +15,4 @@ public class EmptyListException extends GretlException {
         super(message, cause);
     }
 
-    public EmptyListException(Throwable cause) {
-        super(cause);
-    }
-
-    public EmptyListException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
