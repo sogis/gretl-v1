@@ -419,7 +419,7 @@ Die Klasse FileExtensionTest überprüft die Funktionalitäten der FileExtension
 
 Prüft, ob die Methode bei einem File mit der Endung .sql auch die Endung sql ermittelt wird.
 
-2.3.2.2. Test missingFileExtension
+2.3.2.2. Test missingFileExtensionThrowsGretlException
 
 Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegeben wird.
 
@@ -427,7 +427,7 @@ Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegebe
 
 Prüft, ob bei einem File mit mehreren Endungen (file.ext1.ext2) auch wirklich die letzte Fileendung ausgegeben wird.
 
-2.3.2.4. Test strangeFileNameExtension
+2.3.2.4. Test strangeFileNameExtensionThrowsGretlException
 
 Prüft, ob bei einem File mit folgendem Namen (c:\\file) auch wirklich eine Fehlermeldung ausgeworfen wird.
 
@@ -637,6 +637,14 @@ Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 
 2.5.1.4. Test loggerOutputsCallingClassAsLogSource  --> ToDo: Was macht dieser Test????
 
+2.5.1.5. Methode resetSystemOutAndErr
+
+Benötigt: nicht
+
+Liefert: nicht
+
+Diese Methode setzt den Standard Output Stream und den Standard Error Stream wieder zurück auf die ursprünglichen Streams.
+
 
 **2.6.	Steps**
    
@@ -803,7 +811,46 @@ Beispiel::
    sqlfiles = [new File("/Path/to/File/Filename.sql")]:
    logPathToInputSqlFiles(sqlfiles);
    
-2.6.3.4. Methode readSqlFiles
+2.6.3.4. Methode checkIfNoExistingFileIsEmpty
+
+Benötigt: sqlfiles (List<File>)
+
+Liefert: nichts
+
+Diese Methode prüft, ob die übergebenen Files existieren und ob sie nicht leer sind.
+
+Beispiel::
+
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]
+   checkIfNoExistingFileIsEmpty(sqlfiles)
+
+2.6.3.5. Methode checkFilesExtensionsForSqlExtension
+
+Benötigt: sqlfiles (List<File>)
+
+Liefert: nichts
+
+Mit dieser Methode wird überprüft, ob die übergebenen Files die Dateiendung ".sql" haben.
+
+Beispiel::
+
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]
+   checkFilesExtensionsForSqlExtension(sqlfiles)
+   
+2.6.3.6. Methode checkFilesForUTF8WithoutBOM
+
+Benötigt: sqlfiles (List<File>)
+
+Liefert: nichts
+
+Die Methode checkFilesForUTF8WithoutBOM führt die Methoden checkForUtf8 und checkForBOMInFile der FileStylingDefinition-Klasse aus. Mit diesen wird geprüft, ob die übergebenen File in UTF8 kodiert sind und ob sie keine BOM aufweisen.
+
+Beispiel::
+
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]
+   checkFilesForUTF8WithoutBOM(sqlfiles)
+   
+2.6.3.7. Methode readSqlFiles
 
 Benötigt: sqlfiles (List<File>), db (Connection)
 
@@ -817,7 +864,7 @@ Beispiel::
    Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
    readSqlFiles(sqlfiles, db);
    
-2.6.3.5. Methode executeAllSqlStatements
+2.6.3.8. Methode executeAllSqlStatements
 
 Benötigt: conn (Connection), sqlfile (File)
 
@@ -831,7 +878,7 @@ Beispiel::
    Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
    executeAllSqlStatements(sqlfile, db);
 
-2.6.3.6. Methode prepareSqlStatement
+2.6.3.9. Methode prepareSqlStatement
 
 Benötigt: conn (Connection), statement (String)
 
@@ -846,7 +893,7 @@ Beispiel::
    
    prepareSqlStatement(conn, statement);
    
-2.6.3.7. Methode executeSqlStatement
+2.6.3.10. Methode executeSqlStatement
 
 Benötigt: dbstmt (Statement), statement (String)
 
