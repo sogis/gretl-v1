@@ -33,9 +33,8 @@ public class FileStylingDefinitionTest {
         File inputfile = new File(classLoader.getResource("query_with_bom.sql").getFile());
         try {
             FileStylingDefinition.checkForBOMInFile(inputfile);
-            Assert.fail();
-        } catch (Exception e) {
-
+        } catch (GretlException e) {
+            Assert.assertEquals("file with unallowed BOM", e.getType());
         }
     }
 

@@ -28,7 +28,7 @@ public class FileExtensionTest {
         try {
             FileExtension.getFileExtension(sqlFile);
         } catch (GretlException e) {
-            Assert.assertEquals("no file extension: File must have a file extension", e.getMessage());
+            Assert.assertEquals("no file extension", e.getType());
         }
 
     }
@@ -46,7 +46,7 @@ public class FileExtensionTest {
         try {
             FileExtension.getFileExtension(sqlFile);
         } catch (GretlException e) {
-            Assert.assertEquals("no file extension: File must have a file extension", e.getMessage());
+            Assert.assertEquals("no file extension", e.getType());
         }
 
     }
