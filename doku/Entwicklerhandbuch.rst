@@ -785,7 +785,19 @@ Beispiel::
 
    x.execute(sourceDb, sqlListe);
    
-2.6.3.2. Methode assertAtLeastOneSqlFileIsGiven
+2.6.3.2. Methode checkIfConnectorIsNotNull
+
+Benötigt: trans (Connector)
+
+Liefert: nichts
+
+Prüft, ob der übergebene Connector nicht null ist. Sollte er null sein, wird eine GretlException geworfen.
+
+Beispiel::
+   Connector trans = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+   checkIfConnectorIsNotNull(trans);
+
+2.6.3.3. Methode assertAtLeastOneSqlFileIsGiven
 
 Benötigt: sqlFiles (List<File>)
 
@@ -798,7 +810,7 @@ Beispiel::
    sqlfiles = [new File("/Path/to/File/Filename.sql")]:
    assertAtLeastOneSqlFileIsGiven(sqlfiles);
    
-2.6.3.3. Methode logPathToInputSqlFiles
+2.6.3.4. Methode logPathToInputSqlFiles
 
 Benötigt: sqlfiles (List<File>)
 
@@ -811,7 +823,7 @@ Beispiel::
    sqlfiles = [new File("/Path/to/File/Filename.sql")]:
    logPathToInputSqlFiles(sqlfiles);
    
-2.6.3.4. Methode checkIfNoExistingFileIsEmpty
+2.6.3.5. Methode checkIfNoExistingFileIsEmpty
 
 Benötigt: sqlfiles (List<File>)
 
@@ -824,7 +836,7 @@ Beispiel::
    sqlfiles = [new File("/Path/to/File/Filename.sql")]
    checkIfNoExistingFileIsEmpty(sqlfiles)
 
-2.6.3.5. Methode checkFilesExtensionsForSqlExtension
+2.6.3.6. Methode checkFilesExtensionsForSqlExtension
 
 Benötigt: sqlfiles (List<File>)
 
@@ -837,7 +849,7 @@ Beispiel::
    sqlfiles = [new File("/Path/to/File/Filename.sql")]
    checkFilesExtensionsForSqlExtension(sqlfiles)
    
-2.6.3.6. Methode checkFilesForUTF8WithoutBOM
+2.6.3.7. Methode checkFilesForUTF8WithoutBOM
 
 Benötigt: sqlfiles (List<File>)
 
@@ -850,7 +862,7 @@ Beispiel::
    sqlfiles = [new File("/Path/to/File/Filename.sql")]
    checkFilesForUTF8WithoutBOM(sqlfiles)
    
-2.6.3.7. Methode readSqlFiles
+2.6.3.8. Methode readSqlFiles
 
 Benötigt: sqlfiles (List<File>), db (Connection)
 
@@ -864,7 +876,7 @@ Beispiel::
    Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
    readSqlFiles(sqlfiles, db);
    
-2.6.3.8. Methode executeAllSqlStatements
+2.6.3.9. Methode executeAllSqlStatements
 
 Benötigt: conn (Connection), sqlfile (File)
 
@@ -878,7 +890,7 @@ Beispiel::
    Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
    executeAllSqlStatements(sqlfile, db);
 
-2.6.3.9. Methode prepareSqlStatement
+2.6.3.10. Methode prepareSqlStatement
 
 Benötigt: conn (Connection), statement (String)
 
@@ -893,7 +905,7 @@ Beispiel::
    
    prepareSqlStatement(conn, statement);
    
-2.6.3.10. Methode executeSqlStatement
+2.6.3.11. Methode executeSqlStatement
 
 Benötigt: dbstmt (Statement), statement (String)
 
