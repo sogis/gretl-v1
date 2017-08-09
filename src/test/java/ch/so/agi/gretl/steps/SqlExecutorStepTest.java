@@ -2,14 +2,19 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.util.EmptyFileException;
+import ch.so.agi.gretl.util.GretlException;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +47,8 @@ public class SqlExecutorStepTest {
         clearTestDb(sourceDb);
     }
 
-//todo generell: Die Namen der Testmethoden refactoren - diese dürfen auch wirklich laaaaang werden - dies stört niemanden.
-// Beispiel: anstatt executeWithoutFiles() executeWithoutFilesThrowsGretlException()
-
-
     @Test
-    public void executeWithoutFiles() throws Exception {
+    public void executeWithoutFilesThrowsGretlException() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
@@ -55,33 +56,27 @@ public class SqlExecutorStepTest {
 
         try {
             x.execute(sourceDb,sqlListe);
-            Assert.fail();
-        } catch (Exception e) {
-            //todo welche art der Exception wird erwartet? diese mit assert.equals sicherstellen und eventuell zwecks stabiler testbarkeit eine eigene exception machen
-            // (eine Subklasse von GretlException)
-            // Hier kann nicht einfach pauschal jede beiliebige Exception eingefangen werden - so wissen wir nicht ob der Programmcode
-            // wegen den fehlenden sql-Dateien oder wegen irgendeinem anderen Fehler abgebrochen wurde.
+        } catch (GretlException e) {
+            Assert.assertEquals("no file: Inputfile are either null or there is no inputfile", e.getMessage());
         }
     }
 
     @Test
-    public void executeWithoutDb() throws Exception {
+    public void executeWithoutDbThrowsGretlException() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         Connector sourceDb = null;
-
         List<File> sqlListe = createCorrectSqlFiles();
 
         try {
             x.execute(sourceDb,sqlListe);
-            Assert.fail();
         } catch (Exception e) {
-        //todo siehe executeWithoutFiles()
+            Assert.assertEquals("no database: Connector-String must not be null", e.getMessage());
         }
     }
 
 
     @Test
-    public void executeDifferentExtensions() throws Exception {
+    public void executeWithWrongFileExtensionsThrowsGretlException() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
 
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
@@ -89,18 +84,16 @@ public class SqlExecutorStepTest {
         List<File> sqlListe = createCorrectSqlFiles();
         sqlListe.add(createSqlFileWithWrongExtension());
 
-
         try {
             x.execute(sourceDb,sqlListe);
-            Assert.fail();
         } catch (Exception e) {
-
+            Assert.assertThat(e.getMessage(),containsString("File extension must be .sql."));
         }
     }
 
 
     @Test
-    public void executeEmptyFile() throws Exception {
+    public void executeEmptyFileThrowsEmptyFileException() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
@@ -109,15 +102,31 @@ public class SqlExecutorStepTest {
 
         try {
             x.execute(sourceDb, sqlListe);
-            Assert.fail();
-        } catch (Exception e) {
+        } catch (EmptyFileException e) {
+            Assert.assertThat(e.getMessage(), containsString("File must not be empty"));
+
+        }
+    }
+
+    @Test
+    public void executeWithInexistentFilePathThrowsFileNotFoundException() throws Exception {
+        SqlExecutorStep x = new SqlExecutorStep();
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+
+        List<File>sqlListe = new ArrayList<>();
+        sqlListe.add(new File("/inexistent/path/to/file.sql"));
+
+        try {
+            x.execute(sourceDb, sqlListe);
+        } catch (FileNotFoundException e) {
+            Assert.assertThat(e.getMessage(), containsString("File could not be found"));
 
         }
     }
 
 
     @Test
-    public void executeWrongQuery() throws Exception {
+    public void executeWrongQueryThrowsSQLException() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
@@ -125,9 +134,8 @@ public class SqlExecutorStepTest {
 
         try {
             x.execute(sourceDb, sqlListe);
-            Assert.fail();
-        } catch (Exception e) {
-
+        } catch (SQLException e) {
+            Assert.assertThat(e.getMessage(), containsString("Error while executing the sqlstatement."));
         }
 
     }
@@ -155,18 +163,6 @@ public class SqlExecutorStepTest {
         Assert.assertTrue(sourceDb.connect().isClosed());
     }
 
-    //todo Unterschied zwischen checkIfConnectionIsClosed() und notClosedConnectionThrowsError()?
-
-    @Test
-    public void notClosedConnectionThrowsError() throws Exception{
-        SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
-
-        List<File> sqlListe = createCorrectSqlFiles();
-
-        x.execute(sourceDb,sqlListe);
-        Assert.assertFalse(!sourceDb.connect().isClosed());
-    }
 
 
     private void clearTestDb(Connector sourceDb) throws Exception {

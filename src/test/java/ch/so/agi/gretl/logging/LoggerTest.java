@@ -1,14 +1,14 @@
 package ch.so.agi.gretl.logging;
 
 import org.junit.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import java.util.logging.Logger;
 
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
+
 
 
 /**
@@ -18,8 +18,9 @@ public class LoggerTest {
 
     private GretlLogger log;
     private static ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    private static PrintStream oldSystem = System.err;
-    private static PrintStream ps;
+    private static PrintStream oldSystemErr = System.err;
+    private static PrintStream oldSystemOut = System.out;
+
 
 
     public LoggerTest() {
@@ -31,11 +32,11 @@ public class LoggerTest {
     @BeforeClass
     public static void initialise() {
 
-        PrintStream ps = new PrintStream(baos);
+        PrintStream ps;
+        ps = new PrintStream(baos);
+
         System.setErr(ps);
-        //todo System.setOut auch notwendig
-        //todo Es ist kritisch dass die Streams nach einem Test in jedem fall zurückgesetzt werden --> im finally der jeweiligen Testmethode,
-        // nicht im  @AfterClass der ganzen Testklasse....
+        System.setOut(ps);
 
     }
 
@@ -44,28 +45,23 @@ public class LoggerTest {
         baos.reset();
     }
 
-    @AfterClass
-    public static void finalise() {
-
-        System.err.flush();
-        System.setErr(oldSystem);
-
-    }
-
-
-    // Tell Java to use your special stream
 
     @Test
     public void logInfoTest() throws Exception {
 
-        log.info("Info-Logger-Test");
+        try {
 
-        String LogMessage = baos.toString();
-        String[] ArrayLogMessage = LogMessage.split(" -> ");
+            log.info("Info-Logger-Test");
 
-        Assert.assertEquals("Logger is not working properly: " + baos.toString(),
-                "Info-Logger-Test\n",
-                ArrayLogMessage[1]);
+            String LogMessage = baos.toString();
+            String[] ArrayLogMessage = LogMessage.split(" -> ");
+
+            Assert.assertEquals("Logger is not working properly: " + baos.toString(),
+                    "Info-Logger-Test\n",
+                    ArrayLogMessage[1]);
+        } finally {
+            resetSystemOutAndErr();
+        }
 
     }
 
@@ -79,16 +75,20 @@ public class LoggerTest {
     @Test
     public void logErrorTest() throws Exception {
 
-        log.error("Error-Logger-Test", new RuntimeException("Test Exception"));
+        try {
+            log.error("Error-Logger-Test", new RuntimeException("Test Exception"));
 
-        String LogMessage = baos.toString();
-        String[] ArrayLogMessage = LogMessage.split(" -> ");
+            String LogMessage = baos.toString();
+            String[] ArrayLogMessage = LogMessage.split(" -> ");
 
-        String[] ArrayMessage = ArrayLogMessage[1].split("\n");
+            String[] ArrayMessage = ArrayLogMessage[1].split("\n");
 
-        Assert.assertEquals("Logger is not working properly: " + baos.toString(),
+            Assert.assertEquals("Logger is not working properly: " + baos.toString(),
                 "Error-Logger-Test",
-                ArrayMessage[0]);
+                    ArrayMessage[0]);
+        } finally {
+            resetSystemOutAndErr();
+        }
 
     }
 
@@ -96,15 +96,27 @@ public class LoggerTest {
     @Test
     public void logDebugTest() throws Exception {
 
-        log.debug("Debug-Logger-Test");
+        try{
+            log.debug("Debug-Logger-Test");
 
-        String LogMessage = baos.toString();
-        String[] ArrayLogMessage = LogMessage.split(" -> ");
+            String LogMessage = baos.toString();
+            String[] ArrayLogMessage = LogMessage.split(" -> ");
 
-        Assert.assertEquals("Logger is not working properly: " + baos.toString(),
+            Assert.assertEquals("Logger is not working properly: " + baos.toString(),
                 "Debug-Logger-Test\n",
-                ArrayLogMessage[1]);
+                    ArrayLogMessage[1]);
+        } finally {
+            resetSystemOutAndErr();
+        }
 
+    }
+
+
+
+    private void resetSystemOutAndErr () {
+        System.err.flush();
+        System.setErr(oldSystemErr);
+        System.setOut(oldSystemOut);
     }
 
 
