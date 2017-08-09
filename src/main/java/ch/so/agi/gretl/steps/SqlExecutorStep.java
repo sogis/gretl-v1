@@ -215,11 +215,16 @@ public class SqlExecutorStep {
 
         String statement = SqlReader.readSqlStmt(sqlfile);
 
-        while (statement != null) {
+       if (statement == null){
+           throw new GretlException(GretlException.TYPE_NO_STATEMENT,"At least one statement must be in the sql-File");
+       } else {
 
-            prepareSqlStatement(conn,statement);
-            statement = SqlReader.nextSqlStmt();
-        }
+           while (statement != null) {
+
+               prepareSqlStatement(conn, statement);
+               statement = SqlReader.nextSqlStmt();
+           }
+       }
 
     }
 

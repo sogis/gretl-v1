@@ -1293,7 +1293,7 @@ Dieser Test prüft, ob eine Exception geworfen wird, wenn ein File angegeben wir
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query im SQL-File falsch ist. Mit der Methode createWrongSqlFiles wird ein fehlerhaftes SQL-File erzeugt
 
-2.7.2.16. Methode createWrongSqlFiles
+2.7.2.16. Methode createWrongSqlFile
 
 Benötigt: nichts
 
@@ -1301,11 +1301,23 @@ Liefert: List<File>
 
 Die Methode createWrongSqlFiles erstellt eine SQL-Datei, welche mit einer fehlerbehafteten Query abgefüllt wird, und gibt dieses File im Anschluss in einer Liste zurück.
 
-2.7.2.17. Test executePositiveTest
+2.7.2.17. Test executeSqlFileWithoutStatementThrowsGretlException
+
+Dieser Test prüft, ob ein File, welches kein einziges Statement enthält aber auch nicht leer ist, eine Fehlermeldung wirft.
+
+2.7.2.18. Methode createSqlFilesWithoutStatement
+
+Benötigt: nichts
+
+Liefert: List<File>
+
+Diese Methode erstellte eine SQL-Datei, welche lediglich Semikolons enthält, und gibt diese als in einer Liste zurück.
+
+2.7.2.19 Test executePositiveTest
 
 Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
-2.7.2.18. Test checkIfConnectionIsClosed
+2.7.2.20. Test checkIfConnectionIsClosed
 
 Prüft, ob nach dem Ausführen des Steps die Datenbankverbindung korrekt geschlossen wurde. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
