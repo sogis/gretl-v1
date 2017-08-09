@@ -130,12 +130,27 @@ public class SqlExecutorStepTest {
         SqlExecutorStep x = new SqlExecutorStep();
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
-        List<File> sqlListe = createWrongSqlFiles();
+        List<File> sqlListe = createWrongSqlFile();
 
         try {
             x.execute(sourceDb, sqlListe);
         } catch (SQLException e) {
             Assert.assertThat(e.getMessage(), containsString("Error while executing the sqlstatement."));
+        }
+
+    }
+
+    @Test
+    public void executeSQLFileWithoutStatementThrowsGretlException() throws Exception {
+        SqlExecutorStep x = new SqlExecutorStep();
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+
+        List<File> sqlListe = createSqlFileWithoutStatement();
+
+        try {
+            x.execute(sourceDb, sqlListe);
+        } catch (GretlException e) {
+            Assert.assertEquals("no statement in sql-file", e.getType());
         }
 
     }
@@ -216,12 +231,23 @@ public class SqlExecutorStepTest {
         return sqlFile1;
     }
 
-    private List<File> createWrongSqlFiles() throws Exception {
+    private List<File> createWrongSqlFile() throws Exception {
         File sqlFile =  folder.newFile("query.sql");
         BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
         writer.write(" INSERT INTO colors1\n" +
                 "VALUES (124,252,0,'LawnGreen')");
         writer.close();
+        List<File> sqlListe = new ArrayList<>();
+        sqlListe.add(sqlFile);
+        return sqlListe;
+    }
+
+    private List<File> createSqlFileWithoutStatement() throws Exception {
+        File sqlFile =  folder.newFile("query.sql");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
+        writer.write(" ;;;;; ; ; ");
+        writer.close();
+
         List<File> sqlListe = new ArrayList<>();
         sqlListe.add(sqlFile);
         return sqlListe;
