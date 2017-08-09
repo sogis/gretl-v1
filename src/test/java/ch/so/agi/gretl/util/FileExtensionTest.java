@@ -25,13 +25,12 @@ public class FileExtensionTest {
     }
 
     @Test
-    public void missingFileExtension() throws Exception {
+    public void missingFileExtensionThrowsGretlException() throws Exception {
         File sqlFile = folder.newFile("file");
         try {
             FileExtension.getFileExtension(sqlFile);
-            Assert.fail();
-        } catch (Exception e) {
-//todo welche Exception wird erwartet - generelles "catch all" ist nicht genau genug....
+        } catch (GretlException e) {
+            Assert.assertEquals("no file extension: File must have a file extension", e.getMessage());
         }
 
     }
@@ -44,13 +43,12 @@ public class FileExtensionTest {
     }
 
     @Test
-    public void strangeFileNameExtension() throws Exception {
+    public void strangeFileNameExtensionThrowsGretlExtension() throws Exception {
         File sqlFile = folder.newFile("c:\\file");
         try {
             FileExtension.getFileExtension(sqlFile);
-            Assert.fail();
-        } catch (Exception e) {
-//todo welche Exception wird erwartet - generelles "catch all" ist nicht genau genug....
+        } catch (GretlException e) {
+            Assert.assertEquals("no file extension: File must have a file extension", e.getMessage());
         }
 
     }
