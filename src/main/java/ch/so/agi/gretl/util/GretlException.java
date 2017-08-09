@@ -26,14 +26,6 @@ public class GretlException extends RuntimeException {
         super(message, cause);
     }
 
-    public GretlException(Throwable cause) {
-        super(cause);
-    }
-
-    public GretlException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
     public GretlException(String type, String message){
         super(message);
         this.type = type;
