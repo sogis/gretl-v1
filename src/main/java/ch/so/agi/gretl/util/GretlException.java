@@ -13,7 +13,8 @@ public class GretlException extends RuntimeException {
     public static final String TYPE_NO_DB = "no database";
     public static final String TYPE_WRONG_EXTENSION = "no .sql-Extension";
     public static final String TYPE_MISSING_FILE_EXTENSION = "no file extension";
-    //private String type;
+    public static final String TYPE_FILE_WITH_BOM ="file with unallowed BOM";
+    private String type;
 
     public GretlException(){}
 
@@ -34,11 +35,12 @@ public class GretlException extends RuntimeException {
     }
 
     public GretlException(String type, String message){
-        super(type + ": " + message);
+        super(message);
+        this.type = type;
 
     }
 
-    /*public String getType(){
+    public String getType(){
         return this.type;
-    }*/
+    }
 }

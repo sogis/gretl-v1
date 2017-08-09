@@ -57,7 +57,7 @@ public class SqlExecutorStepTest {
         try {
             x.execute(sourceDb,sqlListe);
         } catch (GretlException e) {
-            Assert.assertEquals("no file: Inputfile are either null or there is no inputfile", e.getMessage());
+            Assert.assertEquals("no file", e.getType());
         }
     }
 
@@ -69,8 +69,8 @@ public class SqlExecutorStepTest {
 
         try {
             x.execute(sourceDb,sqlListe);
-        } catch (Exception e) {
-            Assert.assertEquals("no database: Connector-String must not be null", e.getMessage());
+        } catch (GretlException e) {
+            Assert.assertEquals("no database", e.getType());
         }
     }
 
@@ -86,8 +86,8 @@ public class SqlExecutorStepTest {
 
         try {
             x.execute(sourceDb,sqlListe);
-        } catch (Exception e) {
-            Assert.assertThat(e.getMessage(),containsString("File extension must be .sql."));
+        } catch (GretlException e) {
+            Assert.assertEquals("no .sql-Extension", e.getType());
         }
     }
 
