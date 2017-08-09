@@ -7,8 +7,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 
-import static org.junit.Assert.assertFalse;
-
 /**
  * Tests for FileExtension-Class
  */
@@ -43,7 +41,7 @@ public class FileExtensionTest {
     }
 
     @Test
-    public void strangeFileNameExtensionThrowsGretlExtension() throws Exception {
+    public void strangeFileNameExtensionThrowsGretlException() throws Exception {
         File sqlFile = folder.newFile("c:\\file");
         try {
             FileExtension.getFileExtension(sqlFile);
