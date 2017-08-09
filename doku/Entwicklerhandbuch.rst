@@ -1233,11 +1233,11 @@ Liefert: nichts
 
 Die Methode erstellt eine Verbindung zu der im Connector übergebenen Datenbank, löscht die in createTableInTestDb erstellte Tabelle und schliesst die Verbindung zur Datenbank.
 
-2.7.2.7. Test executeWithoutFiles
+2.7.2.7. Test executeWithoutFilesThrowsGretlException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn keine Files aber eine Datenbankconnection angegeben werden.
 
-2.7.2.8. Test executeWithoutDb
+2.7.2.8. Test executeWithoutDbThrowsGretlException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar ein sqlFile übergeben wird, aber keine Datenbankconnection. Der Test verwendet die Methode createCorrectSqlFiles für die Erstellung der sqlFiles
 
@@ -1249,7 +1249,7 @@ Liefert: List<File>
 
 Mit der Methode createCorrectSqlFiles werden zwei SQL-Dateien (query.sql, query1.sql) erzeugt, welche sogleich mit Queries abgefüllt werden und anschliessend als File-Liste zurückgegeben werden.
 
-2.7.2.10. Test executeDifferentExtensions
+2.7.2.10. Test executeWithWrongFileExtensionsThrowsGretlException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn eine Datenbankverbindung und in der Fileliste ein SQL-File und ein txt-File übergeben werden. Für die Erzeugung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet. Anschliessend wird mit der Methode createSqlFileWithWrongExtension ein txt-Datei erstellt.
 
@@ -1261,7 +1261,7 @@ Liefert: File
 
 Die Methode createSqlFileWithWrongExtension erzeugt eine txt-Datei, in welche eine korrekte Query geschrieben wird. Diese Datei wird als File zurückgegeben.
 
-2.7.2.12. Test executeEmptyFile
+2.7.2.12. Test executeEmptyFileThrowsEmptyFileException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn eine Datenbankverbindung, ein sql-File mit einer Query und ein sql-File ohne Query übergeben werden. Die korrekten SQL-Files werden mit der Methode createCorrectSqlFiles erzeugt. Das leere SQL-File wird mit der Methode createEmptySqlFile erzeugt.
 
@@ -1273,11 +1273,15 @@ Liefert: File
 
 Die Methode createEmptySqlFile erzeugt ein leeres SQL-File, welches dann zurückgegeben wird.
 
-2.7.2.14. Test executeWrongQuery
+2.7.2.14. Test executeWithInexistenFilePathThrowsFileNotFoundException
+
+Dieser Test prüft, ob eine Exception geworfen wird, wenn ein File angegeben wird, welches nicht existiert.
+
+2.7.2.15. Test executeWrongQueryThrowsSQLException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query im SQL-File falsch ist. Mit der Methode createWrongSqlFiles wird ein fehlerhaftes SQL-File erzeugt
 
-2.7.2.15. Methode createWrongSqlFiles
+2.7.2.16. Methode createWrongSqlFiles
 
 Benötigt: nichts
 
@@ -1285,18 +1289,13 @@ Liefert: List<File>
 
 Die Methode createWrongSqlFiles erstellt eine SQL-Datei, welche mit einer fehlerbehafteten Query abgefüllt wird, und gibt dieses File im Anschluss in einer Liste zurück.
 
-2.7.2.16. Test executePositiveTest
+2.7.2.17. Test executePositiveTest
 
 Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
-2.7.2.17. Test checkIfConnectionIsClosed
+2.7.2.18. Test checkIfConnectionIsClosed
 
 Prüft, ob nach dem Ausführen des Steps die Datenbankverbindung korrekt geschlossen wurde. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
-
-
-2.7.2.18. Test notClosedConnectionThrowsError
-
-Prüft, ob eine Datenbankverbindung, welche nach dem Ausführen des Steps nicht erfolgreich geschlossen wurde, eine Fehler verursacht. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
 
 **2.8.	Build.gradle**
