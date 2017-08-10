@@ -4,7 +4,6 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
-import ch.so.agi.gretl.util.GretlException;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
@@ -15,6 +14,8 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static org.gradle.internal.impldep.org.testng.AssertJUnit.assertEquals;
 
 public class Db2DbStepTest {
 
@@ -74,9 +75,8 @@ public class Db2DbStepTest {
 
             ResultSet rs = con.connect().createStatement().executeQuery("SELECT * FROM colors_copy WHERE farbname = 'blau'");
             while(rs.next()) {
-                //todo assertEquals(...)
-                if (!rs.getObject("rot").equals(0)) throw new GretlException(e);
-                if (!rs.getObject("farbname").equals("blau")) throw new GretlException(e);
+                assertEquals(rs.getObject("rot"),0);
+                assertEquals(rs.getObject("farbname"),"blau");
             }
         } finally {
             con.connect().close();
@@ -268,17 +268,8 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             ResultSet rs = con.connect().createStatement().executeQuery("SELECT * FROM colors_copy");
 
-            //todo assertEquals(rs.getFetchSize(), 0)?
+            assertEquals(rs.getFetchSize(), 1);
 
-            int count = 0;
-            while(rs.next()) {
-                ++count;
-            }
-            if(count > 1) {
-                //todo trumpscher logeintrag ist lustig, muss aber zwecks verständlicherer Meldungen ersetzt werden ;-)
-                log.info("Got "+count+" rows! Very sad!");
-                throw new GretlException();
-            }
         } finally {
             con.connect().close();
         }
@@ -309,9 +300,7 @@ public class Db2DbStepTest {
 
             Assert.assertTrue("SourceConnection is not closed", sourceDb.connect().isClosed());
             Assert.assertTrue("TargetConnection is not closed", targetDb.connect().isClosed());
-
-            //todo entfernen - ist aufgrund finally redundant
-            con.connect().close();
+            
         } finally {
             con.connect().close();
         }

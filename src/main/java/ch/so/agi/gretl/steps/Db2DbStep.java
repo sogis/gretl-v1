@@ -2,12 +2,11 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.util.EmptyFileException;
-import ch.so.agi.gretl.util.EmptyListException;
-import ch.so.agi.gretl.util.NotAllowedSqlExpressionException;
-import ch.so.agi.gretl.util.SqlReader;
+import ch.so.agi.gretl.util.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 
@@ -38,9 +37,9 @@ public class Db2DbStep {
 
     /**
      * Main method. Calls for each transferSet methode processTransferSet
-     * @param sourceDb
-     * @param targetDb
-     * @param transferSets
+     * @param sourceDb The Source Databaseconnection
+     * @param targetDb The Target Databaseconnection
+     * @param transferSets A list of Transfersets
      * @throws Exception
      */
     public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets) throws Exception {
@@ -51,27 +50,35 @@ public class Db2DbStep {
                 "targetDb = "+targetDb.connect().getMetaData().getURL()+", " +
                 "user = "+targetDb.connect().getMetaData().getUserName()+"\n");
 
-        //todo Connections ausserhalb try deklarieren (Connection sourceDbConnection = null)
+        Connection sourceDbConnection = null;
+        Connection targetDbConnection = null;
 
         try {
-            //todo hier Connection lediglich noch zuweisen
-            Connection sourceDbConnection = sourceDb.connect();
-            Connection targetDbConnection = targetDb.connect();
+            sourceDbConnection = sourceDb.connect();
+            targetDbConnection = targetDb.connect();
             for(TransferSet transferSet : transferSets){
+                //Check if file is readable
                 if(!transferSet.getInputSqlFile().canRead()) {
                     throw new IllegalArgumentException("File"+transferSet.getInputSqlFile().getName()+" not found or not readable");
                 }
+                //Check if File is UTF8
+                FileStylingDefinition.checkForUtf8(transferSet.getInputSqlFile());
+                //Check if File contains no BOM. If File is Empty, there will be a NullPointerException catched away.
+                try {
+                    FileStylingDefinition.checkForBOMInFile(transferSet.getInputSqlFile());
+                } catch (NullPointerException e){};
+                
                 processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
             }
             sourceDbConnection.commit();
             targetDbConnection.commit();
             log.lifecycle(taskName + ": Transfered all Transfersets");
         } catch (Exception e) {
-            if (sourceDb.connect()!=null) { //todo hier die oben deklarierten connections behandeln
-                sourceDb.connect().rollback();
+            if (sourceDbConnection!=null) {
+                sourceDbConnection.rollback();
             }
-            if (targetDb.connect() != null) {
-                targetDb.connect().rollback();
+            if (targetDbConnection != null) {
+                targetDbConnection.rollback();
             }
             log.error("Exception while executing processAllTransferSets()", e);
             throw e;
@@ -88,9 +95,9 @@ public class Db2DbStep {
 
     /**
      * Controls the execution of a TransferSet
-     * @param srcCon
-     * @param targetCon
-     * @param transferSet
+     * @param srcCon SourceDB Connection
+     * @param targetCon TargetDB Connection
+     * @param transferSet Transferset
      * @throws SQLException
      * @throws FileNotFoundException
      * @throws EmptyFileException
@@ -116,9 +123,9 @@ public class Db2DbStep {
 
     /**
      * Copies a row of the source ResultSet to the target table
-     * @param rs
-     * @param insertRowStatement
-     * @param columncount
+     * @param rs ResultSet
+     * @param insertRowStatement The prepared Insertstatement
+     * @param columncount How many columns
      * @throws SQLException
      */
     private void transferRow(ResultSet rs, PreparedStatement insertRowStatement, int columncount) throws SQLException {
@@ -131,8 +138,8 @@ public class Db2DbStep {
 
     /**
      * Delete the content of the target table
-     * @param targetCon
-     * @param destTableName
+     * @param targetCon TargedDB Connection
+     * @param destTableName Qualified Target Table Name (Schema.Table)
      * @throws SQLException
      */
     private void deleteDestTableContents(Connection targetCon, String destTableName) throws SQLException {
@@ -150,9 +157,9 @@ public class Db2DbStep {
 
     /**
      * Creates the ResultSet with the SelectStatement from the InputFile
-     * @param srcCon
-     * @param sqlSelectStatement
-     * @return
+     * @param srcCon SourceDB Connection
+     * @param sqlSelectStatement The SQL Statement extract from the input-file
+     * @return rs Resultset
      * @throws SQLException
      */
     private ResultSet createResultSet(Connection srcCon, String sqlSelectStatement) throws SQLException {
@@ -163,7 +170,13 @@ public class Db2DbStep {
     }
 
     /**
-     * Creates woth the meta-data from the SelectStatement the Insert-Statement
+     * Prepares the insert Statement. Leaves the Values as ?
+     * @param srcCon SourceDB Connection
+     * @param targetCon DargetDB Connection
+     * @param rs ResultSet
+     * @param tSet TransferSet
+     * @return The InsertRowStatement
+     * @throws SQLException
      */
     private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, TransferSet tSet) throws SQLException {
         ResultSetMetaData meta = null;
@@ -216,46 +229,41 @@ public class Db2DbStep {
     /**
      * Extracts a single statement out of the SQL-file and checks if it fits the conditions.
      * @param targetFile
-     * @return
+     * @returnA Select Statement as String
      * @throws FileNotFoundException
      * @throws EmptyFileException
      */
-    private String extractSingleStatement(File targetFile) throws EmptyFileException, IOException {
+    private String extractSingleStatement(File targetFile) throws IOException {
 
         String line = null;
 
         String firstline = null;
-        try {
-            line = SqlReader.readSqlStmt(targetFile);
-            if(line == null) {
-                log.info("Empty File. No Statement to execute!");
-                throw new EmptyFileException("EmptyFile: "+targetFile.getName());
-            }
+        line = SqlReader.readSqlStmt(targetFile);
+        if(line == null) {
+            log.info("Empty File. No Statement to execute!");
+            throw new EmptyFileException("EmptyFile: "+targetFile.getName());
+        }
 
 
-            while (line != null) {
-                firstline = line.trim();
-                if (firstline.length() > 0) {
-                    log.info( "Statement found. Length: " + firstline.length()+" caracters");
-                } else {
-                    log.info( "NO STATEMENT IN FILE!");
-                    throw new FileNotFoundException();
-                }
-                line = SqlReader.nextSqlStmt();
-                if(line != null) {
-                    log.info("There are more then 1 Statement in the file!");
-                    throw new RuntimeException();
-                }
+        while (line != null) {
+            firstline = line.trim();
+            if (firstline.length() > 0) {
+                log.info( "Statement found. Length: " + firstline.length()+" caracters");
+            } else {
+                log.info( "NO STATEMENT IN FILE!");
+                throw new FileNotFoundException();
             }
-        } catch (IOException e2) {
-            throw new IllegalStateException(e2);
-            //todo wieso catch und throw als IllegalStateException??
+            line = SqlReader.nextSqlStmt();
+            if(line != null) {
+                log.info("There are more then 1 Statement in the file!");
+                throw new RuntimeException();
+            }
         }
         return firstline;
     }
 
     /**
-     *
+     * Checks if the Transferset List is not Empty.
      * @param transferSets
      * @throws EmptyListException
      */
