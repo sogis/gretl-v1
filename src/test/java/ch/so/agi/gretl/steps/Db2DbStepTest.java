@@ -16,9 +16,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by bjsvwsch on 03.05.17.
- */
 public class Db2DbStepTest {
 
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
@@ -109,8 +106,6 @@ public class Db2DbStepTest {
             Assert.fail("EmptyFileException müsste geworfen werden");
         } catch (EmptyFileException e) {
 
-        } catch (Exception e) {
-            //todo wieso catch exception? Dann gibt der test ok zurück obwohl gar nicht ok.
         } finally {
             con.connect().close();
         }
@@ -137,12 +132,8 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             Assert.fail("EmptyFileException müsste geworfen werden");
 
-            //todo wie kann als Resultat eines Tests zwei Exception-Typen erwartet werden? Wie kann "catch all" jemals
-            //richtig sein bei einem spezifischen test?
         } catch (SQLException e) {
             log.debug("Got SQLException as expected");
-        } catch (Exception e) {
-            log.debug("Got Exception as expected");
         } finally{
             con.connect().close();
         }
@@ -155,8 +146,8 @@ public class Db2DbStepTest {
         Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         try {
-            //todo Erstellen und füllen der Testtabelle ist bei Noemi schon als utilmethode vorhanden
-            //utilmethode in entsprechende utilklasse rausmanufakteren und gemeinsam nutzen...
+            //Hier müssen die Tabellen manuell erstellt werden, da die Tabelle colors_copy
+            //ja gerade mit nicht genug Spalten angelegt werden soll!
             Statement stmt = con.createStatement();
             stmt.execute("CREATE TABLE colors ( " +
                     "  rot integer, " +
@@ -184,11 +175,8 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
 
-            //todo welche Exception wird erwartet? nur genau diese abfangen.
         } catch (SQLException e) {
             log.debug("Got SQLException as expected");
-        } catch (Exception e) {
-            log.debug("Got Exception as expected");
         } finally {
             con.close();
         }
@@ -229,45 +217,15 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
 
-            //todo welche ex?
         } catch (SQLException e) {
             log.debug("Got SQLException as expected");
-        } catch (Exception e) {
-            log.debug("Got Exception as expected");
         } finally {
             con.close();
         }
     }
 
-    //todo namen: was testet diese Testmethode genau?
     @Test
-    public void EmptyTableTest() throws Exception {
-        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        createTableInTestDb(con.connect());
-        try {
-            File sqlFile = createFile("SELECT * FROM colors", "query.sql");
-
-            ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
-            mylist.add(new TransferSet(
-                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)
-            ));
-
-            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-
-            Db2DbStep db2db = new Db2DbStep();
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
-        } catch (SQLException e) {
-            //todo wieso catch und throw?
-            throw new GretlException(e);
-        } finally {
-            con.connect().close();
-        }
-    }
-
-    //todo namen...
-    @Test
-    public void NullSourceValueTest() throws Exception {
+    public void CopyEmptyTableToOtherTableTest() throws Exception {
 
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
@@ -284,9 +242,6 @@ public class Db2DbStepTest {
 
             Db2DbStep db2db = new Db2DbStep();
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
-        } catch (SQLException e) {
-            //todo wieso catch und throw?
-            throw new GretlException(e);
         } finally {
             con.connect().close();
         }
