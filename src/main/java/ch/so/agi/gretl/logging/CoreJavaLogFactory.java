@@ -9,7 +9,6 @@ public class CoreJavaLogFactory implements LogFactory {
     }
 
     public GretlLogger getLogger(Class logSource){
-        //System.out.println("logSource in CoreJavaLogFactory = "+logSource.getName());
         return new CoreJavaLogAdaptor(logSource, globalLogLevel);
     }
 }

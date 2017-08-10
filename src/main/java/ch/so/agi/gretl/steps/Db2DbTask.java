@@ -8,12 +8,8 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
-import java.sql.SQLException;
 import java.util.List;
 
-/**
- * Created by bjsvwsch on 19.05.17.
- */
 public class Db2DbTask extends DefaultTask {
 
 
@@ -49,13 +45,5 @@ public class Db2DbTask extends DefaultTask {
             }
     }
 
-    //todo weg damit, oder?
-    private void dbRollback(Exception e) {
-        try {
-            sourceDb.connect().rollback();
-        } catch (SQLException e1) {
-            log.debug( "Failed to rollback "+e.getMessage());
-        }
-    }
 }
 

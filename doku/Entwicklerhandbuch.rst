@@ -666,7 +666,7 @@ Liefert: nichts
 
 Diese Methode arbeitet ein TransferSet ab. Dabei werden verschiedene weitere Methoden aufgerufen.
 Als erstes wird überprüft, ob im TransferSet die Option getDeleteAllRows auf True gesetzt ist. Ist das der Fall, wird die Methode deleteDestTableContents aufgerufen, welche den Inhalt der Zieltabelle löscht.
-Danach wird mit der Methode extractSingleStatement ein Statement aus dem SQL-File, welches im TransferSet definiert ist, extrahiert und gleich auf unerlaubte Ausdrücke (Delete, Insert, Update etc. --> Todo: genauer definieren! <--) überprüft. Danach wird mit der Methode createResultSet das Statement ausgeführt und anschliessend wird mit der Methode createInsertRowStatement ein SQL-INSERT-Statement vorbereitet. Dieses wird in der Methode transferRow mit den Werten aus dem ResultSet abgefüllt.
+Danach wird mit der Methode extractSingleStatement ein Statement aus dem SQL-File, welches im TransferSet definiert ist, extrahiert
 
 Beispiel::
 
@@ -741,7 +741,7 @@ Liefert: nichts
 
 Die Methode assertListNotEmpty prüft, ob die Liste grösser als 0 ist, also mindestens ein Transferset vorhanden ist.
 
-2.6.2. Klasse Db2DbTask  --> ToDo: bitte überarbeiten/prüfen
+2.6.2. Klasse Db2DbTask
 
 Package: 	ch.so.agi.gretl.steps
 
@@ -998,69 +998,72 @@ Package: ch.so.agi.gretl.steps
 
 **2.7.	Steps – Test**
 
-2.7.1. Klasse Db2DbStepTest   ----> ToDo: überarbeiten/prüfen
+2.7.1. Klasse Db2DbStepTest
 
 Package: ch.so.agi.gretl.steps
 
-Die Klasse Db2DbStepTest überprüft die Funktionalitäten der Db2DbStep-Klasse. Bisher liegen die folgenden Tests vor:
-PositiveTest(): Dieser Test ist ein positiv-Test, das heisst, er überprüft, ob der Db2DbStep grundsätzlich funktioniert.
-NotAllowedSqlExpressionInScriptTest(): Dieser Test überprüft, ob bei der Verwendung eines nicht erlaubten Ausdruck in einem SQL-File eine Exception geworfen wird.
-Db2DbEmptyFileTest(): Überprüft, ob bei einem leeren File eine EmptyFileException geworfen wird.
-SQLExceptionTest(): Überprüft, ob bei einem fehlerhaften SQL-Stetement eine SQLException geworfen wird.
+Die Klasse Db2DbStepTest überprüft die Funktionalitäten der Db2DbStep-Klasse.
 
 2.7.1.1. Test FaultFreeExecutionTest
 
---> Todo: Test beschreiben <--
+Dieser Test sollte Fehlerfrei durchlaufen. Es ist eine Standard-Transaktion.
+Erwartet: Kein Fehler
 
 2.7.1.2. Test Db2DbEmptyFileTest
 
---> Todo: Test beschreiben <--
+Ein leeres SQL-File wird erzeugt und dem Db2DBStep übergeben.
+Erwartet: EmptyFileException.
 
 2.7.1.3. Test SQLExceptionTest
 
---> Todo: Test beschreiben <--
+Eine fehlerhafte SQL-Datei.
+Erwartet: SQLException
 
 2.7.1.4. Test columnNumberTest
 
---> Todo: Test beschreiben <--
+Eine Tabelle mit 4 Spalten soll in eine Tabelle mit 2 Spalten kopiert werden.
+Erwartet: SQLException.
 
 2.7.1.5. Test IncompatibleDataTypeTest
 
---> todo: Test beschreiben <--
+Es wird versucht, ein Varchar in eine Integer-Spalte zu kopieren.
+Erwartet: SQLException
 
-2.7.1.6. Test EmptyTableTest
+2.7.1.6. Test CopyEmptyTableToOtherTableTest
 
---> Todo: Test beschreiben <--
+Der Inhalt einer leeren Tabelle wird in eine andere kopiert.
+Erwartet: Kein Fehler
 
-2.7.1.7. Test NullSourceValueTest
+2.7.1.7. Test DeleteTest
 
---> Todo: Test beschreiben <--
+Im TransferSet wird ein leeren der Tabelle verlangt. Im Test wird geschaut, ob es das auch tatsächlich tut, indem die 3
+Zeilen umfassende Tabelle geleert und danach mit einer einzigen Zeilen befüllt wird. Sind danach mehr als 1 Zeile
+vorhanden, hat das leeren nicht funktioniert.
+Erwartet: Nur einen Zeile in der Tabelle colors_copy
 
-2.7.1.8. Test DeleteTest
+2.7.1.8. Test CloseConnectionsTest
 
---> Todo: Test beschreiben <---
+Es wird eine Korrekte Db2DB-Transaktion ausgeführt.
+Erwartet: Geschlossene Connections
 
-2.7.1.9. Test CloseConnectionsTest
+2.7.1.9. Test CloseConnectionsAfterFailedTest
 
---> Todo: Test beschreiben <--
+Es wird eine Fehlerhafte Db2DB-Transaktion ausgeführt.
+Erwartet: Geschlossene Connections
 
-2.7.1.10. Test CloseConnectionsAfterFailedTest
-
---> Todo: Test beschreiben <--
-
-2.7.1.11. Test canWriteGeomFromWkbTest
-
---> Todo: Test beschreiben <--
-
-2.7.1.12. Test canWriteGeomFromWktText
-
---> Todo: Test beschreiben <--
-
-2.7.1.13. Test canWriteGeomFromGeoJsonTest
+2.7.1.10. Test canWriteGeomFromWkbTest
 
 --> Todo: Test beschreiben <--
 
-2.7.1.14. Method assertEqualGeomInSourceAndSing
+2.7.1.11. Test canWriteGeomFromWktText
+
+--> Todo: Test beschreiben <--
+
+2.7.1.12. Test canWriteGeomFromGeoJsonTest
+
+--> Todo: Test beschreiben <--
+
+2.7.1.13. Method assertEqualGeomInSourceAndSing
 
 Benötigt: con (Connection), schemaName (String)
 
@@ -1068,7 +1071,7 @@ Liefert: nichts
 
 --> Todo: Beschreibung <--
 
-2.7.1.15. Method preparePgGeomSourceSinkTables
+2.7.1.14. Method preparePgGeomSourceSinkTables
 
 Benötigt: schemaName (String), con (Connection)
 
@@ -1076,7 +1079,7 @@ Liefert: nichts
 
 --> Todo: Beschreibung <--
 
-2.7.1.16. Methode dropSchema
+2.7.1.15. Methode dropSchema
 
 Benötigt: schemaName (String), con (Connection)
 
@@ -1084,7 +1087,7 @@ Liefert: nichts
 
 --> Todo: Beschreibung <--
 
-2.7.1.17. Methode connectToPreparedPgDb
+2.7.1.16. Methode connectToPreparedPgDb
 
 Benötigt: schemaName (String)
 
@@ -1092,45 +1095,45 @@ Liefert: Connection
 
 --> Todo: Beschreibung <--
 
-2.7.1.18. Methode clearTestDb
+2.7.1.17. Methode clearTestDb
 
 Benötigt: sourceDb (Connector)
 
 Liefert: nichts
 
---> Todo: Beschreibung <--
+Löscht die Tabellen colors und colors_copy.
 
-2.7.1.19. Methode createFile
+2.7.1.18. Methode createFile
 
 Benötigt: stm (String), fileName (String)
 
 Liefert: File
 
---> Todo: Beschreibung <--
+Erstellt ein SQL File mit einem String, der der Methode mitgegeben wird.
 
-2.7.1.20. Methode createTestDb
+2.7.1.19. Methode createTestDb
 
 Benötigt: sourceDb (Connector)
 
 Liefert: nichts
 
---> Todo: Beschreibung <--
+Führt die Methoden createTableInTestDb und writeExampleDataInTestDB aus.
 
-2.7.1.21. Methode createTableInTestDb
+2.7.1.20. Methode createTableInTestDb
 
 Benötigt: con (Connection)
 
 Liefert: nichts
 
---> Todo: Beschreibung <--
+Erstellt die Tabellen colors und colors_copy
 
-2.7.1.22. Methode writeExampleDataInTestDB
+2.7.1.21. Methode writeExampleDataInTestDB
 
 Benötigt: con (Connection)
 
 Liefert: nichts 
 
---> Todo: Beschreibung <--
+Schreibt einen Satz voon Test-Daten in die Test-Tabelle
 
 2.7.2. Klasse SqlExecutorStepTest
 
