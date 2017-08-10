@@ -32,10 +32,10 @@ public class FileExtension {
 
     private static String getFileExtensionFromArray(String[] splittedFilePath) throws Exception{
         Integer arrayLength=splittedFilePath.length;
-        if (arrayLength >=2) {
+        if (arrayLength >= 2) {
             return splittedFilePath[arrayLength - 1];
         } else  {
-            throw new GretlException("Error: File without Fileextension");
+            throw new GretlException(GretlException.TYPE_MISSING_FILE_EXTENSION, "File must have a file extension");
         }
     }
 }

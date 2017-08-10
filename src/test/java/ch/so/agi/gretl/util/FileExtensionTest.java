@@ -7,8 +7,6 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 
-import static org.junit.Assert.assertFalse;
-
 /**
  * Tests for FileExtension-Class
  */
@@ -25,13 +23,12 @@ public class FileExtensionTest {
     }
 
     @Test
-    public void missingFileExtension() throws Exception {
+    public void missingFileExtensionThrowsGretlException() throws Exception {
         File sqlFile = folder.newFile("file");
         try {
             FileExtension.getFileExtension(sqlFile);
-            Assert.fail();
-        } catch (Exception e) {
-//todo welche Exception wird erwartet - generelles "catch all" ist nicht genau genug....
+        } catch (GretlException e) {
+            Assert.assertEquals("no file extension", e.getType());
         }
 
     }
@@ -44,13 +41,12 @@ public class FileExtensionTest {
     }
 
     @Test
-    public void strangeFileNameExtension() throws Exception {
+    public void strangeFileNameExtensionThrowsGretlException() throws Exception {
         File sqlFile = folder.newFile("c:\\file");
         try {
             FileExtension.getFileExtension(sqlFile);
-            Assert.fail();
-        } catch (Exception e) {
-//todo welche Exception wird erwartet - generelles "catch all" ist nicht genau genug....
+        } catch (GretlException e) {
+            Assert.assertEquals("no file extension", e.getType());
         }
 
     }

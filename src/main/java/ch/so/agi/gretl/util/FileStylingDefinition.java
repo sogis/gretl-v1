@@ -75,7 +75,7 @@ public class FileStylingDefinition {
         String line = bufferedInputFileStream.readLine();
         if (line.startsWith(stringBOM)) {
             bufferedInputFileStream.close();
-            throw new GretlException("File includes not allowed BOM");
+            throw new GretlException(GretlException.TYPE_FILE_WITH_BOM, "File includes not allowed BOM");
         } else {
             bufferedInputFileStream.close();
         }
