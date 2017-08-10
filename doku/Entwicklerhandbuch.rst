@@ -419,7 +419,7 @@ Die Klasse FileExtensionTest überprüft die Funktionalitäten der FileExtension
 
 Prüft, ob die Methode bei einem File mit der Endung .sql auch die Endung sql ermittelt wird.
 
-2.3.2.2. Test missingFileExtension
+2.3.2.2. Test missingFileExtensionThrowsGretlException
 
 Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegeben wird.
 
@@ -427,7 +427,7 @@ Prüft, ob bei einem File ohne Endung auch wirklich eine Fehlermeldung ausgegebe
 
 Prüft, ob bei einem File mit mehreren Endungen (file.ext1.ext2) auch wirklich die letzte Fileendung ausgegeben wird.
 
-2.3.2.4. Test strangeFileNameExtension
+2.3.2.4. Test strangeFileNameExtensionThrowsGretlException
 
 Prüft, ob bei einem File mit folgendem Namen (c:\\file) auch wirklich eine Fehlermeldung ausgeworfen wird.
 
@@ -637,6 +637,14 @@ Prüft, ob die geworfene Logmeldung der Erwartung entspricht.
 
 2.5.1.4. Test loggerOutputsCallingClassAsLogSource  --> ToDo: Was macht dieser Test????
 
+2.5.1.5. Methode resetSystemOutAndErr
+
+Benötigt: nicht
+
+Liefert: nicht
+
+Diese Methode setzt den Standard Output Stream und den Standard Error Stream wieder zurück auf die ursprünglichen Streams.
+
 
 **2.6.	Steps**
    
@@ -777,7 +785,19 @@ Beispiel::
 
    x.execute(sourceDb, sqlListe);
    
-2.6.3.2. Methode assertAtLeastOneSqlFileIsGiven
+2.6.3.2. Methode checkIfConnectorIsNotNull
+
+Benötigt: trans (Connector)
+
+Liefert: nichts
+
+Prüft, ob der übergebene Connector nicht null ist. Sollte er null sein, wird eine GretlException geworfen.
+
+Beispiel::
+   Connector trans = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
+   checkIfConnectorIsNotNull(trans);
+
+2.6.3.3. Methode assertAtLeastOneSqlFileIsGiven
 
 Benötigt: sqlFiles (List<File>)
 
@@ -790,7 +810,7 @@ Beispiel::
    sqlfiles = [new File("/Path/to/File/Filename.sql")]:
    assertAtLeastOneSqlFileIsGiven(sqlfiles);
    
-2.6.3.3. Methode logPathToInputSqlFiles
+2.6.3.4. Methode logPathToInputSqlFiles
 
 Benötigt: sqlfiles (List<File>)
 
@@ -803,7 +823,46 @@ Beispiel::
    sqlfiles = [new File("/Path/to/File/Filename.sql")]:
    logPathToInputSqlFiles(sqlfiles);
    
-2.6.3.4. Methode readSqlFiles
+2.6.3.5. Methode checkIfNoExistingFileIsEmpty
+
+Benötigt: sqlfiles (List<File>)
+
+Liefert: nichts
+
+Diese Methode prüft, ob die übergebenen Files existieren und ob sie nicht leer sind.
+
+Beispiel::
+
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]
+   checkIfNoExistingFileIsEmpty(sqlfiles)
+
+2.6.3.6. Methode checkFilesExtensionsForSqlExtension
+
+Benötigt: sqlfiles (List<File>)
+
+Liefert: nichts
+
+Mit dieser Methode wird überprüft, ob die übergebenen Files die Dateiendung ".sql" haben.
+
+Beispiel::
+
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]
+   checkFilesExtensionsForSqlExtension(sqlfiles)
+   
+2.6.3.7. Methode checkFilesForUTF8WithoutBOM
+
+Benötigt: sqlfiles (List<File>)
+
+Liefert: nichts
+
+Die Methode checkFilesForUTF8WithoutBOM führt die Methoden checkForUtf8 und checkForBOMInFile der FileStylingDefinition-Klasse aus. Mit diesen wird geprüft, ob die übergebenen File in UTF8 kodiert sind und ob sie keine BOM aufweisen.
+
+Beispiel::
+
+   sqlfiles = [new File("/Path/to/File/Filename.sql")]
+   checkFilesForUTF8WithoutBOM(sqlfiles)
+   
+2.6.3.8. Methode readSqlFiles
 
 Benötigt: sqlfiles (List<File>), db (Connection)
 
@@ -817,7 +876,7 @@ Beispiel::
    Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
    readSqlFiles(sqlfiles, db);
    
-2.6.3.5. Methode executeAllSqlStatements
+2.6.3.9. Methode executeAllSqlStatements
 
 Benötigt: conn (Connection), sqlfile (File)
 
@@ -831,7 +890,7 @@ Beispiel::
    Connection db = Drivermanager.getConnection(ConnectionUrl, Username, Password)
    executeAllSqlStatements(sqlfile, db);
 
-2.6.3.6. Methode prepareSqlStatement
+2.6.3.10. Methode prepareSqlStatement
 
 Benötigt: conn (Connection), statement (String)
 
@@ -846,7 +905,7 @@ Beispiel::
    
    prepareSqlStatement(conn, statement);
    
-2.6.3.7. Methode executeSqlStatement
+2.6.3.11. Methode executeSqlStatement
 
 Benötigt: dbstmt (Statement), statement (String)
 
@@ -1189,11 +1248,11 @@ Liefert: nichts
 
 Die Methode erstellt eine Verbindung zu der im Connector übergebenen Datenbank, löscht die in createTableInTestDb erstellte Tabelle und schliesst die Verbindung zur Datenbank.
 
-2.7.2.7. Test executeWithoutFiles
+2.7.2.7. Test executeWithoutFilesThrowsGretlException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn keine Files aber eine Datenbankconnection angegeben werden.
 
-2.7.2.8. Test executeWithoutDb
+2.7.2.8. Test executeWithoutDbThrowsGretlException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar ein sqlFile übergeben wird, aber keine Datenbankconnection. Der Test verwendet die Methode createCorrectSqlFiles für die Erstellung der sqlFiles
 
@@ -1205,7 +1264,7 @@ Liefert: List<File>
 
 Mit der Methode createCorrectSqlFiles werden zwei SQL-Dateien (query.sql, query1.sql) erzeugt, welche sogleich mit Queries abgefüllt werden und anschliessend als File-Liste zurückgegeben werden.
 
-2.7.2.10. Test executeDifferentExtensions
+2.7.2.10. Test executeWithWrongFileExtensionsThrowsGretlException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn eine Datenbankverbindung und in der Fileliste ein SQL-File und ein txt-File übergeben werden. Für die Erzeugung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet. Anschliessend wird mit der Methode createSqlFileWithWrongExtension ein txt-Datei erstellt.
 
@@ -1217,7 +1276,7 @@ Liefert: File
 
 Die Methode createSqlFileWithWrongExtension erzeugt eine txt-Datei, in welche eine korrekte Query geschrieben wird. Diese Datei wird als File zurückgegeben.
 
-2.7.2.12. Test executeEmptyFile
+2.7.2.12. Test executeEmptyFileThrowsEmptyFileException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn eine Datenbankverbindung, ein sql-File mit einer Query und ein sql-File ohne Query übergeben werden. Die korrekten SQL-Files werden mit der Methode createCorrectSqlFiles erzeugt. Das leere SQL-File wird mit der Methode createEmptySqlFile erzeugt.
 
@@ -1229,11 +1288,15 @@ Liefert: File
 
 Die Methode createEmptySqlFile erzeugt ein leeres SQL-File, welches dann zurückgegeben wird.
 
-2.7.2.14. Test executeWrongQuery
+2.7.2.14. Test executeWithInexistenFilePathThrowsFileNotFoundException
+
+Dieser Test prüft, ob eine Exception geworfen wird, wenn ein File angegeben wird, welches nicht existiert.
+
+2.7.2.15. Test executeWrongQueryThrowsSQLException
 
 Prüft, ob eine Fehlermeldung geworfen wird, wenn zwar eine Datenbankverbindung und ein sql-File übergeben wird, aber die Query im SQL-File falsch ist. Mit der Methode createWrongSqlFiles wird ein fehlerhaftes SQL-File erzeugt
 
-2.7.2.15. Methode createWrongSqlFiles
+2.7.2.16. Methode createWrongSqlFile
 
 Benötigt: nichts
 
@@ -1241,18 +1304,25 @@ Liefert: List<File>
 
 Die Methode createWrongSqlFiles erstellt eine SQL-Datei, welche mit einer fehlerbehafteten Query abgefüllt wird, und gibt dieses File im Anschluss in einer Liste zurück.
 
-2.7.2.16. Test executePositiveTest
+2.7.2.17. Test executeSqlFileWithoutStatementThrowsGretlException
+
+Dieser Test prüft, ob ein File, welches kein einziges Statement enthält aber auch nicht leer ist, eine Fehlermeldung wirft.
+
+2.7.2.18. Methode createSqlFilesWithoutStatement
+
+Benötigt: nichts
+
+Liefert: List<File>
+
+Diese Methode erstellte eine SQL-Datei, welche lediglich Semikolons enthält, und gibt diese als in einer Liste zurück.
+
+2.7.2.19 Test executePositiveTest
 
 Prüft, ob alles korrekt und ohne Fehlermeldung ausgeführt wird, wenn eine Datenbankverbindung und zwei sql-Files übergeben werden. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
-2.7.2.17. Test checkIfConnectionIsClosed
+2.7.2.20. Test checkIfConnectionIsClosed
 
 Prüft, ob nach dem Ausführen des Steps die Datenbankverbindung korrekt geschlossen wurde. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
-
-
-2.7.2.18. Test notClosedConnectionThrowsError
-
-Prüft, ob eine Datenbankverbindung, welche nach dem Ausführen des Steps nicht erfolgreich geschlossen wurde, eine Fehler verursacht. Für die Erstellung der korrekten SQL-Files wird die Methode createCorrectSqlFiles verwendet.
 
 
 **2.8.	Build.gradle**

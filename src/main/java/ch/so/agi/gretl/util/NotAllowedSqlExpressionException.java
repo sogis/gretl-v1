@@ -13,11 +13,4 @@ public class NotAllowedSqlExpressionException extends GretlException {
         super(message, cause);
     }
 
-    public NotAllowedSqlExpressionException(Throwable cause) {
-        super(cause);
-    }
-
-    public NotAllowedSqlExpressionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
