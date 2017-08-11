@@ -15,6 +15,8 @@ public class GretlException extends RuntimeException {
     public static final String TYPE_MISSING_FILE_EXTENSION = "no file extension";
     public static final String TYPE_FILE_WITH_BOM ="file with unallowed BOM";
     public static final String TYPE_NO_STATEMENT = "no statement in sql-file";
+    public static final String TYPE_FILE_NOT_READABLE = "TYPE_FILE_NOT_READABLE";
+
     private String type;
 
     public GretlException(){}

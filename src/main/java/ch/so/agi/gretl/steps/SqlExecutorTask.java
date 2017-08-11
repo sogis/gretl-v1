@@ -4,7 +4,7 @@ package ch.so.agi.gretl.steps;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
-import ch.so.agi.gretl.util.ExConverter;
+import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
@@ -46,7 +46,7 @@ public class SqlExecutorTask extends DefaultTask {
         }
 
 
-        List<File> files = convertToValidatedFileList(sqlFiles);
+        List<File> files = convertToFileList(sqlFiles);
 
         try {
             SqlExecutorStep step = new SqlExecutorStep(taskName);
@@ -55,12 +55,12 @@ public class SqlExecutorTask extends DefaultTask {
         } catch (Exception e) {
             log.error("Exception in creating / invoking SqlExecutorStep.", e);
 
-            GradleException ge = ExConverter.toGradleException(e);
+            GradleException ge = TaskUtil.toGradleException(e);
             throw ge;
         }
     }
 
-    private static List<File> convertToValidatedFileList(List<String> filePaths){
+    private List<File> convertToFileList(List<String> filePaths){
 
         List<File> files = new ArrayList<>();
 
@@ -69,12 +69,8 @@ public class SqlExecutorTask extends DefaultTask {
             if(filePath == null || filePath.length() == 0)
                 throw new IllegalArgumentException("Filepaths must not be null or empty");
 
-            File file = new File(filePath);
-
-            if(!file.canRead())
-                throw new IllegalArgumentException("Can not read the file at path: " + filePath);
-
-            files.add(new File(filePath));
+            File absolute = TaskUtil.createAbsolutePath(filePath, ((Task)this).getProject());
+            files.add(absolute);
         }
 
         return files;
