@@ -43,7 +43,8 @@ public class Db2DbStep {
      * @throws Exception
      */
     public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets) throws Exception {
-        assertListNotEmpty(transferSets);
+        assertValidTransferSets(transferSets);
+
         log.lifecycle( taskName + ": \n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
                 "sourceDb = "+sourceDb.connect().getMetaData().getURL()+", " +
                 "user = "+sourceDb.connect().getMetaData().getUserName()+", \n" +
@@ -267,9 +268,15 @@ public class Db2DbStep {
      * @param transferSets
      * @throws EmptyListException
      */
-    private void assertListNotEmpty(List<TransferSet> transferSets) throws EmptyListException {
+    private void assertValidTransferSets(List<TransferSet> transferSets) throws EmptyListException {
         if(transferSets.size() == 0) {
             throw new EmptyListException();
+        }
+
+        for(TransferSet ts : transferSets){
+            if(!ts.getInputSqlFile().canRead()){
+                throw new GretlException("Can not read input sql file at path: " + ts.getInputSqlFile().getPath());
+            }
         }
     }
 

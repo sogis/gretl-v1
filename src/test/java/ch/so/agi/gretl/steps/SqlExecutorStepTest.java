@@ -109,7 +109,7 @@ public class SqlExecutorStepTest {
     }
 
     @Test
-    public void executeWithInexistentFilePathThrowsFileNotFoundException() throws Exception {
+    public void executeWithInexistentFilePathThrowsGretlException() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "barpastu", null);
 
@@ -118,9 +118,11 @@ public class SqlExecutorStepTest {
 
         try {
             x.execute(sourceDb, sqlListe);
-        } catch (FileNotFoundException e) {
-            Assert.assertThat(e.getMessage(), containsString("File could not be found"));
-
+        } catch (GretlException e) {
+            Assert.assertEquals(
+                    "GretlException must be of type: " + GretlException.TYPE_FILE_NOT_READABLE,
+                    e.getType(),
+                    GretlException.TYPE_FILE_NOT_READABLE);
         }
     }
 
