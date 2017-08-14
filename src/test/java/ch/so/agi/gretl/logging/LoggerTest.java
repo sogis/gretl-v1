@@ -51,14 +51,12 @@ public class LoggerTest {
 
         try {
 
-            log.info("Info-Logger-Test");
+            log.info("$Info-Logger-Test$");
 
             String LogMessage = baos.toString();
-            String[] ArrayLogMessage = LogMessage.split(" -> ");
 
-            Assert.assertEquals("Logger is not working properly: " + baos.toString(),
-                    "Info-Logger-Test\n",
-                    ArrayLogMessage[1]);
+            Assert.assertTrue(LogMessage.contains("$Info-Logger-Test$"));
+
         } finally {
             resetSystemOutAndErr();
         }
@@ -76,16 +74,12 @@ public class LoggerTest {
     public void logErrorTest() throws Exception {
 
         try {
-            log.error("Error-Logger-Test", new RuntimeException("Test Exception"));
+            log.error("$Error-Logger-Test$", new RuntimeException("Test Exception"));
 
             String LogMessage = baos.toString();
-            String[] ArrayLogMessage = LogMessage.split(" -> ");
+            
+            Assert.assertTrue(LogMessage.contains("$Error-Logger-Test$"));
 
-            String[] ArrayMessage = ArrayLogMessage[1].split("\n");
-
-            Assert.assertEquals("Logger is not working properly: " + baos.toString(),
-                "Error-Logger-Test",
-                    ArrayMessage[0]);
         } finally {
             resetSystemOutAndErr();
         }
@@ -97,14 +91,12 @@ public class LoggerTest {
     public void logDebugTest() throws Exception {
 
         try{
-            log.debug("Debug-Logger-Test");
+            log.debug("$Debug-Logger-Test$");
 
             String LogMessage = baos.toString();
-            String[] ArrayLogMessage = LogMessage.split(" -> ");
 
-            Assert.assertEquals("Logger is not working properly: " + baos.toString(),
-                "Debug-Logger-Test\n",
-                    ArrayLogMessage[1]);
+            Assert.assertTrue(LogMessage.contains("$Debug-Logger-Test$"));
+
         } finally {
             resetSystemOutAndErr();
         }
