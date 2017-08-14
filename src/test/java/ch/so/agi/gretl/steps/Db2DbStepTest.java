@@ -416,7 +416,7 @@ public class Db2DbStepTest {
                 con.close();
         }
     }
-    
+
     @Test
     public void canWriteGeomFromGeoJsonTest() throws Exception {
         String schemaName = "GeomFromGeoJsonTest";
