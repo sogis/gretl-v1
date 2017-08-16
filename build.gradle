@@ -1,5 +1,5 @@
-group 'gretl'
-version '0.9'
+group 'ch.so.agi'
+version '1.0.0'
 
 repositories {
     mavenCentral()
@@ -8,6 +8,7 @@ repositories {
 apply plugin: 'java'
 
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 //apply plugin: 'findbugs'
 
 dependencies {
@@ -22,6 +23,24 @@ dependencies {
 }
 
 sourceCompatibility = 1.8
+
+publishing{
+    publications{
+        mavenJava(MavenPublication){
+            from components.java
+        }
+    }
+    repositories{
+        maven{
+            name gretlRepoName
+            url gretlRepoUrl
+            credentials {
+                username gretlRepoWriterName
+                password gretlRepoWriterPass
+            }
+        }
+    }
+}
 
 /*
 tasks.withType(FindBugs) {
