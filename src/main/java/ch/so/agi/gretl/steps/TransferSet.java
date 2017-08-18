@@ -19,8 +19,6 @@ public class TransferSet {
             throw new IllegalArgumentException("inputSqlFilePath must not be null or empty");
 
         this.inputSqlFile = new File(inputSqlFilePath);
-        if(!this.inputSqlFile.canRead())
-            throw new IllegalArgumentException("Can not read the file: " + inputSqlFilePath);
 
         if(outputQualifiedSchemaAndTableName == null || outputQualifiedSchemaAndTableName.length() == 0)
             throw new IllegalArgumentException("outputQualifiedTableName must not be null or empty");
@@ -57,6 +55,10 @@ public class TransferSet {
     }
 
     public File getInputSqlFile() { return inputSqlFile; }
+
+    public void setInputSqlFile(File inputSqlFile){
+        this.inputSqlFile = inputSqlFile;
+    }
 
     public String getOutputQualifiedTableName() {
         return outputQualifiedTableName;
