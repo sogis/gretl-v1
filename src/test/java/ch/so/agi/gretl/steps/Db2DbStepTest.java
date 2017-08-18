@@ -300,7 +300,7 @@ public class Db2DbStepTest {
 
             Assert.assertTrue("SourceConnection is not closed", sourceDb.connect().isClosed());
             Assert.assertTrue("TargetConnection is not closed", targetDb.connect().isClosed());
-            
+
         } finally {
             con.connect().close();
         }
