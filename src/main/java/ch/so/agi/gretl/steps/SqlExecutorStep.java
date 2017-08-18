@@ -3,6 +3,7 @@ package ch.so.agi.gretl.steps;
 import ch.so.agi.gretl.util.*;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import org.gradle.api.Task;
 
 import java.io.*;
 import java.sql.Connection;
@@ -53,9 +54,7 @@ public class SqlExecutorStep {
 
         checkIfConnectorIsNotNull(trans);
 
-        assertAtLeastOneSqlFileIsGiven(sqlfiles);
-
-
+        assertValidFilePaths(sqlfiles);
 
         log.lifecycle(taskName +": Given parameters DB-URL: "  + trans.connect().getMetaData().getURL() +
                 ", DB-User: " + trans.connect().getMetaData().getUserName() +
@@ -63,9 +62,6 @@ public class SqlExecutorStep {
 
 
         logPathToInputSqlFiles(sqlfiles);
-
-
-
 
 
         try{
@@ -112,15 +108,18 @@ public class SqlExecutorStep {
         }
     }
 
-    /**
-     * @param sqlfiles      Files with .sql-extension which contain queries
-     * @throws GretlException    if File is missing
-     */
-    private void assertAtLeastOneSqlFileIsGiven(List<File> sqlfiles)
+
+    private void assertValidFilePaths(List<File> sqlfiles)
             throws GretlException {
 
-        if (sqlfiles == null || sqlfiles.size() < 1){
-            throw new GretlException(GretlException.TYPE_NO_FILE, "Inputfile are either null or there is no inputfile");
+        if (sqlfiles == null || sqlfiles.size() == 0){
+            throw new GretlException(GretlException.TYPE_NO_FILE, "Inputfile list is null or empty");
+        }
+
+        for(File file : sqlfiles){
+            if(!file.canRead()){
+                throw new GretlException(GretlException.TYPE_FILE_NOT_READABLE, "Can not read sql file at path: " + file.getPath());
+            }
         }
     }
 
@@ -274,5 +273,4 @@ public class SqlExecutorStep {
             dbstmt.close();
         }
     }
-
 }
