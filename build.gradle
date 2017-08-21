@@ -1,5 +1,5 @@
 group 'ch.so.agi'
-version '1.0.0'
+version '1.0.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -24,6 +24,11 @@ dependencies {
 
 sourceCompatibility = 1.8
 
+setNonExistingPropertyToUndefinedValue('gretlRepoName')
+setNonExistingPropertyToUndefinedValue('gretlRepoUrl')
+setNonExistingPropertyToUndefinedValue('gretlRepoWriterName')
+setNonExistingPropertyToUndefinedValue('gretlRepoWriterPass')
+
 publishing{
     publications{
         mavenJava(MavenPublication){
@@ -39,6 +44,16 @@ publishing{
                 password gretlRepoWriterPass
             }
         }
+    }
+}
+
+def setNonExistingPropertyToUndefinedValue(propertyName){
+    setNonExistingPropertyToDefaultValue(propertyName, 'UNDEFINED')
+}
+
+def setNonExistingPropertyToDefaultValue(propertyName, defaultValue) {
+    if (!project.hasProperty(propertyName)) {
+        ext[propertyName] = defaultValue
     }
 }
 
