@@ -25,7 +25,7 @@ public class TransferSet {
 
         this.outputQualifiedTableName = outputQualifiedSchemaAndTableName;
 
-        this.deleteAllRows = deleteAllRows;
+        this.deleteAllRows = outputDeleteAllRows;
 
         initGeoColumnHash(geoColumns);
     }
