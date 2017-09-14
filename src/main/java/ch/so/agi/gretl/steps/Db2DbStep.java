@@ -149,10 +149,19 @@ public class Db2DbStep {
     private void deleteDestTableContents(Connection targetCon, String destTableName) throws SQLException {
         String sqltruncate = "DELETE FROM "+destTableName;
         log.info("Try to delete all rows in Table "+destTableName);
+        log.debug("SQL-Statement = "+sqltruncate);
         try {
-            PreparedStatement truncatestmt = targetCon.prepareStatement(sqltruncate);
-            truncatestmt.execute();
-            log.info( "DELETE succesfull!");
+            PreparedStatement stmt = targetCon.prepareStatement(sqltruncate);
+            stmt.execute();
+            //Test if there are no more Rows in the targettable
+            ResultSet rs = targetCon.createStatement().executeQuery("SELECT * FROM " + destTableName);
+            if (rs.next()) {
+                log.debug( "DELETE FROM TABLE "+destTableName+" failed. There are still Rows in the Target-Table!");
+                throw new SQLException();
+            }
+            else {
+                log.info( "DELETE succesfull!");
+            }
         } catch (SQLException e1) {
             log.error( "DELETE FROM TABLE "+destTableName+" failed.", e1);
             throw e1;

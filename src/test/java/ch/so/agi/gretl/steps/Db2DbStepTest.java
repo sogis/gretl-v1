@@ -4,10 +4,12 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import javax.print.DocFlavor;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -258,6 +260,10 @@ public class Db2DbStepTest {
         //unittest
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
+        Statement stmt = con.connect().createStatement();
+        stmt.execute("INSERT INTO colors_copy  VALUES (255,0,0,'rot')");
+        stmt.execute("INSERT INTO colors_copy  VALUES (251,0,0,'rot')");
+        stmt.execute("INSERT INTO colors_copy  VALUES (0,0,255,'blau')");
         try {
             File sqlFile = createFile("SELECT rot, gruen, blau, farbname FROM (SELECT ROW_NUMBER() OVER() AS rownum, colors.* FROM colors) AS tmp WHERE rownum <= 1;", "query.sql");
 
@@ -273,17 +279,16 @@ public class Db2DbStepTest {
 
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             ResultSet rs = con.connect().createStatement().executeQuery("SELECT * FROM colors_copy");
-
-            assertEquals(rs.getFetchSize(), 1);
+            int i = 0;
+            while(rs.next()) {
+                i+=1;
+            }
+            assertEquals(i, 1);
 
         } finally {
             con.connect().close();
         }
     }
-    //TEST with ORACLE and PostgreSQL ////////////////////////////////
-
-    //TEST MUSS evtl. NOCH GESCHRIEBEN WERDEN....
-
 
     @Test
     public void CloseConnectionsTest() throws Exception {
@@ -678,6 +683,9 @@ public class Db2DbStepTest {
         }
     }
 
+
+    //HILFSFUNKTIONEN FÜR DIE TESTS! ////
+
     private static void prepareSrcTable(String schemaName, Connection con) throws SQLException
     {
         Statement s = con.createStatement();
@@ -752,12 +760,6 @@ public class Db2DbStepTest {
 
         return con;
     }
-
-
-
-
-
-    //HILFSFUNKTIONEN FÜR DIE TESTS! ////
 
     private void clearTestDb(Connector sourceDb) throws Exception {
         Connection con = sourceDb.connect();
