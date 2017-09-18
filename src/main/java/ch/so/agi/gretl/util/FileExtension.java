@@ -15,6 +15,7 @@ public class FileExtension {
      *
      * @param inputFile File, which should be checked for the extension
      * @return          file extension (e.g. ".sql")
+     * @throws GretlException if no extension
      */
     public static String getFileExtension(File inputFile)
             throws Exception {

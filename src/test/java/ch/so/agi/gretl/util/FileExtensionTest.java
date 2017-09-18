@@ -42,7 +42,7 @@ public class FileExtensionTest {
 
     @Test
     public void strangeFileNameExtensionThrowsGretlException() throws Exception {
-        File sqlFile = folder.newFile("c:\\file");
+        File sqlFile = new File("c:\\file");
         try {
             FileExtension.getFileExtension(sqlFile);
         } catch (GretlException e) {
