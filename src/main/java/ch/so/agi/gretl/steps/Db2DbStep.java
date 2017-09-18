@@ -117,10 +117,13 @@ public class Db2DbStep {
                 transferSet);
 
         int columncount = rs.getMetaData().getColumnCount();
+        int k = 0;
         while (rs.next()) {
             transferRow(rs, insertRowStatement, columncount);
+            k+=1;
         }
         insertRowStatement.executeBatch();
+        log.debug("Transfer "+k+" rows and "+columncount+" columns to table "+transferSet.getOutputQualifiedTableName());
     }
 
     /**
