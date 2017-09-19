@@ -117,7 +117,6 @@ public class Db2DbStep {
                 transferSet);
 
         int columncount = rs.getMetaData().getColumnCount();
-
         while (rs.next()) {
             transferRow(rs, insertRowStatement, columncount);
         }
@@ -149,19 +148,10 @@ public class Db2DbStep {
     private void deleteDestTableContents(Connection targetCon, String destTableName) throws SQLException {
         String sqltruncate = "DELETE FROM "+destTableName;
         log.info("Try to delete all rows in Table "+destTableName);
-        log.debug("SQL-Statement = "+sqltruncate);
         try {
             PreparedStatement stmt = targetCon.prepareStatement(sqltruncate);
             stmt.execute();
-            //Test if there are no more Rows in the targettable
-            ResultSet rs = targetCon.createStatement().executeQuery("SELECT * FROM " + destTableName);
-            if (rs.next()) {
-                log.debug( "DELETE FROM TABLE "+destTableName+" failed. There are still Rows in the Target-Table!");
-                throw new SQLException();
-            }
-            else {
-                log.info( "DELETE succesfull!");
-            }
+            log.info( "DELETE succesfull!");
         } catch (SQLException e1) {
             log.error( "DELETE FROM TABLE "+destTableName+" failed.", e1);
             throw e1;
@@ -193,7 +183,6 @@ public class Db2DbStep {
      */
     private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, TransferSet tSet) throws SQLException {
         ResultSetMetaData meta = null;
-        Statement dbstmt = null;
         StringBuilder columnNames = null;
         StringBuilder bindVariables = null;
 
@@ -225,8 +214,6 @@ public class Db2DbStep {
                 bindVariables.append("?");
             }
         }
-        log.debug("Transfering table with " + rs.getFetchSize() + " rows and "+meta.getColumnCount() + " columns to table " + tSet.getOutputQualifiedTableName());
-
         String sql = "INSERT INTO " + tSet.getOutputQualifiedTableName() + " ("
                 + columnNames
                 + ") VALUES ("
