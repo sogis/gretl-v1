@@ -10,6 +10,10 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.interlis2.validator.Validator;
 
@@ -21,13 +25,13 @@ import java.util.List;
 public class IliValidator extends DefaultTask {
     private GretlLogger log;
 
-    @Input
+    @InputFiles
     public List<Object> dataFiles;
 	@Input
 	public String models = null;
 	@Input
 	public String modeldir = null;
-	@Input
+	@InputFile
 	public Object configFile = null;
 	@Input
 	public boolean forceTypeValidation = false;
@@ -39,11 +43,11 @@ public class IliValidator extends DefaultTask {
 	public boolean allObjectsAccessible=false;
     @Input
     public boolean skipPolygonBuilding=false;
-	@Input
+	@OutputFile
 	public Object logFile = null;
-	@Input
+	@OutputFile
 	public Object xtflogFile = null;
-	@Input
+	@InputDirectory
 	public Object pluginFolder = null;
 	@Input
 	public String proxy = null;
