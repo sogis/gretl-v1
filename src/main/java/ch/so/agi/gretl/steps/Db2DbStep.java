@@ -184,49 +184,75 @@ public class Db2DbStep {
      * @return The InsertRowStatement
      * @throws SQLException
      */
-    private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, TransferSet tSet) throws SQLException {
+    private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, TransferSet tSet) {
         ResultSetMetaData meta = null;
-        StringBuilder columnNames = null;
-        StringBuilder bindVariables = null;
+        PreparedStatement insertRowStatement = null;
 
         try {
             meta = rs.getMetaData();
+
+            String insertColNames = buildInsertColumnNames(meta, targetCon, tSet.getOutputQualifiedTableName());
+            String valuesList = buildValuesList(meta, tSet);
+
+            String sql = "INSERT INTO " + tSet.getOutputQualifiedTableName() + " ("
+                    + insertColNames
+                    + ") VALUES ("
+                    + valuesList
+                    + ")";
+            insertRowStatement = targetCon.prepareStatement(sql);
+
+            log.info(String.format(taskName + ": Sql insert statement: [%s]", sql));
+
         } catch (SQLException g) {
-            log.info( String.valueOf(g));
-            throw new SQLException(g);
+            throw new GretlException(g);
         }
-        columnNames = new StringBuilder();
-        bindVariables = new StringBuilder();
-
-        int j;
-        for (j = 1; j <= meta.getColumnCount(); j++)
-        {
-            if (j > 1) {
-                columnNames.append(", ");
-                bindVariables.append(", ");
-            }
-
-            String colName = meta.getColumnName(j);
-            columnNames.append(colName);
-
-            if(tSet.isGeoColumn(colName)){
-                String func = tSet.wrapWithGeoTransformFunction(colName, "?");
-                bindVariables.append(func);
-            }
-            else {
-                bindVariables.append("?");
-            }
-        }
-        String sql = "INSERT INTO " + tSet.getOutputQualifiedTableName() + " ("
-                + columnNames
-                + ") VALUES ("
-                + bindVariables
-                + ")";
-        PreparedStatement insertRowStatement = targetCon.prepareStatement(sql);
-
-        log.lifecycle(String.format(taskName + ": Sql insert statement: [%s]", sql));
 
         return insertRowStatement;
+    }
+
+    private static String buildValuesList(ResultSetMetaData meta, TransferSet tSet){
+        StringBuffer valuesList = new StringBuffer();
+        try {
+            for (int j = 1; j <= meta.getColumnCount(); j++) {
+                if (j > 1) {
+                    valuesList.append(", ");
+                }
+
+                String colName = meta.getColumnName(j);
+
+                if (tSet.isGeoColumn(colName)) {
+                    String func = tSet.wrapWithGeoTransformFunction(colName, "?");
+                    valuesList.append(func);
+                } else {
+                    valuesList.append("?");
+                }
+            }
+        }
+        catch(SQLException se){
+            throw new GretlException(se);
+        }
+        return valuesList.toString();
+    }
+
+    private static String buildInsertColumnNames(ResultSetMetaData sourceMeta, Connection targetCon, String targetTableName){
+        StringBuffer columnNames = new StringBuffer();
+        AttributeNameMap colMap = AttributeNameMap.createAttributeNameMap(targetCon, targetTableName);
+        try {
+            for (int j = 1; j <= sourceMeta.getColumnCount(); j++) {
+                if (j > 1) {
+                    columnNames.append(", ");
+                }
+
+                String srcColName = sourceMeta.getColumnName(j);
+                String targetColName = colMap.getAttributeName(srcColName);
+                columnNames.append(targetColName);
+
+            }
+        }
+        catch(SQLException se){
+            throw new GretlException(se);
+        }
+        return columnNames.toString();
     }
 
     /**

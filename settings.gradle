@@ -1,3 +1,3 @@
-rootProject.name = 'gretl'
+rootProject.name = 'gretlv1'
 include 'src'
 

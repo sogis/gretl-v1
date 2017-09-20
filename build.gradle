@@ -1,5 +1,5 @@
 group 'ch.so.agi'
-version '1.0.1-SNAPSHOT'
+version '1.0.2-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -65,4 +65,15 @@ tasks.withType(FindBugs) {
     }
 }
 */
+
+/*
+Ablauf für das Erstellen eines neue Release
+* gradle build muss fehlerfrei durchlaufen
+* jars auf snapshot deployen
+* Integrationstests durchführen
+* Versionsnummer anpassen (snapshot entfernen)
+* jars auf release deployen
+* Versionsnummer anpassen (auf snapshot folgeversion)
+* Nutzer orientieren
+ */
 
