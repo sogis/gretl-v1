@@ -6,10 +6,7 @@ import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.GretlException;
 import ch.so.agi.gretl.testutil.TestUtil;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedWriter;
@@ -263,37 +260,55 @@ public class Db2DbStepTest {
 
     @Test
     public void DeleteTest() throws Exception {
-        //unittest
-        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        createTestDb(con);
-        Statement stmt = con.connect().createStatement();
-        stmt.execute("INSERT INTO colors_copy  VALUES (255,0,0,'rot')");
-        stmt.execute("INSERT INTO colors_copy  VALUES (251,0,0,'rot')");
-        stmt.execute("INSERT INTO colors_copy  VALUES (0,0,255,'blau')");
+        //Datenbank für Test vorbereiten
+        Connection con = null;
         try {
-            File sqlFile = TestUtil.createFile(folder, "SELECT rot, gruen, blau, farbname FROM (SELECT ROW_NUMBER() OVER() AS rownum, colors.* FROM colors) AS tmp WHERE rownum <= 1;", "query.sql");
-
-            ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
-            mylist.add(new TransferSet(
-                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)
-            ));
-
-            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-
-            Db2DbStep db2db = new Db2DbStep();
-
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
-            ResultSet rs = con.connect().createStatement().executeQuery("SELECT * FROM colors_copy");
-            int i = 0;
-            while(rs.next()) {
-                i+=1;
-            }
-            assertEquals(i, 1);
-
+            Connector connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            con = connector.connect();
+            createTestDb(connector);
+            Statement stmt = con.createStatement();
+            stmt.execute("INSERT INTO colors_copy  VALUES (255,0,0,'rot')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (251,0,0,'rot')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (0,0,255,'blau')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (251,0,0,'rot')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (67,2,255,'blauauaua')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (251,45,23,'rotototo')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (67,3,255,'blauwederenzian')");
+            con.commit();
+            //Vorbereitungsverbindung schliessen
         } finally {
-            con.connect().close();
+            con.close();
         }
+
+        File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors;", "query.sql");
+
+        ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
+        mylist.add(new TransferSet(
+                sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)
+        ));
+
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB", "bjsvwsch", null);
+        Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB", "bjsvwsch", null);
+
+        Db2DbStep db2db = new Db2DbStep();
+        //db2dbstep ausführen
+        db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+
+        //Select auf db um korrektes ausführen zu verifizieren
+        Connection con2 = null;
+        try {
+            Connector connector2 = new Connector("jdbc:derby:memory:myInMemDB", "bjsvwsch", null);
+            con2 = connector2.connect();
+            ResultSet rs = con2.createStatement().executeQuery("SELECT COUNT(*) FROM colors_copy");
+            rs.next();
+            int i = rs.getInt(1);
+            con2.commit();
+            assertEquals(i, 3);
+        } finally {
+            con2.close();
+        }
+
+
     }
 
     @Test
