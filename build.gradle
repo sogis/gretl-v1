@@ -1,5 +1,5 @@
 group 'ch.so.agi'
-version '1.0.2-SNAPSHOT'
+version env('GRETL_VERSION', '1.0.2-SNAPSHOT')
 
 repositories {
     mavenCentral()
@@ -24,10 +24,6 @@ dependencies {
 
 sourceCompatibility = 1.8
 
-setNonExistingPropertyToUndefinedValue('gretlRepoName')
-setNonExistingPropertyToUndefinedValue('gretlRepoUrl')
-setNonExistingPropertyToUndefinedValue('gretlRepoWriterName')
-setNonExistingPropertyToUndefinedValue('gretlRepoWriterPass')
 
 publishing{
     publications{
@@ -37,24 +33,26 @@ publishing{
     }
     repositories{
         maven{
-            name gretlRepoName
-            url gretlRepoUrl
+            name 'AIO AGI Artifactory'
+            url env('GRETL_JAR_URL')
             credentials {
-                username gretlRepoWriterName
-                password gretlRepoWriterPass
+                username env('GRETL_JAR_USER')
+                password env('GRETL_JAR_PASS')
             }
         }
     }
 }
 
-def setNonExistingPropertyToUndefinedValue(propertyName){
-    setNonExistingPropertyToDefaultValue(propertyName, 'UNDEFINED')
+def env(environmentVariableName){
+    return env(environmentVariableName, 'UNDEFINED')
 }
 
-def setNonExistingPropertyToDefaultValue(propertyName, defaultValue) {
-    if (!project.hasProperty(propertyName)) {
-        ext[propertyName] = defaultValue
+def env(environmentVariableName, defaultValue){
+    def var = System.getenv(environmentVariableName)
+    if (var == null || var.length() == 0){
+        var = defaultValue
     }
+    return var;
 }
 
 /*

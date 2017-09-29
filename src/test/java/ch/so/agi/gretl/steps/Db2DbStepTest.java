@@ -284,6 +284,8 @@ public class Db2DbStepTest {
             Db2DbStep db2db = new Db2DbStep();
 
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+
+
             ResultSet rs = con.connect().createStatement().executeQuery("SELECT * FROM colors_copy");
             int i = 0;
             while(rs.next()) {
