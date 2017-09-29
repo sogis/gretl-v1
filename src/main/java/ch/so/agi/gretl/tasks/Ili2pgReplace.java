@@ -19,7 +19,7 @@ public class Ili2pgReplace extends Ili2pgAbstractTask {
     {
         Config settings=createConfig();
         settings.setConfigReadFromDb(true);
-    	int function=Config.FC_UPDATE;
+    	int function=Config.FC_REPLACE;
         if (dataFile==null) {
             return;
         }
