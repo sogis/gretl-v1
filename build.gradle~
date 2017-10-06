@@ -56,13 +56,6 @@ def env(environmentVariableName, defaultValue){
 }
 
 /*
-Anforderungen:
-* Auch lokal ausführbar
-* Möglichst auf der Kommandozeile ausführbar (IDE-Unabhängig)
-* Nutzt für DB-Setup jdbc (gleiche Versionen wie GRETL selbst)
-* Möglichst einfache Integration in IDE und Buildserver (Jenkins)
-
-
 PG JUnit Tests:
 * Geometrie schreiben
 * Load test

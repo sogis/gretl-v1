@@ -290,6 +290,7 @@ public class Db2DbStepTest {
         Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB", "bjsvwsch", null);
         Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB", "bjsvwsch", null);
 
+
         Db2DbStep db2db = new Db2DbStep();
         //db2dbstep ausführen
         db2db.processAllTransferSets(sourceDb, targetDb, mylist);
