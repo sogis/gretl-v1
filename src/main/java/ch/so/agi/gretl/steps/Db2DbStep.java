@@ -122,6 +122,7 @@ public class Db2DbStep {
             transferRow(rs, insertRowStatement, columncount);
             k+=1;
         }
+
         insertRowStatement.executeBatch();
         log.debug("Transfer "+k+" rows and "+columncount+" columns to table "+transferSet.getOutputQualifiedTableName());
     }
