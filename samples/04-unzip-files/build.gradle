@@ -1,0 +1,36 @@
+description = """\n
+You can use the built-in copy task for unzipping files.
+"""
+
+task unzipSingleFile(type: Copy) {
+    description = "Unzip a single zip file."
+    doLast {
+        println "File unzipped to directory: " + rootProject.projectDir
+    }    
+    from zipTree(file("foo.zip"))
+    into file(rootProject.projectDir)
+
+    // Only *.txt files in the zip file will be extracted.
+    include "*.txt" 
+}
+
+task unzipAllFilesInDirectory(type: Copy) {
+    description = "Unzip all zip files in a directory."
+    doLast {
+        println "Files unzipped to directory: " + rootProject.projectDir
+    }  
+
+    // Task runs even when no change is detected.
+    outputs.upToDateWhen {false}
+
+    from {
+        file(rootProject.projectDir).listFiles().findAll {
+            it.name.endsWith('.zip')
+        }.collect { 
+            zipTree(it) 
+        }
+    }
+    into rootProject.projectDir
+    include '**/*.txt'
+    include '**/*.TXT'
+}
