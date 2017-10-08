@@ -1,0 +1,75 @@
+description = """\n
+FTP downloads can be made with ant. It uses some old 'sun.*' classes.
+These should be avoided according to 'the internet'...
+"""
+
+repositories {
+    jcenter()
+}
+
+configurations {
+    ftpAntTask
+}
+
+dependencies {
+    ftpAntTask("org.apache.ant:ant-commons-net:1.8.2") {
+        module("commons-net:commons-net:1.4.1") {
+            dependencies "oro:oro:2.0.8:jar"
+        }
+    }
+}
+
+// 'remotedir: "avdpool/1.itf"' does not work. It throws some error:
+// "could not change remote directory: 550 Failed to change directory."
+task downloadSingleFile {
+    description = "Download a single file to an existing directory."    
+    doLast {
+        ant {
+            taskdef(name: "ftp", classname: "org.apache.tools.ant.taskdefs.optional.net.FTP", classpath: configurations.ftpAntTask.asPath)      
+            ftp(action: "get", server: "ftp.example.com", userid: "foo", password: "bar", remotedir: "avdpool", verbose: true) {
+                fileset(dir: System.getProperty("java.io.tmpdir")) {
+                    include(name: "**/1.itf")
+                }
+            }
+        }
+        println "All files downloaded to: " + System.getProperty("java.io.tmpdir")
+    }
+
+} 
+
+task downloadMultipleFiles() {
+    description = "Download multiple files to an existing directory."
+    doLast {
+        ant {
+            taskdef(name: "ftp", classname: "org.apache.tools.ant.taskdefs.optional.net.FTP", classpath: configurations.ftpAntTask.asPath)      
+            ftp(action: "get", server: "ftp.example.com", userid: "foo", password: "bar", remotedir: "avdpool", verbose: true) {
+                fileset(dir: System.getProperty("java.io.tmpdir")) {
+                    include(name: "**/*.itf")
+                }
+            }
+        }
+        println "All files downloaded to: " + System.getProperty("java.io.tmpdir")
+    }
+}
+
+// This does not work:
+// Caused by: java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+// at org.apache.commons.net.ftp.FTPClient.__parsePathname(FTPClient.java:330)
+// at org.apache.commons.net.ftp.FTPClient.printWorkingDirectory(FTPClient.java:1812)
+// I think I almost tried everything :-(
+"""
+task downloadMultipleFilesFromExoticFtpServer() {
+    description = "We almost all know what we mean..."
+    doLast {
+        ant {
+            taskdef(name: "ftp", classname: "org.apache.tools.ant.taskdefs.optional.net.FTP", classpath: configurations.ftpAntTask.asPath)      
+            ftp(action: "get", server: "ftp.infogrips.ch", userid: "foo", password: "bar", remotedir: "DM01AVSO24LV95", separator: "\\", verbose: true, binary: true, ignoreNoncriticalErrors: true) {
+                fileset(dir: System.getProperty("java.io.tmpdir")) {
+                    include(name: "**/*.zip")
+                }
+            }
+        }
+        println "All files downloaded to: " + System.getProperty("java.io.tmpdir")
+    }
+}
+"""

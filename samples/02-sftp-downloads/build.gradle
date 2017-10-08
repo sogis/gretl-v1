@@ -1,0 +1,62 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.hidetake:gradle-ssh-plugin:2.9.0"
+    }
+}
+
+apply plugin: "org.hidetake.ssh"
+
+description = """\n
+For FTP downloads you can use the gradle ssh plugin:
+https://gradle-ssh-plugin.github.io/
+
+Be aware that since it uses ssh to transfer the files, sftp
+must be supported by the ftp server.
+"""
+
+// Instead of passwords you can use something like: 
+// "identity = file('id_rsa')"
+// See also console output:
+// "Host key checking is off. It may be vulnerable to man-in-the-middle attacks."
+remotes {
+    ftpServer {
+        host = "ftp.example.com"
+        user = "foo"
+        password = "bar"
+    }
+} 
+
+task downloadSingleFile() {
+    description = "Download a single file with sftp."
+    doLast {
+        ssh.settings {
+            knownHosts = allowAnyHosts
+        }
+        ssh.run {
+            session(remotes.ftpServer) {
+                get from: "fubar.txt", into: System.getProperty("java.io.tmpdir"), fileTransfer: "sftp" // or "scp"
+            }
+        }
+        println "File downloaded to: " + System.getProperty("java.io.tmpdir")
+    }
+}
+
+task downloadedDirectory() {
+    description = "Download a directory and using some file extension filter." +
+        "It will create the remote directory in the download directory."
+    doLast {
+        ssh.settings {
+            knownHosts = allowAnyHosts
+        }
+        ssh.run {
+            session(remotes.ftpServer) {
+                get from: "avdpool/", into: System.getProperty("java.io.tmpdir"), filter: { it.name =~ /\.itf$/ }
+            }
+        }
+        println "Directory downloaded to: " + System.getProperty("java.io.tmpdir")
+    }
+}
+

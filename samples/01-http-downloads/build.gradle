@@ -1,0 +1,72 @@
+import de.undercouch.gradle.tasks.download.Download
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "de.undercouch:gradle-download-task:3.3.0"
+    }
+}
+
+apply plugin: "de.undercouch.download"
+
+description = """\n
+HTTP downloads can be made with the gradle-download-task plugin:
+https://github.com/michel-kraemer/gradle-download-task
+
+See also this site for some cookbook like tips & tricks:
+https://www.michel-kraemer.com/recipes-for-gradle-download/
+"""
+ext {
+    fosnrs = [2601,2543]
+}
+
+task downloadSingleFile(type: Download) {
+    description = "Download a single file to a specific directory."
+    doLast {
+        println "File downloaded to: " + System.getProperty("java.io.tmpdir")
+    }
+    src 'https://data.geo.admin.ch/ch.swisstopo-vd.amtliche-vermessung/DM01AVCH24D/ITF/SO/2601.zip'
+    dest System.getProperty("java.io.tmpdir")
+    overwrite true
+}
+
+task downloadMultipleFilesOneTask(type: Download) {
+    description = "Download multiple files with one task."
+    doLast {
+        println "Files downloaded to: " + System.getProperty("java.io.tmpdir")
+    }
+    src ([
+        'https://data.geo.admin.ch/ch.swisstopo-vd.amtliche-vermessung/DM01AVCH24D/ITF/SO/2601.zip',
+        'https://data.geo.admin.ch/ch.swisstopo-vd.amtliche-vermessung/DM01AVCH24D/ITF/SO/2543.zip'
+    ])
+    dest System.getProperty("java.io.tmpdir")
+    overwrite true
+}
+
+// Create dynamic tasks for every file you want to download.
+// 'gradle tasks --all' will show the dynamic tasks.
+fosnrs.each { fosnr ->
+    task "downloadFile_$fosnr"(type: Download) {
+        description = "Download dataset $fosnr"
+        doLast {
+            println "File downloaded to: " + System.getProperty("java.io.tmpdir")
+        }
+        src "https://data.geo.admin.ch/ch.swisstopo-vd.amtliche-vermessung/DM01AVCH24D/ITF/SO/$fosnr" + ".zip"
+        dest System.getProperty("java.io.tmpdir")
+    }
+}
+
+task downloadAllFiles() {
+    description = "This task performs all dynamic download tasks."
+    doLast {
+        println "All dynamic tasks were performed."
+    }
+}
+
+downloadAllFiles.dependsOn {
+    tasks.findAll { task -> task.name.startsWith('downloadFile_') }
+}
+
+
