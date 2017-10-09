@@ -32,15 +32,15 @@ public class Db2DbTask extends DefaultTask {
     public List<TransferSet> transferSets;
 
     @TaskAction
-    public void db2DbTask() throws Exception {
-
+    public void executeTask() throws Exception {
         String taskName = ((Task)this).getName();
         convertToAbsolutePaths(transferSets);
+
+        log.info(String.format("Start Db2DbTask(Name: %s SourceDb: %s TargetDb: %s Transfers: %s)", taskName, sourceDb, targetDb, transferSets));
 
         try {
             Db2DbStep step = new Db2DbStep(taskName);
             step.processAllTransferSets(sourceDb, targetDb, transferSets);
-            log.info("Task start");
         } catch (Exception e) {
             log.error("Exception in creating / invoking Db2DbStep in Db2DbTask", e);
 

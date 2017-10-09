@@ -9,6 +9,7 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 /**
  * Class which is used get a connection to the database
@@ -45,6 +46,15 @@ public class Connector {
 
     }
 
+    public String toString() {
+        int passLength = 0;
+        if(dbPassword != null)
+            passLength = dbPassword.length();
 
+        char[] starArray = new char[passLength];
+        Arrays.fill(starArray, "*".toCharArray()[0]);
 
+        String res = String.format("Connection( DbUri: %s, DbUser: %s DbPass: %s)", dbUri, dbUser, new String(starArray));
+        return res;
+    }
 }
