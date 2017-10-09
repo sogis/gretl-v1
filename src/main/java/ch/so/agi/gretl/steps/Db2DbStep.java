@@ -128,11 +128,17 @@ public class Db2DbStep {
                 transferSet);
 
         int columncount = rs.getMetaData().getColumnCount();
+        int batchSize = 5000;
         int k = 0;
         while (rs.next()) {
             transferRow(rs, insertRowStatement, columncount);
+            if(k % batchSize == 0) {
+                insertRowStatement.executeBatch();
+                insertRowStatement.clearBatch();
+            }
             k+=1;
         }
+
         insertRowStatement.executeBatch();
         log.debug("Transfer "+k+" rows and "+columncount+" columns to table "+transferSet.getOutputQualifiedTableName());
 

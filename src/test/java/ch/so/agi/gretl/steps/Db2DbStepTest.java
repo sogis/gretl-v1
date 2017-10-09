@@ -339,6 +339,29 @@ public class Db2DbStepTest {
         }
     }
 
+    @Ignore
+    @Test
+    public void MichaelTest() throws Exception {
+
+        ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
+
+        File sqlfile = new File("/home/bjsvwsch/codebasis/gretlv1/src/test/resources/michaeltest.sql");
+        mylist.add(new TransferSet(
+                sqlfile.getPath(), "afu_altlasten_pub.altlasten_belastete_standorte_internet", new Boolean(true)
+        ));
+
+        Connector sourceDb = new Connector("jdbc:postgresql://geodb.verw.rootso.org/sogis", "bjsvwsch", null);
+        Connector targetDb = new Connector("jdbc:postgresql://geodb-t.verw.rootso.org/sogis", "bjsvwsch", null);
+
+        Db2DbStep db2db = new Db2DbStep();
+        //db2dbstep ausführen
+        db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+
+    }
+
+
+
+
     @Test
     public void CloseConnectionsAfterFailedTest() throws Exception {
 
