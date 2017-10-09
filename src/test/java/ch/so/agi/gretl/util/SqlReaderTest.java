@@ -36,20 +36,4 @@ public class SqlReaderTest {
 
         Assert.assertEquals("Line comment must be removed without changing the statement itself", statement, parsedStatement);
     }
-
-    @Ignore
-    @Test
-    public void blockCommentsCleanRemoved() throws Exception {
-
-        String blockComment = "/*This is a multiline\nblock comment. */";
-        String statement = "select \"user\", \"admin\", \"alias\" from sqlkeywords";
-
-        String wholeStatement = blockComment + "\n" + statement;
-
-        File sqlFile = TestUtil.createFile(folder, wholeStatement, "statementIsUnchanged.sql");
-
-        String parsedStatement = SqlReader.readSqlStmt(sqlFile);
-
-        Assert.assertEquals("Block comment must be removed without changing the statement itself", statement, parsedStatement);
-    }
 }
