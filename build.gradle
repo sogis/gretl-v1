@@ -1,5 +1,6 @@
 group 'ch.so.agi'
 version '1.0.2-SNAPSHOT'
+version env('GRETL_VERSION', '1.0.2-SNAPSHOT')
 
 repositories {
     mavenCentral()
@@ -36,10 +37,6 @@ dependencies {
 
 sourceCompatibility = 1.8
 
-setNonExistingPropertyToUndefinedValue('gretlRepoName')
-setNonExistingPropertyToUndefinedValue('gretlRepoUrl')
-setNonExistingPropertyToUndefinedValue('gretlRepoWriterName')
-setNonExistingPropertyToUndefinedValue('gretlRepoWriterPass')
 
 publishing{
     publications{
@@ -49,25 +46,47 @@ publishing{
     }
     repositories{
         maven{
-            name gretlRepoName
-            url gretlRepoUrl
+            name 'AIO AGI Artifactory'
+            url env('GRETL_JAR_URL')
             credentials {
-                username gretlRepoWriterName
-                password gretlRepoWriterPass
+                username env('GRETL_JAR_USER')
+                password env('GRETL_JAR_PASS')
             }
         }
     }
 }
 
-def setNonExistingPropertyToUndefinedValue(propertyName){
-    setNonExistingPropertyToDefaultValue(propertyName, 'UNDEFINED')
+def env(environmentVariableName){
+    return env(environmentVariableName, 'UNDEFINED')
 }
 
-def setNonExistingPropertyToDefaultValue(propertyName, defaultValue) {
-    if (!project.hasProperty(propertyName)) {
-        ext[propertyName] = defaultValue
+def env(environmentVariableName, defaultValue){
+    def var = System.getenv(environmentVariableName)
+    if (var == null || var.length() == 0){
+        var = defaultValue
     }
+    return var;
 }
+
+/*
+Anforderungen:
+* Auch lokal ausführbar
+* Möglichst auf der Kommandozeile ausführbar (IDE-Unabhängig)
+* Nutzt für DB-Setup jdbc (gleiche Versionen wie GRETL selbst)
+* Möglichst einfache Integration in IDE und Buildserver (Jenkins)
+
+
+PG JUnit Tests:
+* Geometrie schreiben
+* Load test
+* DBa lesen DBb schreiben (pg -> sqlite / sqlite -> db)
+
+Integration Tests:
+* Sonnenpfad
+* Relatver Pfad zu build.gradle
+* Taskverkettung in Build.gradle
+* Rückgabetyp von gradle build
+ */
 
 /*
 tasks.withType(FindBugs) {
@@ -77,4 +96,15 @@ tasks.withType(FindBugs) {
     }
 }
 */
+
+/*
+Ablauf für das Erstellen eines neue Release
+* gradle build muss fehlerfrei durchlaufen
+* jars auf snapshot deployen
+* Integrationstests durchführen
+* Versionsnummer anpassen (snapshot entfernen)
+* jars auf release deployen
+* Versionsnummer anpassen (auf snapshot folgeversion)
+* Nutzer orientieren
+ */
 

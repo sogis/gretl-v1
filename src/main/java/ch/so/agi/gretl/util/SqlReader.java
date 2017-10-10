@@ -4,6 +4,8 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Class which reads the given sql-statements
@@ -36,7 +38,7 @@ public class SqlReader {
 
     public static void createPushbackReader(File sqlfile) throws FileNotFoundException {
         sqlFileInputStream = new FileInputStream(sqlfile);
-        sqlFileReader = new InputStreamReader(sqlFileInputStream);
+        sqlFileReader = new InputStreamReader(sqlFileInputStream, StandardCharsets.UTF_8);
 
         reader = new PushbackReader(sqlFileReader);
     }

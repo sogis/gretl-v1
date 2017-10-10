@@ -16,6 +16,7 @@ public class GretlException extends RuntimeException {
     public static final String TYPE_FILE_WITH_BOM ="file with unallowed BOM";
     public static final String TYPE_NO_STATEMENT = "no statement in sql-file";
     public static final String TYPE_FILE_NOT_READABLE = "TYPE_FILE_NOT_READABLE";
+    public static final String TYPE_COLUMN_MISMATCH = "TYPE_COLUMN_MISMATCH";
 
     private String type;
 
@@ -27,6 +28,10 @@ public class GretlException extends RuntimeException {
 
     public GretlException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public GretlException(Throwable cause) {
+        super(cause);
     }
 
     public GretlException(String type, String message){

@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,14 +46,12 @@ public class Db2DbStep {
     public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets) throws Exception {
         assertValidTransferSets(transferSets);
 
-        log.lifecycle( taskName + ": \n\nStart Db2DbStep. Found "+transferSets.size()+" transferSets. \n" +
-                "sourceDb = "+sourceDb.connect().getMetaData().getURL()+", " +
-                "user = "+sourceDb.connect().getMetaData().getUserName()+", \n" +
-                "targetDb = "+targetDb.connect().getMetaData().getURL()+", " +
-                "user = "+targetDb.connect().getMetaData().getUserName()+"\n");
+        log.lifecycle(String.format("Start Db2DbStep(Name: %s SourceDb: %s TargetDb: %s Transfers: %s)", taskName, sourceDb, targetDb, transferSets));
 
         Connection sourceDbConnection = null;
         Connection targetDbConnection = null;
+
+        ArrayList<String> rowCountStrings = new ArrayList<String>();
 
         try {
             sourceDbConnection = sourceDb.connect();
@@ -69,11 +68,21 @@ public class Db2DbStep {
                     FileStylingDefinition.checkForBOMInFile(transferSet.getInputSqlFile());
                 } catch (NullPointerException e){};
                 
-                processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
+                int rowCount = processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
+                rowCountStrings.add(Integer.toString(rowCount));
             }
             sourceDbConnection.commit();
             targetDbConnection.commit();
-            log.lifecycle(taskName + ": Transfered all Transfersets");
+
+            String rowCountList = String.join(",", rowCountStrings);
+            log.lifecycle(
+                    String.format(
+                            "Db2DbStep %s: Transfered all Transfersets. Number of Transfersets: %s, transfered rows: [%s]",
+                            taskName,
+                            rowCountStrings.size(),
+                            rowCountList
+                    )
+            );
         } catch (Exception e) {
             if (sourceDbConnection!=null) {
                 sourceDbConnection.rollback();
@@ -84,15 +93,16 @@ public class Db2DbStep {
             log.error("Exception while executing processAllTransferSets()", e);
             throw e;
         } finally {
-            if (sourceDb.connect() != null) {
-                sourceDb.connect().close();
+            if (sourceDbConnection != null) {
+                sourceDbConnection.close();
             }
-            if (targetDb.connect() != null) {
-                targetDb.connect().close();
+            if (targetDbConnection != null) {
+                targetDbConnection.close();
             }
         }
 
     }
+
 
     /**
      * Controls the execution of a TransferSet
@@ -103,9 +113,10 @@ public class Db2DbStep {
      * @throws FileNotFoundException
      * @throws EmptyFileException
      * @throws NotAllowedSqlExpressionException
+     * @returns The number of processed rows
      */
-    private void processTransferSet(Connection srcCon, Connection targetCon, TransferSet transferSet) throws SQLException, IOException, EmptyFileException, NotAllowedSqlExpressionException {
-        if (transferSet.getDeleteAllRows() == true) {
+    private int processTransferSet(Connection srcCon, Connection targetCon, TransferSet transferSet) throws SQLException, IOException, EmptyFileException, NotAllowedSqlExpressionException {
+        if (transferSet.deleteAllRows()) {
             deleteDestTableContents(targetCon, transferSet.getOutputQualifiedTableName());
         }
         String selectStatement = extractSingleStatement(transferSet.getInputSqlFile());
@@ -117,10 +128,21 @@ public class Db2DbStep {
                 transferSet);
 
         int columncount = rs.getMetaData().getColumnCount();
+        int batchSize = 5000;
+        int k = 0;
         while (rs.next()) {
             transferRow(rs, insertRowStatement, columncount);
+            if(k % batchSize == 0) {
+                insertRowStatement.executeBatch();
+                insertRowStatement.clearBatch();
+            }
+            k+=1;
         }
+
         insertRowStatement.executeBatch();
+        log.debug("Transfer "+k+" rows and "+columncount+" columns to table "+transferSet.getOutputQualifiedTableName());
+
+        return k;
     }
 
     /**
@@ -147,11 +169,10 @@ public class Db2DbStep {
      */
     private void deleteDestTableContents(Connection targetCon, String destTableName) throws SQLException {
         String sqltruncate = "DELETE FROM "+destTableName;
-        log.info("Try to delete all rows in Table "+destTableName);
         try {
             PreparedStatement stmt = targetCon.prepareStatement(sqltruncate);
             stmt.execute();
-            log.info( "DELETE succesfull!");
+            log.info( "DELETE executed");
         } catch (SQLException e1) {
             log.error( "DELETE FROM TABLE "+destTableName+" failed.", e1);
             throw e1;
@@ -181,49 +202,75 @@ public class Db2DbStep {
      * @return The InsertRowStatement
      * @throws SQLException
      */
-    private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, TransferSet tSet) throws SQLException {
+    private PreparedStatement createInsertRowStatement(Connection srcCon, Connection targetCon, ResultSet rs, TransferSet tSet) {
         ResultSetMetaData meta = null;
-        StringBuilder columnNames = null;
-        StringBuilder bindVariables = null;
+        PreparedStatement insertRowStatement = null;
 
         try {
             meta = rs.getMetaData();
+
+            String insertColNames = buildInsertColumnNames(meta, targetCon, tSet.getOutputQualifiedTableName());
+            String valuesList = buildValuesList(meta, tSet);
+
+            String sql = "INSERT INTO " + tSet.getOutputQualifiedTableName() + " ("
+                    + insertColNames
+                    + ") VALUES ("
+                    + valuesList
+                    + ")";
+            insertRowStatement = targetCon.prepareStatement(sql);
+
+            log.info(String.format(taskName + ": Sql insert statement: [%s]", sql));
+
         } catch (SQLException g) {
-            log.info( String.valueOf(g));
-            throw new SQLException(g);
+            throw new GretlException(g);
         }
-        columnNames = new StringBuilder();
-        bindVariables = new StringBuilder();
-
-        int j;
-        for (j = 1; j <= meta.getColumnCount(); j++)
-        {
-            if (j > 1) {
-                columnNames.append(", ");
-                bindVariables.append(", ");
-            }
-
-            String colName = meta.getColumnName(j);
-            columnNames.append(colName);
-
-            if(tSet.isGeoColumn(colName)){
-                String func = tSet.wrapWithGeoTransformFunction(colName, "?");
-                bindVariables.append(func);
-            }
-            else {
-                bindVariables.append("?");
-            }
-        }
-        String sql = "INSERT INTO " + tSet.getOutputQualifiedTableName() + " ("
-                + columnNames
-                + ") VALUES ("
-                + bindVariables
-                + ")";
-        PreparedStatement insertRowStatement = targetCon.prepareStatement(sql);
-
-        log.lifecycle(String.format(taskName + ": Sql insert statement: [%s]", sql));
 
         return insertRowStatement;
+    }
+
+    private static String buildValuesList(ResultSetMetaData meta, TransferSet tSet){
+        StringBuffer valuesList = new StringBuffer();
+        try {
+            for (int j = 1; j <= meta.getColumnCount(); j++) {
+                if (j > 1) {
+                    valuesList.append(", ");
+                }
+
+                String colName = meta.getColumnName(j);
+
+                if (tSet.isGeoColumn(colName)) {
+                    String func = tSet.wrapWithGeoTransformFunction(colName, "?");
+                    valuesList.append(func);
+                } else {
+                    valuesList.append("?");
+                }
+            }
+        }
+        catch(SQLException se){
+            throw new GretlException(se);
+        }
+        return valuesList.toString();
+    }
+
+    private static String buildInsertColumnNames(ResultSetMetaData sourceMeta, Connection targetCon, String targetTableName){
+        StringBuffer columnNames = new StringBuffer();
+        AttributeNameMap colMap = AttributeNameMap.createAttributeNameMap(targetCon, targetTableName);
+        try {
+            for (int j = 1; j <= sourceMeta.getColumnCount(); j++) {
+                if (j > 1) {
+                    columnNames.append(", ");
+                }
+
+                String srcColName = sourceMeta.getColumnName(j);
+                String targetColName = colMap.getAttributeName(srcColName);
+                columnNames.append(targetColName);
+
+            }
+        }
+        catch(SQLException se){
+            throw new GretlException(se);
+        }
+        return columnNames.toString();
     }
 
     /**

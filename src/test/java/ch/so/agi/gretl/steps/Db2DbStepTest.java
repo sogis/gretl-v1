@@ -4,10 +4,9 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import ch.so.agi.gretl.util.GretlException;
+import ch.so.agi.gretl.testutil.TestUtil;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedWriter;
@@ -64,8 +63,8 @@ public class Db2DbStepTest {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = createFile("SELECT * FROM colors; ", "query.sql");
-            File sqlFile2 = createFile("SELECT * FROM colors; ", "query2.sql");
+            File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors; ", "query.sql");
+            File sqlFile2 = TestUtil.createFile(folder, "SELECT * FROM colors; ", "query2.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
@@ -125,7 +124,7 @@ public class Db2DbStepTest {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = createFile("SELECT BLABLABLA FROM colors", "query.sql");
+            File sqlFile = TestUtil.createFile(folder, "SELECT BLABLABLA FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
@@ -168,7 +167,7 @@ public class Db2DbStepTest {
 
             stmt.execute("CREATE TABLE colors_copy (rot integer, gruen integer)");
 
-            File sqlFile = createFile("SELECT rot, gruen, blau, farbname FROM colors", "query.sql");
+            File sqlFile = TestUtil.createFile(folder, "SELECT rot, gruen, blau, farbname FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
@@ -183,8 +182,12 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             Assert.fail("Eine Exception müsste geworfen werden. ");
 
-        } catch (SQLException e) {
-            log.debug("Got SQLException as expected");
+        } catch (GretlException ge) {
+            boolean isMismatchException = GretlException.TYPE_COLUMN_MISMATCH.equals(ge.getType());
+            if(!isMismatchException){
+                throw ge;
+            }
+
         } finally {
             con.close();
         }
@@ -210,7 +213,7 @@ public class Db2DbStepTest {
 
             stmt.execute("CREATE TABLE colors_copy (rot integer, gruen integer, blau integer, farbname integer)");
 
-            File sqlFile = createFile("SELECT * FROM colors", "query.sql");
+            File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
@@ -238,7 +241,7 @@ public class Db2DbStepTest {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = createFile("SELECT * FROM colors", "query.sql");
+            File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
@@ -257,37 +260,56 @@ public class Db2DbStepTest {
 
     @Test
     public void DeleteTest() throws Exception {
-        //unittest
-        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-        createTestDb(con);
-        Statement stmt = con.connect().createStatement();
-        stmt.execute("INSERT INTO colors_copy  VALUES (255,0,0,'rot')");
-        stmt.execute("INSERT INTO colors_copy  VALUES (251,0,0,'rot')");
-        stmt.execute("INSERT INTO colors_copy  VALUES (0,0,255,'blau')");
+        //Datenbank für Test vorbereiten
+        Connection con = null;
         try {
-            File sqlFile = createFile("SELECT rot, gruen, blau, farbname FROM (SELECT ROW_NUMBER() OVER() AS rownum, colors.* FROM colors) AS tmp WHERE rownum <= 1;", "query.sql");
-
-            ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
-            mylist.add(new TransferSet(
-                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)
-            ));
-
-            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
-
-            Db2DbStep db2db = new Db2DbStep();
-
-            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
-            ResultSet rs = con.connect().createStatement().executeQuery("SELECT * FROM colors_copy");
-            int i = 0;
-            while(rs.next()) {
-                i+=1;
-            }
-            assertEquals(i, 1);
-
+            Connector connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            con = connector.connect();
+            createTestDb(connector);
+            Statement stmt = con.createStatement();
+            stmt.execute("INSERT INTO colors_copy  VALUES (255,0,0,'rot')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (251,0,0,'rot')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (0,0,255,'blau')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (251,0,0,'rot')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (67,2,255,'blauauaua')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (251,45,23,'rotototo')");
+            stmt.execute("INSERT INTO colors_copy  VALUES (67,3,255,'blauwederenzian')");
+            con.commit();
+            //Vorbereitungsverbindung schliessen
         } finally {
-            con.connect().close();
+            con.close();
         }
+
+        File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors;", "query.sql");
+
+        ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
+        mylist.add(new TransferSet(
+                sqlFile.getAbsolutePath(), "colors_copy", new Boolean(true)
+        ));
+
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB", "bjsvwsch", null);
+        Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB", "bjsvwsch", null);
+
+
+        Db2DbStep db2db = new Db2DbStep();
+        //db2dbstep ausführen
+        db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+
+        //Select auf db um korrektes ausführen zu verifizieren
+        Connection con2 = null;
+        try {
+            Connector connector2 = new Connector("jdbc:derby:memory:myInMemDB", "bjsvwsch", null);
+            con2 = connector2.connect();
+            ResultSet rs = con2.createStatement().executeQuery("SELECT COUNT(*) FROM colors_copy");
+            rs.next();
+            int i = rs.getInt(1);
+            con2.commit();
+            assertEquals(i, 3);
+        } finally {
+            con2.close();
+        }
+
+
     }
 
     @Test
@@ -296,7 +318,7 @@ public class Db2DbStepTest {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = createFile("SELECT * FROM colors", "query.sql");
+            File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
@@ -317,13 +339,36 @@ public class Db2DbStepTest {
         }
     }
 
+    @Ignore
+    @Test
+    public void MichaelTest() throws Exception {
+
+        ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
+
+        File sqlfile = new File("/home/bjsvwsch/codebasis/gretlv1/src/test/resources/michaeltest.sql");
+        mylist.add(new TransferSet(
+                sqlfile.getPath(), "afu_altlasten_pub.altlasten_belastete_standorte_internet", new Boolean(true)
+        ));
+
+        Connector sourceDb = new Connector("jdbc:postgresql://geodb.verw.rootso.org/sogis", "bjsvwsch", null);
+        Connector targetDb = new Connector("jdbc:postgresql://geodb-t.verw.rootso.org/sogis", "bjsvwsch", null);
+
+        Db2DbStep db2db = new Db2DbStep();
+        //db2dbstep ausführen
+        db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+
+    }
+
+
+
+
     @Test
     public void CloseConnectionsAfterFailedTest() throws Exception {
 
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
-            File sqlFile = createFile("SELECT güggeliblau FROM colors_copy", "query.sql");
+            File sqlFile = TestUtil.createFile(folder, "SELECT güggeliblau FROM colors_copy", "query.sql");
 
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
@@ -360,7 +405,7 @@ public class Db2DbStepTest {
             preparePgGeomSourceSinkTables(schemaName, con);
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = createFile(
+            File queryFile = TestUtil.createFile(folder, 
                     String.format("select ST_AsBinary(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
@@ -397,7 +442,7 @@ public class Db2DbStepTest {
 
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = createFile(
+            File queryFile = TestUtil.createFile(folder, 
                     String.format("select ST_AsText(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
@@ -433,7 +478,7 @@ public class Db2DbStepTest {
             preparePgGeomSourceSinkTables(schemaName, con);
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = createFile(
+            File queryFile = TestUtil.createFile(folder, 
                     String.format("select ST_AsGeoJSON(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
@@ -479,7 +524,7 @@ public class Db2DbStepTest {
             prepareSinkTable(schemaName, targetCon);
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = createFile("select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
+            File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
             Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
@@ -529,7 +574,7 @@ public class Db2DbStepTest {
             prepareSinkTable(schemaName, targetCon);
 
             Db2DbStep step = new Db2DbStep();
-            File queryFile = createFile("select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
+            File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
             Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
@@ -650,7 +695,7 @@ public class Db2DbStepTest {
                     "select myint, myfloat, mytext, mydate, mytime, myuuid, ST_AsText(mygeom) as mygeom_wkt from %s.dtypes",
                     schemaName
             );
-            File queryFile = createFile(select,"select.sql");
+            File queryFile = TestUtil.createFile(folder, select,"select.sql");
 
 
             Connector src = new Connector(PG_READER_CONNECTION[0], PG_READER_CONNECTION[1], PG_READER_CONNECTION[2]);
@@ -776,14 +821,6 @@ public class Db2DbStepTest {
             con.close();
         }
 
-    }
-
-    private File createFile(String stm, String fileName) throws IOException {
-        File sqlFile =  folder.newFile(fileName);
-        BufferedWriter writer = new BufferedWriter(new FileWriter(sqlFile));
-        writer.write(stm);
-        writer.close();
-        return sqlFile;
     }
 
     private void createTestDb(Connector sourceDb )
