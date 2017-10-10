@@ -18,7 +18,7 @@ public class Ili2pgReplace extends Ili2pgAbstractTask {
     public void replaceData()
     {
         Config settings=createConfig();
-    	int function=Config.FC_UPDATE;
+    	int function=Config.FC_REPLACE;
         if (dataFile==null) {
             return;
         }
