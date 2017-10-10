@@ -1,3 +1,8 @@
+plugins {
+    id "org.unbroken-dome.test-sets" version "1.4.2"
+    id "com.bmuschko.docker-remote-api" version "3.2.0"    
+}
+
 group 'ch.so.agi'
 version '1.0.2-SNAPSHOT'
 version env('GRETL_VERSION', '1.0.2-SNAPSHOT')
@@ -14,7 +19,14 @@ apply plugin: 'java'
 
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
+apply plugin: 'org.unbroken-dome.test-sets'
+
 //apply plugin: 'findbugs'
+
+// must set before dependencies
+testSets {
+    onlineTest
+}
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -33,6 +45,14 @@ dependencies {
     // - oracle jdbc driver
     // - sqlserver jdbc driver (Microsoft)
     compile gradleApi()
+    
+    compile group: 'org.apache.commons', name: 'commons-text', version: '1.1'
+    compile gradleTestKit()
+    
+    onlineTestCompile gradleTestKit()
+    onlineTestCompile gradleApi()
+    onlineTestCompile group: 'junit', name: 'junit', version: '4.12'   
+    onlineTestCompile group: 'org.apache.commons', name: 'commons-text', version: '1.1'    
 }
 
 sourceCompatibility = 1.8
@@ -67,6 +87,45 @@ def env(environmentVariableName, defaultValue){
     }
     return var;
 }
+
+
+import com.bmuschko.gradle.docker.tasks.DockerVersion
+import com.bmuschko.gradle.docker.tasks.DockerInfo
+import com.bmuschko.gradle.docker.tasks.image.DockerPullImage
+import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerStopContainer
+
+task dockerVersion(type: DockerVersion) {}
+task dockerInfo(type: DockerInfo) {}
+
+task pullPostgresDockerImage(type: DockerPullImage) { 
+    repository = 'camptocamp/postgres'
+    tag = '9.6'
+}
+
+task createPostgresDockerContainer(dependsOn: 'pullPostgresDockerImage', type: DockerCreateContainer) {
+    targetImageId { pullPostgresDockerImage.getImageId() }
+    portBindings = ['5432:5432']
+}
+
+task startPostgresDockerContainer(dependsOn: 'createPostgresDockerContainer', type: DockerStartContainer) {
+    targetContainerId { createPostgresDockerContainer.getContainerId() }
+    
+    // Starting the database server takes some time
+    // and is not equal to docker container has started.
+    doLast { 
+        sleep(15*1000)
+    }
+}
+
+task stopPostgresDockerContainer(type: DockerStopContainer) { 
+    targetContainerId { startPostgresDockerContainer.getContainerId() }
+}
+
+onlineTest.dependsOn('startPostgresDockerContainer')
+onlineTest.finalizedBy('stopPostgresDockerContainer')
+
 
 /*
 Anforderungen:
