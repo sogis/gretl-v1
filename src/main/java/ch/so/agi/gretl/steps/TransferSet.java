@@ -50,7 +50,7 @@ public class TransferSet {
         this(inputSqlFilePath, outputQualifiedSchemaAndTableName, outputDeleteAllRows, null);
     }
 
-    public boolean getDeleteAllRows() {
+    public boolean deleteAllRows() {
         return deleteAllRows;
     }
 
@@ -77,6 +77,19 @@ public class TransferSet {
             throw new GretlException("Given colName was not defined / configured as geometry column");
 
         res = trans.wrapWithGeoTransformFunction(valuePlaceHolder);
+
+        return res;
+    }
+
+    public String toString(){
+        String colString = String.join(",", geoColumns.keySet());
+
+        String res = String.format(
+                "TransferSet( SqlSelectFile: %s, TargetTable: %s, DeleteTargetRows: %s, GeoColumns: %s)",
+                inputSqlFile.getAbsolutePath(),
+                outputQualifiedTableName,
+                deleteAllRows,
+                colString);
 
         return res;
     }
