@@ -1,0 +1,24 @@
+import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.steps.*
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url 'http://sogeo.services:8081/artifactory/libs-snapshot' }   
+        maven { url 'http://jars.interlis.ch' }   
+    }
+    dependencies {
+        classpath 'ch.so.agi:gretl:1.0.+'
+    }
+}
+
+apply plugin: 'ch.so.agi.gretl'
+
+task importDataset (type: Ili2pgImport) {
+    description = "Import eine INTERLIS-1-Datei in die PostgreSQL-Datenbank."
+    database = [dbUrl, dbUser, dbPass]
+    dbschema = "ch_2549"
+    models = "DM01AVCH24LV95D"
+    disableValidation = true
+    dataFile = itfFile   
+}
