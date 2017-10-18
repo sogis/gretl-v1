@@ -11,7 +11,7 @@ import org.gradle.api.tasks.TaskAction;
 
 public class Ili2pgReplace extends Ili2pgAbstractTask {
     @InputFile 
-    public File dataFile=null;
+    public Object dataFile=null;
     @TaskAction
     public void replaceData()
     {
