@@ -88,8 +88,6 @@ public class Db2DbStepTest {
         } finally {
             con.connect().close();
         }
-
-
     }
 
     @Test
@@ -117,6 +115,46 @@ public class Db2DbStepTest {
             con.connect().close();
         }
 
+    }
+    
+    @Test(expected = RuntimeException.class) 
+    public void db2dbMultipleStatementsInFileTest() throws Exception {
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        createTestDb(sourceDb);
+
+        File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors; SELECT * FROM colors;", "query.sql");
+
+        try {
+            ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
+            mylist.add(new TransferSet(
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)
+            ));
+            
+            Db2DbStep db2db = new Db2DbStep();
+            db2db.processAllTransferSets(sourceDb, sourceDb, mylist);
+        } finally {
+            sourceDb.connect().close();
+        }
+    }
+    
+    @Test
+    public void db2dbBlanksInFileTest() throws Exception {
+        Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwzie", null);
+        createTestDb(sourceDb);
+
+        File sqlFile = TestUtil.createFile(folder, "SELECT * FROM colors;    ;     ", "query.sql");
+
+        try {
+            ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
+            mylist.add(new TransferSet(
+                    sqlFile.getAbsolutePath(), "colors_copy", new Boolean(false)
+            ));
+            
+            Db2DbStep db2db = new Db2DbStep();
+            db2db.processAllTransferSets(sourceDb, sourceDb, mylist);
+        } finally {
+            sourceDb.connect().close();
+        }
     }
 
     @Test
@@ -393,7 +431,8 @@ public class Db2DbStepTest {
             con.connect().close();
         }
     }
-
+    
+    @Ignore
     @Test
     public void canWriteGeomFromWkbTest() throws Exception {
         String schemaName = "GeomFromWkbTest";
@@ -430,6 +469,7 @@ public class Db2DbStepTest {
         }
     }
 
+    @Ignore
     @Test
     public void canWriteGeomFromWktTest() throws Exception {
         String schemaName = "GeomFromWktTest";
@@ -467,6 +507,7 @@ public class Db2DbStepTest {
         }
     }
 
+    @Ignore
     @Test
     public void canWriteGeomFromGeoJsonTest() throws Exception {
         String schemaName = "GeomFromGeoJsonTest";
@@ -504,9 +545,10 @@ public class Db2DbStepTest {
     }
 
     /**
-     * Test's loading several hundred thousand rows from sqlite to postgis.
+     * Tests loading several hundred thousand rows from sqlite to postgis.
      * Loading 300'000 rows should take about 15 seconds
      */
+    @Ignore
     @Test
     public void positiveBulkLoadPostgisTest() throws Exception {
         int numRows = 300000;
@@ -558,6 +600,7 @@ public class Db2DbStepTest {
      * Tests if the sqlite datatypes and geometry as wkt are transferred
      * faultfree from sqlite to postgis
      */
+    @Ignore    
     @Test
     public void positiveSqlite2PostgisTest() throws Exception {
         String schemaName = "SQLITE2POSTGIS";
@@ -675,6 +718,7 @@ public class Db2DbStepTest {
      * Tests if the "special" datatypes (Date, Time, GUID, Geometry, ..) are transferred
      * faultfree from Postgis to sqlite
      */
+    @Ignore    
     @Test
     public void positivePostgis2SqliteTest() throws Exception {
         String schemaName = "POSTGIS2SQLITE";
@@ -828,7 +872,6 @@ public class Db2DbStepTest {
         Connection con = sourceDb.connect();
         createTableInTestDb(con);
         writeExampleDataInTestDB(con);
-
     }
 
     private void createTableInTestDb(Connection con) throws Exception {

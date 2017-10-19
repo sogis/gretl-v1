@@ -281,29 +281,36 @@ public class Db2DbStep {
      * @throws EmptyFileException
      */
     private String extractSingleStatement(File targetFile) throws IOException {
-
         String line = null;
-
         String firstline = null;
+        
         line = SqlReader.readSqlStmt(targetFile);
-        if(line == null) {
-            log.info("Empty File. No Statement to execute!");
-            throw new EmptyFileException("EmptyFile: "+targetFile.getName());
+        
+        // SqlReader returns null if string (=statement) has zero length.
+        // But it does not trim string.
+        if (line == null) {
+            String msg = "No statement found to execute. Empty file: " + targetFile.getName();
+            log.error(msg, new EmptyFileException(msg));
+            throw new EmptyFileException(msg);
         }
-
-
+        
+        firstline = line.trim();
+        if (firstline.length() > 0) {
+            log.info( "Statement found. Length: " + firstline.length() + " characters");
+        } else {
+            String msg = "No statement found to execute. Empty file: " + targetFile.getName();
+            log.error(msg, new EmptyFileException(msg));
+            throw new EmptyFileException(msg);
+        }
+        
         while (line != null) {
-            firstline = line.trim();
-            if (firstline.length() > 0) {
-                log.info( "Statement found. Length: " + firstline.length()+" caracters");
-            } else {
-                log.info( "NO STATEMENT IN FILE!");
-                throw new FileNotFoundException();
-            }
             line = SqlReader.nextSqlStmt();
-            if(line != null) {
-                log.info("There are more then 1 Statement in the file!");
-                throw new RuntimeException();
+            if (line != null) {
+                if (line.trim().length() > 0) {
+                    String msg = "There is more then one statement in the file!";
+                    log.error(msg, new RuntimeException(msg));
+                    throw new RuntimeException(msg);
+                }   
             }
         }
         return firstline;
