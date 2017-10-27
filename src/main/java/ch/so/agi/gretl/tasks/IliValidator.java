@@ -13,6 +13,7 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.interlis2.validator.Validator;
@@ -28,30 +29,43 @@ public class IliValidator extends DefaultTask {
     @InputFiles
     public List<Object> dataFiles;
 	@Input
+	@Optional
 	public String models = null;
 	@Input
+	@Optional
 	public String modeldir = null;
 	@InputFile
+	@Optional
 	public Object configFile = null;
 	@Input
+	@Optional
 	public boolean forceTypeValidation = false;
 	@Input
+	@Optional
 	public boolean disableAreaValidation = false;
 	@Input
+	@Optional
 	public boolean multiplicityOff = false;
 	@Input
+	@Optional
 	public boolean allObjectsAccessible=false;
     @Input
+	@Optional
     public boolean skipPolygonBuilding=false;
 	@OutputFile
+	@Optional
 	public Object logFile = null;
 	@OutputFile
+	@Optional
 	public Object xtflogFile = null;
 	@InputDirectory
+	@Optional
 	public Object pluginFolder = null;
 	@Input
+	@Optional
 	public String proxy = null;
 	@Input
+	@Optional
 	public Integer proxyPort = null;
 
     @TaskAction

@@ -11,6 +11,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
@@ -24,45 +25,65 @@ public abstract class Ili2pgAbstractTask extends DefaultTask {
     @Input
     public Connector database;
     @Input
+	@Optional
 	public String dbschema = null;
 	@Input
+	@Optional
 	public String proxy = null;
 	@Input
+	@Optional
 	public Integer proxyPort = null;
     
     @Input
+	@Optional
 	public String modeldir = null;
     @Input
+	@Optional
 	public String models = null;
     @Input
+	@Optional
 	public String dataset = null;
     @Input
+	@Optional
 	public String baskets = null;
     @Input
+	@Optional
 	public String topics = null;
     @InputFile
+	@Optional
 	public File preScript = null;
     @InputFile
+	@Optional
 	public File postScript = null;
     @Input
+	@Optional
 	public boolean deleteData = false;
     @OutputFile
+	@Optional
 	public Object logFile = null;
     @InputFile
+	@Optional
 	public File validConfigFile = null;
     @Input
+	@Optional
 	public boolean disableValidation = false;
     @Input
+	@Optional
 	public boolean disableAreaValidation = false;
     @Input
+	@Optional
 	public boolean forceTypeValidation = false;
     @Input
+	@Optional
 	public boolean strokeArcs = false;
     @Input
+	@Optional
 	public boolean skipPolygonBuilding = false;
     @Input
+	@Optional
 	public boolean skipGeometryErrors = false;
     @Input
+	@Optional
 	public boolean iligml20 = false;
 
     protected void run(int function,Config settings) {
