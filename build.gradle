@@ -42,8 +42,8 @@ test {
 	// environment variable values along to the new environment. One has to 
 	// explicitly pass these variables
 	systemProperty 'dburl', System.getProperty('dburl')
-	systemProperty 'dbusr', System.getProperty('dbusr')
-	systemProperty 'dbpwd', System.getProperty('dbpwd')
+	systemProperty 'dbusr', System.getProperty('dbusr','ddluser')
+	systemProperty 'dbpwd', System.getProperty('dbpwd','ddluser')
 	//testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
 }
