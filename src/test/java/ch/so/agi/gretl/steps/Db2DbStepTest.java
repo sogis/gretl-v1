@@ -28,17 +28,18 @@ public class Db2DbStepTest {
 
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
 
-    private static final String[] PG_WRITER_CONNECTION = {
-            "jdbc:postgresql://192.168.56.31:5432/automatedtest",
-            "dmluser",
-            "dmluser"
-    };
+    private static final String PG_DDL_CONNECTION_URL = 
+	        System.getProperty("dburl"); //,"jdbc:postgresql://192.168.56.31:5432/automatedtest");
+    private static final String PG_DDL_CONNECTION_USR=System.getProperty("dbusr","ddluser");
+    private static final String PG_DDL_CONNECTION_PWD=System.getProperty("dbpwd","ddluser");
+    
+    private static final String PG_WRITER_CONNECTION_URL = PG_DDL_CONNECTION_URL; 
+    private static final String PG_WRITER_CONNECTION_USR="dmluser";  // FIXME following code should ref this constant, but contains hard coded strings
+    private static final String PG_WRITER_CONNECTION_PWD="dmluser";
 
-    private static final String[] PG_READER_CONNECTION = {
-            "jdbc:postgresql://192.168.56.31:5432/automatedtest",
-            "readeruser",
-            "readeruser"
-    };
+    private static final String PG_READER_CONNECTION_URL = PG_DDL_CONNECTION_URL;
+    private static final String PG_READER_CONNECTION_USR="readeruser"; // FIXME following code should ref this constant, but contains hard coded strings
+    private static final String PG_READER_CONNECTION_PWD="readeruser";
 
     //Konstruktor//
     public Db2DbStepTest () {
@@ -409,8 +410,8 @@ public class Db2DbStepTest {
                     String.format("select ST_AsBinary(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
-            Connector src = new Connector(PG_READER_CONNECTION[0], PG_READER_CONNECTION[1], PG_READER_CONNECTION[2]);
-            Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
+            Connector src = new Connector(PG_READER_CONNECTION_URL, PG_READER_CONNECTION_USR, PG_READER_CONNECTION_PWD);
+            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".SINK",
@@ -446,8 +447,8 @@ public class Db2DbStepTest {
                     String.format("select ST_AsText(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
-            Connector src = new Connector(PG_READER_CONNECTION[0], PG_READER_CONNECTION[1], PG_READER_CONNECTION[2]);
-            Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
+            Connector src = new Connector(PG_READER_CONNECTION_URL, PG_READER_CONNECTION_USR, PG_READER_CONNECTION_PWD);
+            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".SINK",
@@ -482,8 +483,8 @@ public class Db2DbStepTest {
                     String.format("select ST_AsGeoJSON(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
-            Connector src = new Connector(PG_READER_CONNECTION[0], PG_READER_CONNECTION[1], PG_READER_CONNECTION[2]);
-            Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
+            Connector src = new Connector(PG_READER_CONNECTION_URL, PG_READER_CONNECTION_USR, PG_READER_CONNECTION_PWD);
+            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".SINK",
@@ -527,7 +528,7 @@ public class Db2DbStepTest {
             File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
-            Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
+            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".DTYPES",
@@ -577,7 +578,7 @@ public class Db2DbStepTest {
             File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
-            Connector sink = new Connector(PG_WRITER_CONNECTION[0], PG_WRITER_CONNECTION[1], PG_WRITER_CONNECTION[2]);
+            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".DTYPES",
@@ -698,7 +699,7 @@ public class Db2DbStepTest {
             File queryFile = TestUtil.createFile(folder, select,"select.sql");
 
 
-            Connector src = new Connector(PG_READER_CONNECTION[0], PG_READER_CONNECTION[1], PG_READER_CONNECTION[2]);
+            Connector src = new Connector(PG_READER_CONNECTION_URL, PG_READER_CONNECTION_USR, PG_READER_CONNECTION_PWD);
             Connector sink = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
@@ -789,9 +790,9 @@ public class Db2DbStepTest {
         DriverManager.registerDriver(pgDriver);
 
         Connection con = DriverManager.getConnection(
-            "jdbc:postgresql://192.168.56.31:5432/automatedtest",
-            "ddluser",
-            "ddluser");
+            PG_DDL_CONNECTION_URL,
+            PG_DDL_CONNECTION_USR,
+            PG_DDL_CONNECTION_PWD);
 
         con.setAutoCommit(false);
 
