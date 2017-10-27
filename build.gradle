@@ -37,6 +37,15 @@ dependencies {
 
 sourceCompatibility = 1.8
 
+test {
+	// when Gradle forks a new Java process, it does not automatically pass the 
+	// environment variable values along to the new environment. One has to 
+	// explicitly pass these variables
+	systemProperty 'dburl', System.getProperty('dburl')
+	systemProperty 'dbusr', System.getProperty('dbusr')
+	systemProperty 'dbpwd', System.getProperty('dbpwd')
+
+}
 
 publishing{
     publications{
