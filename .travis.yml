@@ -24,4 +24,4 @@ before_script:
     - psql -c 'select postgis_full_version();' -d gretl -U postgres
   
 script: 
-  - gradle -Ddburl=jdbc:postgresql:gretl build
+  - gradle -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres '-Ddbpwd=' build
