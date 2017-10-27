@@ -21,9 +21,9 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     @Input
 	public boolean setupPgExt = false;
     @OutputFile
-	public File dropscript = null;
+	public Object dropscript = null;
     @OutputFile
-	public File createscript = null;
+	public Object createscript = null;
     @Input
 	public String defaultSrsAuth = null;
     @Input
@@ -100,15 +100,15 @@ public class Ili2pgImportSchema extends Ili2pgAbstractTask {
     {
         Config settings=createConfig();
     	int function=Config.FC_SCHEMAIMPORT;
-        if (iliFile==null) {
-            return;
+        String iliFilename=null;
+        if(iliFile==null) {
+        }else {
+            if(iliFile instanceof String && ch.ehi.basics.view.GenericFileFilter.getFileExtension((String) iliFile)==null) {
+            	iliFilename=(String)iliFile;
+            }else {
+                iliFilename=this.getProject().file(iliFile).getPath();
+            }
         }
-        if(false && iliFile instanceof String) {
-        	if(ch.ehi.basics.view.GenericFileFilter.getFileExtension((String) iliFile)==null) {
-        		//iliFilename=iliFile;
-        	}
-        }
-        String iliFilename=this.getProject().file(iliFile).getPath();
 		settings.setXtffile(iliFilename);
 		init(settings);
     	run(function, settings);

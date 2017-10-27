@@ -13,7 +13,7 @@ import org.gradle.api.tasks.TaskAction;
 
 public class Ili2pgExport extends Ili2pgAbstractTask {
 	@OutputFile
-	public File dataFile=null;
+	public Object dataFile=null;
     @TaskAction
     public void exportData()
     {
