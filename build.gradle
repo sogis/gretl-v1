@@ -44,7 +44,8 @@ test {
 	systemProperty 'dburl', System.getProperty('dburl')
 	systemProperty 'dbusr', System.getProperty('dbusr')
 	systemProperty 'dbpwd', System.getProperty('dbpwd')
-
+	//testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
 }
 
 publishing{
