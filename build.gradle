@@ -26,6 +26,9 @@ dependencies {
     compile('ch.interlis:ili2pg:3.10.+'){
     	exclude group: 'ch.interlis', module: 'iox-ili' // excluded, so that SNAPSHOT (see below) can be used
     }
+    compile('ch.interlis:iox-wkf:0.+'){
+    	exclude group: 'ch.interlis', module: 'iox-ili' // excluded, so that SNAPSHOT (see below) can be used
+    }
     compile group: 'ch.interlis', name: 'iox-ili', version: '1.19.+' // use SNAPSHOT
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.8.11.2'
     compile group: 'org.apache.derby', name: 'derby', version: '10.13.1.1'
