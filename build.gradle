@@ -44,13 +44,9 @@ dependencies {
 sourceCompatibility = 1.8
 
 test {
-	// when Gradle forks a new Java process, it does not automatically pass the
-	// environment variable values along to the new environment. One has to
-	// explicitly pass these variables
-	systemProperty 'dburl', System.getProperty('dburl')
-	systemProperty 'dbusr', System.getProperty('dbusr','ddluser')
-	systemProperty 'dbpwd', System.getProperty('dbpwd','ddluser')
-	//testLogging.showStandardStreams = true
+    exclude 'ch/so/agi/gretl/steps/**.*'
+
+    //testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
 }
 
@@ -82,6 +78,27 @@ def env(environmentVariableName, defaultValue){
         var = defaultValue
     }
     return var;
+}
+
+task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+    exclude 'ch/so/agi/gretl/logging/**.*'
+    exclude 'ch/so/agi/gretl/util/**.*'
+    exclude 'ch/so/agi/gretl/testutil/**.*'
+
+    // when Gradle forks a new Java process, it does not automatically pass the
+    // environment variable values along to the new environment. One has to
+    // explicitly pass these variables
+    systemProperty 'dburl', System.getProperty('dburl')
+    systemProperty 'dbusr', System.getProperty('dbusr','ddluser')
+    systemProperty 'dbpwd', System.getProperty('dbpwd','ddluser')
+
+    //testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
+}
+
+configure(dbTest) {
+    group = 'Verification'
+    description = 'Runs tests with dockered database'
 }
 
 /*
