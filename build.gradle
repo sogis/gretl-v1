@@ -3,6 +3,9 @@ version '1.0.4-SNAPSHOT'
 version env('GRETL_VERSION', '1.0.4-SNAPSHOT')
 
 repositories {
+    maven {
+        url "http://download.osgeo.org/webdav/geotools/"
+    }
     mavenCentral()
     mavenLocal()
     maven {
@@ -19,7 +22,7 @@ apply plugin: 'maven-publish'
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.1.3'
-    //compile group: 'ch.interlis', name: 'ilivalidator', version: '1.5.+' 
+    //compile group: 'ch.interlis', name: 'ilivalidator', version: '1.5.+'
     compile('ch.interlis:ilivalidator:1.5.+') {
     	exclude group: 'ch.interlis', module: 'iox-ili' // excluded, so that SNAPSHOT (see below) can be used
     }
@@ -41,8 +44,8 @@ dependencies {
 sourceCompatibility = 1.8
 
 test {
-	// when Gradle forks a new Java process, it does not automatically pass the 
-	// environment variable values along to the new environment. One has to 
+	// when Gradle forks a new Java process, it does not automatically pass the
+	// environment variable values along to the new environment. One has to
 	// explicitly pass these variables
 	systemProperty 'dburl', System.getProperty('dburl')
 	systemProperty 'dbusr', System.getProperty('dbusr','ddluser')
@@ -120,4 +123,3 @@ Ablauf für das Erstellen eines neue Release
 * Versionsnummer anpassen (auf snapshot folgeversion)
 * Nutzer orientieren
  */
-
