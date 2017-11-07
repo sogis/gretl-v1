@@ -18,7 +18,7 @@ gretl is in development state.
 
 ## System requirements
 
-For the current version of gretl, you will need a JRE (Java Runtime Environment) installed on your system, version 1.8 or later and gradle, version 3.4 or later.
+For the current version of gretl, you will need a JRE (Java Runtime Environment) installed on your system, version 1.8 or later and gradle, version 3.4 or later. For convenience use the gradle wrapper.
 
 ## How to use?
 
@@ -61,7 +61,7 @@ task transferSomeData(type: Db2DbTask) {
 ```
 Copies data from a source database (`sourceDb`) to target database (`targetDb`). It can handle an arbitrary count of transfers in one task.
 
- `sourceDB` / `targetDB`: A list with a valid jdbc database url, the login name and the password. 
+ `sourceDB` / `targetDB`: A list with a valid jdbc database url, the login name and the password.
 
 `transferSets`: A list of `TransferSet`. A transfer set consists of the path to the file containing the sql select statement, the destination table and the option to delete the destination table contents before adding the new data.
 
@@ -78,7 +78,6 @@ task executeSomeSql(type: SqlExecutorTask){
 
 This task can be used to execute _any_ sql statement in one database.
 
-`database`: A list with a valid jdbc database url, the login name and the password. 
+`database`: A list with a valid jdbc database url, the login name and the password.
 
 `sqlFiles`: A list with files names containing _any_ sql statements.
-
