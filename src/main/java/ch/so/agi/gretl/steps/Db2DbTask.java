@@ -14,9 +14,7 @@ import java.io.File;
 import java.util.List;
 
 public class Db2DbTask extends DefaultTask {
-
-
-
+    
     private static GretlLogger log;
 
     static {
@@ -57,6 +55,5 @@ public class Db2DbTask extends DefaultTask {
             ts.setInputSqlFile(absolutePath);
         }
     }
-
 }
 
