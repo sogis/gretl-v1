@@ -167,6 +167,28 @@ public class SqlExecutorStepTest {
 
         x.execute(sourceDb,sqlListe);
     }
+    @Test
+    public void executePostgisVersionTest() throws Exception {
+        SqlExecutorStep x = new SqlExecutorStep();
+        Connector sourceDb = new Connector(System.getProperty("dburl"), System.getProperty("dbusr"),System.getProperty("dbpwd"));
+
+        File sqlFile = folder.newFile("postgisversion.sql");
+        FileWriter sqlWriter=null;
+        try {
+            sqlWriter=new FileWriter(sqlFile);
+            sqlWriter.write("SELECT PostGIS_Full_Version();");
+        }finally {
+        	if(sqlWriter!=null) {
+                sqlWriter.close();
+                sqlWriter=null;
+        	}
+        }
+        List<File> sqlListe = new ArrayList<File>();
+        sqlListe.add(sqlFile);
+        
+
+        x.execute(sourceDb,sqlListe);
+    }
 
 
     @Test

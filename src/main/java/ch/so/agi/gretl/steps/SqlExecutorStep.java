@@ -7,6 +7,7 @@ import org.gradle.api.Task;
 
 import java.io.*;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -257,14 +258,36 @@ public class SqlExecutorStep {
             throws Exception {
 
         try {
-            int modifiedLines = dbstmt.executeUpdate(statement);  //only allows SQL INSERT, UPDATE or DELETE
-
-            if (modifiedLines==1) {
-                log.lifecycle(taskName + ": " + modifiedLines + " Line has been modified.");
-            } else if (modifiedLines>1) {
-                log.lifecycle(taskName +": " + modifiedLines + " Lines have been modified.");
-            } else if (modifiedLines<1){
-                log.lifecycle(taskName + ": No Line has been modified.");
+            boolean isResultSet = dbstmt.execute(statement);  //only allows SQL INSERT, UPDATE or DELETE
+            if(isResultSet) {
+            	ResultSet rs=dbstmt.getResultSet();
+            	StringBuffer res=new StringBuffer();
+            	int colCount=rs.getMetaData().getColumnCount();
+            	String sep="";
+            	while(rs.next()) {
+            		for(int i=1;i<=colCount;i++) {
+            			String value=rs.getString(i);
+            			if(value!=null) {
+            				res.append(sep);
+            				res.append(value);
+            				sep=" ";
+            			}
+            		}
+                	if(res.length()>0) {
+                        log.lifecycle(taskName + ": " + res.toString());
+                	}
+                	res.setLength(0);
+                	sep="";
+            	}
+            }else {
+                int modifiedLines=dbstmt.getUpdateCount();
+                if (modifiedLines==1) {
+                    log.lifecycle(taskName + ": " + modifiedLines + " Line has been modified.");
+                } else if (modifiedLines>1) {
+                    log.lifecycle(taskName +": " + modifiedLines + " Lines have been modified.");
+                } else if (modifiedLines<1){
+                    log.lifecycle(taskName + ": No Line has been modified.");
+                }
             }
 
 
