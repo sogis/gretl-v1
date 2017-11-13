@@ -13,8 +13,8 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.ehi.basics.settings.Settings;
-import ch.interlis.ioxwkf.dbtools.Config;
 import ch.interlis.ioxwkf.dbtools.Csv2db;
+import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.Connector;
@@ -34,10 +34,10 @@ public class CsvImport extends DefaultTask {
 	public boolean firstLineIsHeader=true;
     @Input
     @Optional
-	public String fieldDelimiter=null;
+	public String valueDelimiter=null;
     @Input
     @Optional
-	public String quotationMark=null;
+	public String valueSeparator=null;
     @Input
     @Optional
 	public String schemaName=null;
@@ -56,8 +56,19 @@ public class CsvImport extends DefaultTask {
             return;
         }
         Settings settings=new Settings();
-        settings.setValue(Config.TABLE, tableName);
-        // TODO set optional parameters
+        settings.setValue(IoxWkfConfig.SETTING_DBTABLE, tableName);
+        // set optional parameters
+        settings.setValue(IoxWkfConfig.SETTING_FIRSTLINE,firstLineIsHeader?IoxWkfConfig.SETTING_FIRSTLINE_AS_HEADER:IoxWkfConfig.SETTING_FIRSTLINE_AS_VALUE);
+    	if(valueDelimiter!=null) {
+            settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER,valueDelimiter);
+    	}
+    	if(valueSeparator!=null) {
+            settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR,valueSeparator);
+    	}
+    	if(schemaName!=null) {
+            settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA,schemaName);
+    	}
+        
         File data=this.getProject().file(dataFile);
         java.sql.Connection conn=null;
         try {
