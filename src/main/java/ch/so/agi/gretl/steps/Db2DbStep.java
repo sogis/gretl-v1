@@ -282,31 +282,20 @@ public class Db2DbStep {
      */
     private String extractSingleStatement(File targetFile) throws IOException {
 
-        String line = null;
-
-        String firstline = null;
-        line = SqlReader.readSqlStmt(targetFile);
-        if(line == null) {
+        SqlReader reader=new SqlReader();
+        String firstStmt = reader.readSqlStmt(targetFile);
+        if(firstStmt == null) {
             log.info("Empty File. No Statement to execute!");
             throw new EmptyFileException("EmptyFile: "+targetFile.getName());
         }
-
-
-        while (line != null) {
-            firstline = line.trim();
-            if (firstline.length() > 0) {
-                log.info( "Statement found. Length: " + firstline.length()+" caracters");
-            } else {
-                log.info( "NO STATEMENT IN FILE!");
-                throw new FileNotFoundException();
-            }
-            line = SqlReader.nextSqlStmt();
-            if(line != null) {
-                log.info("There are more then 1 Statement in the file!");
-                throw new RuntimeException();
-            }
+        String secondStmt = reader.nextSqlStmt();
+        if(secondStmt!=null) {
+            log.info("There is more then 1 Statement in the file!");
+            throw new IOException("There is more then 1 Statement in the file");
         }
-        return firstline;
+        reader.close();
+
+        return firstStmt;
     }
 
     /**

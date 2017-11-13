@@ -23,6 +23,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import static org.gradle.internal.impldep.org.testng.AssertJUnit.assertEquals;
+import static org.junit.Assert.fail;
 
 public class Db2DbStepTest {
 
@@ -86,6 +87,77 @@ public class Db2DbStepTest {
                 assertEquals(rs.getObject("rot"),0);
                 assertEquals(rs.getObject("farbname"),"blau");
             }
+        } finally {
+            con.connect().close();
+        }
+
+
+    }
+    @Test
+    public void newlineAtEndOfFileTest() throws Exception {
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        createTestDb(con);
+        try {
+            File sqlFile = folder.newFile("query.sql");
+            FileWriter sqlWriter=null;
+            try {
+                sqlWriter=new FileWriter(sqlFile);
+                sqlWriter.write("SELECT * FROM colors;");
+                sqlWriter.write(System.getProperty("line.separator"));
+                //sqlWriter.write("SELECT * FROM colors;");
+            }finally {
+            	if(sqlWriter!=null) {
+                    sqlWriter.close();
+                    sqlWriter=null;
+            	}
+            }
+            ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
+            mylist.add(new TransferSet(
+                    sqlFile.getAbsolutePath(), "colors_copy", true
+            ));
+
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+
+            Db2DbStep db2db = new Db2DbStep();
+            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+        } finally {
+            con.connect().close();
+        }
+
+
+    }
+    @Test
+    public void fileWithMultipleStmtTest() throws Exception {
+        Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+        createTestDb(con);
+        try {
+            File sqlFile = folder.newFile("query.sql");
+            FileWriter sqlWriter=null;
+            try {
+                sqlWriter=new FileWriter(sqlFile);
+                sqlWriter.write("SELECT * FROM colors;");
+                sqlWriter.write(System.getProperty("line.separator"));
+                sqlWriter.write("SELECT * FROM colors;");
+            }finally {
+            	if(sqlWriter!=null) {
+                    sqlWriter.close();
+                    sqlWriter=null;
+            	}
+            }
+            ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
+            mylist.add(new TransferSet(
+                    sqlFile.getAbsolutePath(), "colors_copy", true
+            ));
+
+            Connector sourceDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+            Connector targetDb = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
+
+            Db2DbStep db2db = new Db2DbStep();
+            db2db.processAllTransferSets(sourceDb, targetDb, mylist);
+            fail();
+        }catch(IOException ex) {
+        	
         } finally {
             con.connect().close();
         }

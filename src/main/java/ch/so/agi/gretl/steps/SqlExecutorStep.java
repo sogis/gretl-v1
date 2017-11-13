@@ -211,8 +211,8 @@ public class SqlExecutorStep {
     private void executeAllSqlStatements (Connection conn, File sqlfile)
             throws Exception {
 
-
-        String statement = SqlReader.readSqlStmt(sqlfile);
+    	SqlReader reader=new SqlReader();
+        String statement = reader.readSqlStmt(sqlfile);
 
        if (statement == null){
            throw new GretlException(GretlException.TYPE_NO_STATEMENT,"At least one statement must be in the sql-File");
@@ -221,9 +221,10 @@ public class SqlExecutorStep {
            while (statement != null) {
 
                prepareSqlStatement(conn, statement);
-               statement = SqlReader.nextSqlStmt();
+               statement = reader.nextSqlStmt();
            }
        }
+       reader.close();
 
     }
 

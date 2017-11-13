@@ -11,37 +11,76 @@ import java.nio.charset.StandardCharsets;
  * Class which reads the given sql-statements
  */
 public class SqlReader {
-    private static FileInputStream sqlFileInputStream;
-    private static InputStreamReader sqlFileReader;
-    private static PushbackReader reader;
+    private PushbackReader reader=null;
 
-    private static GretlLogger log = LogEnvironment.getLogger(SqlReader.class);
+    private GretlLogger log = LogEnvironment.getLogger(SqlReader.class);
 
 
-    public static String readSqlStmt(File sqlfile)
+    public String readSqlStmt(File sqlfile)
             throws IOException {
 
+    	if(reader!=null) {
+    		throw new IllegalStateException("readSqlStmt() must only be called for the first statement");
+    	}
         createPushbackReader(sqlfile);
-
         StringBuffer stmt=new StringBuffer();
         int c=reader.read();
 
         stmt = createStatement(c,reader,stmt);
-
-        if(stmt.length()==0){
-            return null;
+        String ret=stripEndOfStmtSemicolon(stmt.toString());
+        if(ret==null) {
+        	close();
         }
-
-        return stmt.toString();
-
+        return ret;
     }
 
-    public static void createPushbackReader(File sqlfile) throws FileNotFoundException {
-        sqlFileInputStream = new FileInputStream(sqlfile);
-        sqlFileReader = new InputStreamReader(sqlFileInputStream, StandardCharsets.UTF_8);
+    private String stripEndOfStmtSemicolon(String stmt) {
+		if(stmt!=null) {
+			stmt=stmt.trim();
+			if(stmt.endsWith(";")) {
+				stmt=stmt.substring(0, stmt.length()-1);
+				stmt=stmt.trim();
+			}
+			if(stmt.length()==0) {
+				stmt=null;
+			}
+				
+		}
+		return stmt;
+	}
+
+	private void createPushbackReader(File sqlfile) throws FileNotFoundException {
+        FileInputStream sqlFileInputStream = new FileInputStream(sqlfile);
+        InputStreamReader sqlFileReader = new InputStreamReader(sqlFileInputStream, StandardCharsets.UTF_8);
 
         reader = new PushbackReader(sqlFileReader);
     }
+
+
+    public String nextSqlStmt() throws IOException{
+    	if(reader==null) {
+    		return null;
+    	}
+        StringBuffer stmt=new StringBuffer();
+        int c=reader.read();
+
+        stmt = createStatement(c,reader,stmt);
+        String ret=stripEndOfStmtSemicolon(stmt.toString());
+        if(ret==null) {
+        	close();
+        }
+        return ret;
+    }
+
+
+    public void close()
+            throws IOException {
+    	if(reader!=null) {
+    		reader.close();
+    		reader=null;
+    	}
+    }
+
 
     private static StringBuffer createStatement(int c, java.io.PushbackReader reader, StringBuffer stmt)
             throws IOException{
@@ -200,32 +239,5 @@ private static StringBuffer checkCharacterAfterHyphen(java.io.PushbackReader rea
         }
         return stmt;
     }
-
-    public static String nextSqlStmt() throws IOException{
-
-        StringBuffer stmt=new StringBuffer();
-        int c=reader.read();
-        while (c==' ') {
-            c = reader.read();
-        }
-
-        stmt = createStatement(c,reader,stmt);
-
-        if(stmt.length()==0){
-            closePushbackReader();
-            return null;
-        }
-
-        return stmt.toString();
-    }
-
-
-    public static void closePushbackReader()
-            throws IOException {
-        sqlFileReader.close();
-        sqlFileInputStream.close();
-    }
-
-
 }
 

@@ -32,7 +32,7 @@ public class SqlReaderTest {
 
         File sqlFile = TestUtil.createFile(folder, wholeStatement, "statementIsUnchanged.sql");
 
-        String parsedStatement = SqlReader.readSqlStmt(sqlFile);
+        String parsedStatement = new SqlReader().readSqlStmt(sqlFile);
 
         Assert.assertEquals("Line comment must be removed without changing the statement itself", statement, parsedStatement);
     }
