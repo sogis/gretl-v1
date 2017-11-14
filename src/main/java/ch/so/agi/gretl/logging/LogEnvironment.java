@@ -10,11 +10,15 @@ package ch.so.agi.gretl.logging;
  */
 public class LogEnvironment {
 
-    private static LogFactory currentLogFactory;
+    private static LogFactory currentLogFactory=null;
 
+    public static void setLogFactory(LogFactory factory) {
+    	currentLogFactory=factory;
+    }
     public static void initGradleIntegrated() {
-        if(currentLogFactory == null || currentLogFactory instanceof CoreJavaLogFactory)
-            currentLogFactory = new GradleLogFactory();
+        if(currentLogFactory == null) {
+            setLogFactory( new GradleLogFactory());
+        }
     }
 
     public static void initStandalone(){
@@ -22,15 +26,23 @@ public class LogEnvironment {
     }
 
     public static void initStandalone(Level logLevel) {
-        if(currentLogFactory == null || currentLogFactory instanceof GradleLogFactory)
-            currentLogFactory = new CoreJavaLogFactory(logLevel);
+        if(currentLogFactory == null) {
+            setLogFactory( new CoreJavaLogFactory(logLevel));
+        }
     }
 
     public static GretlLogger getLogger(Class logSource) {
-        //System.out.println("Class in getLogger = "+logSource.getName());
-        if(currentLogFactory == null)
-            throw new IllegalArgumentException("The LogEnvironment must be initialized with one of the init* methods before calling getLogger");
-
+        if(currentLogFactory == null) {
+        	try {
+				if(Class.forName("org.gradle.api.logging.Logger")!=null) {
+					
+				}
+	        	setLogFactory( new GradleLogFactory());
+			} catch (ClassNotFoundException e) {
+				// use java logging if no gradle in classpath
+	            setLogFactory( new CoreJavaLogFactory(Level.DEBUG));
+			}
+        }
         if(logSource == null)
             throw new IllegalArgumentException("The logSource must not be null");
 
