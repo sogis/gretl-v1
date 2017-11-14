@@ -25,3 +25,15 @@ before_script:
   
 script: 
   - gradle -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres '-Ddbpwd=' build dbTest
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: gradle -Drepos_url=${repos_url} -Drepos_pwd=${repos_pwd} -Drepos_usr=${repos_usr} publishMavenJavaPublicationToPublicRepository
+    on:
+      branch: master
+  - provider: script
+    skip_cleanup: true
+    script: gradle -Drepos_url=${repos_url} -Drepos_pwd=${repos_pwd} -Drepos_usr=${repos_usr} -Drelease=final publishMavenJavaPublicationToPublicRepository
+    on:
+      branch: stable
