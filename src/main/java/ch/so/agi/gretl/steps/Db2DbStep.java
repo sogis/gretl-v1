@@ -47,6 +47,9 @@ public class Db2DbStep {
      * @param transferSets A list of Transfersets
      * @throws Exception
      */
+    public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets) throws Exception {
+    	processAllTransferSets(sourceDb, targetDb, transferSets,new Settings());
+    }
     public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets,Settings settings) throws Exception {
         assertValidTransferSets(transferSets);
 
