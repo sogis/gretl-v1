@@ -5,6 +5,7 @@ import ch.ehi.basics.settings.Settings;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
+import ch.so.agi.gretl.tasks.impl.ShpValidatorImpl;
 import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -23,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class IliValidator extends AbstractValidatorTask {
+public class ShpValidator extends AbstractValidatorTask {
     private GretlLogger log;
 
     @TaskAction
     public void validate() {
-        log = LogEnvironment.getLogger(IliValidator.class);
+        log = LogEnvironment.getLogger(ShpValidator.class);
 
         if (dataFiles==null || dataFiles.size()==0) {
             return;
@@ -43,7 +44,7 @@ public class IliValidator extends AbstractValidatorTask {
         initSettings(settings);
         
         try {
-        	boolean ret=new Validator().validate(files.toArray(new String[files.size()]), settings);
+        	boolean ret=new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
         } catch (Exception e) {
             log.error("failed to validate data", e);
 

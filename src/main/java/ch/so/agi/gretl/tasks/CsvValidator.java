@@ -2,9 +2,12 @@ package ch.so.agi.gretl.tasks;
 
 
 import ch.ehi.basics.settings.Settings;
+import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
+import ch.so.agi.gretl.tasks.impl.CsvValidatorImpl;
+import ch.so.agi.gretl.tasks.impl.ShpValidatorImpl;
 import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -23,12 +26,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class IliValidator extends AbstractValidatorTask {
+public class CsvValidator extends AbstractValidatorTask {
     private GretlLogger log;
+    @Input
+    @Optional
+	public boolean firstLineIsHeader=true;
+    @Input
+    @Optional
+	public Character valueDelimiter=null;
+    @Input
+    @Optional
+	public Character valueSeparator=null;
 
     @TaskAction
     public void validate() {
-        log = LogEnvironment.getLogger(IliValidator.class);
+        log = LogEnvironment.getLogger(CsvValidator.class);
 
         if (dataFiles==null || dataFiles.size()==0) {
             return;
@@ -41,9 +53,17 @@ public class IliValidator extends AbstractValidatorTask {
         
         Settings settings=new Settings();
         initSettings(settings);
-        
+        // set optional parameters
+        settings.setValue(IoxWkfConfig.SETTING_FIRSTLINE,firstLineIsHeader?IoxWkfConfig.SETTING_FIRSTLINE_AS_HEADER:IoxWkfConfig.SETTING_FIRSTLINE_AS_VALUE);
+    	if(valueDelimiter!=null) {
+            settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER,valueDelimiter.toString());
+    	}
+    	if(valueSeparator!=null) {
+            settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR,valueSeparator.toString());
+    	}
+
         try {
-        	boolean ret=new Validator().validate(files.toArray(new String[files.size()]), settings);
+        	boolean ret=new CsvValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
         } catch (Exception e) {
             log.error("failed to validate data", e);
 

@@ -34,10 +34,10 @@ public class CsvImport extends DefaultTask {
 	public boolean firstLineIsHeader=true;
     @Input
     @Optional
-	public String valueDelimiter=null;
+	public Character valueDelimiter=null;
     @Input
     @Optional
-	public String valueSeparator=null;
+	public Character valueSeparator=null;
     @Input
     @Optional
 	public String schemaName=null;
@@ -60,10 +60,10 @@ public class CsvImport extends DefaultTask {
         // set optional parameters
         settings.setValue(IoxWkfConfig.SETTING_FIRSTLINE,firstLineIsHeader?IoxWkfConfig.SETTING_FIRSTLINE_AS_HEADER:IoxWkfConfig.SETTING_FIRSTLINE_AS_VALUE);
     	if(valueDelimiter!=null) {
-            settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER,valueDelimiter);
+            settings.setValue(IoxWkfConfig.SETTING_VALUEDELIMITER,valueDelimiter.toString());
     	}
     	if(valueSeparator!=null) {
-            settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR,valueSeparator);
+            settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR,valueSeparator.toString());
     	}
     	if(schemaName!=null) {
             settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA,schemaName);
