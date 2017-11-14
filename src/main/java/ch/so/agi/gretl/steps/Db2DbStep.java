@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.steps;
 
+import ch.ehi.basics.settings.Settings;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.*;
@@ -19,8 +20,11 @@ import java.util.List;
  */
 public class Db2DbStep {
 
-    private static GretlLogger log = LogEnvironment.getLogger(Db2DbStep.class);
+    public static final String PREFIX = "ch.so.agi.gretl.steps.Db2DbStep";
+    public static final String SETTING_BATCH_SIZE = PREFIX+".batchSize";
+	private static GretlLogger log = LogEnvironment.getLogger(Db2DbStep.class);
     private String taskName;
+	private int batchSize=5000;
 
 
     public Db2DbStep() {
@@ -43,9 +47,20 @@ public class Db2DbStep {
      * @param transferSets A list of Transfersets
      * @throws Exception
      */
-    public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets) throws Exception {
+    public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets,Settings settings) throws Exception {
         assertValidTransferSets(transferSets);
 
+        String batchSizeStr=settings.getValue(SETTING_BATCH_SIZE);
+        if(batchSizeStr!=null) {
+        	try {
+        		int newBatchSize=Integer.parseInt(batchSizeStr);
+        		if(newBatchSize>0) {
+        			batchSize=newBatchSize;
+        		}
+        	}catch(NumberFormatException e) {
+        		
+        	}
+        }
         log.lifecycle(String.format("Start Db2DbStep(Name: %s SourceDb: %s TargetDb: %s Transfers: %s)", taskName, sourceDb, targetDb, transferSets));
 
         Connection sourceDbConnection = null;
@@ -128,7 +143,6 @@ public class Db2DbStep {
                 transferSet);
 
         int columncount = rs.getMetaData().getColumnCount();
-        int batchSize = 5000;
         int k = 0;
         while (rs.next()) {
             transferRow(rs, insertRowStatement, columncount);

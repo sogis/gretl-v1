@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.steps;
 
+import ch.ehi.basics.settings.Settings;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.util.TaskUtil;
@@ -8,6 +9,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
@@ -30,6 +32,9 @@ public class Db2DbTask extends DefaultTask {
     public Connector targetDb;
     @Input
     public List<TransferSet> transferSets;
+    @Input
+    @Optional
+    public Integer batchSize=null;
 
     @TaskAction
     public void executeTask() throws Exception {
@@ -38,9 +43,13 @@ public class Db2DbTask extends DefaultTask {
 
         log.info(String.format("Start Db2DbTask(Name: %s SourceDb: %s TargetDb: %s Transfers: %s)", taskName, sourceDb, targetDb, transferSets));
 
+        Settings settings=new Settings();
+        if(batchSize!=null) {
+        	settings.setValue(Db2DbStep.SETTING_BATCH_SIZE, batchSize.toString());
+        }
         try {
             Db2DbStep step = new Db2DbStep(taskName);
-            step.processAllTransferSets(sourceDb, targetDb, transferSets);
+            step.processAllTransferSets(sourceDb, targetDb, transferSets,settings);
         } catch (Exception e) {
             log.error("Exception in creating / invoking Db2DbStep in Db2DbTask", e);
 
