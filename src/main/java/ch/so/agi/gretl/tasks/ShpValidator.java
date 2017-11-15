@@ -17,6 +17,7 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskExecutionException;
 import org.interlis2.validator.Validator;
 
 import java.io.File;
@@ -43,14 +44,10 @@ public class ShpValidator extends AbstractValidatorTask {
         Settings settings=new Settings();
         initSettings(settings);
         
-        try {
-        	boolean ret=new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-        } catch (Exception e) {
-            log.error("failed to validate data", e);
-
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
-        }
+    	validationOk=new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
+    	if(!validationOk && failOnError) {
+    		throw new TaskExecutionException(this,new Exception("validation failed"));
+    	}
     }
 
 }

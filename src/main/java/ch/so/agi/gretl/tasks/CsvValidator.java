@@ -19,6 +19,7 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskExecutionException;
 import org.interlis2.validator.Validator;
 
 import java.io.File;
@@ -62,14 +63,10 @@ public class CsvValidator extends AbstractValidatorTask {
             settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR,valueSeparator.toString());
     	}
 
-        try {
-        	boolean ret=new CsvValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-        } catch (Exception e) {
-            log.error("failed to validate data", e);
-
-            GradleException ge = TaskUtil.toGradleException(e);
-            throw ge;
-        }
+    	validationOk=new CsvValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
+    	if(!validationOk && failOnError) {
+    		throw new TaskExecutionException(this,new Exception("validation failed"));
+    	}
     }
 
 }

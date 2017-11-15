@@ -65,6 +65,10 @@ public class AbstractValidatorTask extends DefaultTask {
 	@Input
 	@Optional
 	public Integer proxyPort = null;
+	@Input
+	@Optional
+	public boolean failOnError=true;
+	public boolean validationOk=true;
 
 	protected void initSettings(Settings settings) {
 		settings.setValue(Validator.SETTING_DISABLE_STD_LOGGER, Validator.TRUE);
