@@ -1,9 +1,12 @@
-Einführung und Ziele {#section-introduction-and-goals}
+Einführung und Ziele
 ====================
 
 Dieses Dokument ist nach [arc42](http://www.arc42.de/) Template Revision 7.0 strukturiert.
 
-Aufgabenstellung {#_aufgabenstellung}
+Diagramme werden online auf [draw.io](https://www.draw.io/) erstellt.
+Die XML Definitionen der Diagramme liegen neben den exortierten Bildern.
+
+Aufgabenstellung
 ----------------
 
 ### Was ist GRETL?
@@ -11,11 +14,11 @@ GRETL ist eine [Gradle](https://gradle.org/) Erweiterung zur Ausführung von GEO
 
 Der Name GRETL ist eine Kombination von **Gr**adle und [ETL](https://de.wikipedia.org/wiki/ETL-Prozess)
 
-Qualitätsziele {#_qualit_tsziele}
+Qualitätsziele
 --------------
 * Standartisierter und automatisierter Build Prozess.
 
-Stakeholder {#_stakeholder}
+Stakeholder
 -----------
 
 +-----------------+-----------------+-----------------------------------+
@@ -28,20 +31,35 @@ Stakeholder {#_stakeholder}
 | ;*              | gt;*            |                                   |
 +-----------------+-----------------+-----------------------------------+
 
-Randbedingungen {#section-architecture-constraints}
+Randbedingungen
 ===============
 
-Kontextabgrenzung {#section-system-scope-and-context}
+Organisatorische Randbedingungen
+--------------------------------
+
+### Veröffentlichung als Open Source
+Die Lösung wird als Open Source verfügbar gemacht.
+
+Lizenz: MIT
+
+
+Kontextabgrenzung
 =================
 
-Fachlicher Kontext {#_fachlicher_kontext}
+Fachlicher Kontext
 ------------------
 
-**&lt;Diagramm und/oder Tabelle&gt;**
+![Business context](images/BusinessContext.png)
 
-**&lt;optional: Erläuterung der externen fachlichen Schnittstellen&gt;**
+* **AGI**: erstellt Jobs im *gretljobs* Repository auf *GitHub* und verwaltet deren Ausführung über den *GRETL Jenkins*.
+* **GitHub**: webbasierter Online-Dienst für das Versionsverwaltungssystem Git: <https://github.com/>
+* **gretljobs**: Transformations-Job Konfigurationen für die *GRETL Runtime*.
+* **GRETL**: System für die Ausführung der GRETL Jobs.
+* **GRETL Jenkins**: Verwaltungsoberfläche / UI für GRETL Jobs.
+* **GRETL Runtime**: Runtime für GRETL Jobs.
 
-Technischer Kontext {#_technischer_kontext}
+
+Technischer Kontext
 -------------------
 
 **&lt;Diagramm oder Tabelle&gt;**
@@ -51,13 +69,13 @@ Schnittstellen&gt;**
 
 **&lt;Mapping fachliche auf technische Schnittstellen&gt;**
 
-Lösungsstrategie {#section-solution-strategy}
+Lösungsstrategie
 ================
 
-Bausteinsicht {#section-building-block-view}
+Bausteinsicht
 =============
 
-Whitebox Gesamtsystem {#_whitebox_gesamtsystem}
+Whitebox Gesamtsystem
 ---------------------
 
 ***&lt;Übersichtsdiagramm&gt;***
@@ -74,7 +92,7 @@ Wichtige Schnittstellen
 
 :   *&lt;Beschreibung wichtiger Schnittstellen&gt;*
 
-### &lt;Name Blackbox 1&gt; {#__name_blackbox_1}
+### &lt;Name Blackbox 1&gt;
 
 *&lt;Zweck/Verantwortung&gt;*
 
@@ -88,56 +106,56 @@ Wichtige Schnittstellen
 
 *&lt;(optional) Offene Punkte/Probleme/Risiken&gt;*
 
-### &lt;Name Blackbox 2&gt; {#__name_blackbox_2}
+### &lt;Name Blackbox 2&gt;
 
 *&lt;Blackbox-Template&gt;*
 
-### &lt;Name Blackbox n&gt; {#__name_blackbox_n}
+### &lt;Name Blackbox n&gt;
 
 *&lt;Blackbox-Template&gt;*
 
-### &lt;Name Schnittstelle 1&gt; {#__name_schnittstelle_1}
+### &lt;Name Schnittstelle 1&gt;
 
 …
 
-### &lt;Name Schnittstelle m&gt; {#__name_schnittstelle_m}
+### &lt;Name Schnittstelle m&gt;
 
-Ebene 2 {#_ebene_2}
+Ebene 2
 -------
 
-### Whitebox *&lt;Baustein 1&gt;* {#_whitebox_emphasis_baustein_1_emphasis}
+### Whitebox *&lt;Baustein 1&gt;*
 
 *&lt;Whitebox-Template&gt;*
 
-### Whitebox *&lt;Baustein 2&gt;* {#_whitebox_emphasis_baustein_2_emphasis}
+### Whitebox *&lt;Baustein 2&gt;*
 
 *&lt;Whitebox-Template&gt;*
 
 …
 
-### Whitebox *&lt;Baustein m&gt;* {#_whitebox_emphasis_baustein_m_emphasis}
+### Whitebox *&lt;Baustein m&gt;*
 
 *&lt;Whitebox-Template&gt;*
 
-Ebene 3 {#_ebene_3}
+Ebene 3
 -------
 
-### Whitebox &lt;\_Baustein x.1\_&gt; {#_whitebox_baustein_x_1}
+### Whitebox &lt;\_Baustein x.1\_&gt;
 
 *&lt;Whitebox-Template&gt;*
 
-### Whitebox &lt;\_Baustein x.2\_&gt; {#_whitebox_baustein_x_2}
+### Whitebox &lt;\_Baustein x.2\_&gt;
 
 *&lt;Whitebox-Template&gt;*
 
-### Whitebox &lt;\_Baustein y.1\_&gt; {#_whitebox_baustein_y_1}
+### Whitebox &lt;\_Baustein y.1\_&gt;
 
 *&lt;Whitebox-Template&gt;*
 
-Laufzeitsicht {#section-runtime-view}
+Laufzeitsicht
 =============
 
-*&lt;Bezeichnung Laufzeitszenario 1&gt;* {#__emphasis_bezeichnung_laufzeitszenario_1_emphasis}
+*&lt;Bezeichnung Laufzeitszenario 1&gt;*
 ----------------------------------------
 
 -   &lt;hier Laufzeitdiagramm oder Ablaufbeschreibung einfügen&gt;
@@ -145,20 +163,20 @@ Laufzeitsicht {#section-runtime-view}
 -   &lt;hier Besonderheiten bei dem Zusammenspiel der Bausteine in
     diesem Szenario erläutern&gt;
 
-*&lt;Bezeichnung Laufzeitszenario 2&gt;* {#__emphasis_bezeichnung_laufzeitszenario_2_emphasis}
+*&lt;Bezeichnung Laufzeitszenario 2&gt;*
 ----------------------------------------
 
 …
 
-*&lt;Bezeichnung Laufzeitszenario n&gt;* {#__emphasis_bezeichnung_laufzeitszenario_n_emphasis}
+*&lt;Bezeichnung Laufzeitszenario n&gt;*
 ----------------------------------------
 
 …
 
-Verteilungssicht {#section-deployment-view}
+Verteilungssicht
 ================
 
-Infrastruktur Ebene 1 {#_infrastruktur_ebene_1}
+Infrastruktur Ebene 1
 ---------------------
 
 ***&lt;Übersichtsdiagramm&gt;***
@@ -175,67 +193,61 @@ Zuordnung von Bausteinen zu Infrastruktur
 
 :   *&lt;Beschreibung der Zuordnung&gt;*
 
-Infrastruktur Ebene 2 {#_infrastruktur_ebene_2}
+Infrastruktur Ebene 2
 ---------------------
 
-### *&lt;Infrastrukturelement 1&gt;* {#__emphasis_infrastrukturelement_1_emphasis}
+### *&lt;Infrastrukturelement 1&gt;*
 
 *&lt;Diagramm + Erläuterungen&gt;*
 
-### *&lt;Infrastrukturelement 2&gt;* {#__emphasis_infrastrukturelement_2_emphasis}
+### *&lt;Infrastrukturelement 2&gt;*
 
 *&lt;Diagramm + Erläuterungen&gt;*
 
 …
 
-### *&lt;Infrastrukturelement n&gt;* {#__emphasis_infrastrukturelement_n_emphasis}
+### *&lt;Infrastrukturelement n&gt;*
 
 *&lt;Diagramm + Erläuterungen&gt;*
 
-Querschnittliche Konzepte {#section-concepts}
+Querschnittliche Konzepte
 =========================
 
-*&lt;Konzept 1&gt;* {#__emphasis_konzept_1_emphasis}
+*&lt;Konzept 1&gt;*
 -------------------
 
 *&lt;Erklärung&gt;*
 
-*&lt;Konzept 2&gt;* {#__emphasis_konzept_2_emphasis}
+*&lt;Konzept 2&gt;*
 -------------------
 
 *&lt;Erklärung&gt;*
 
 …
 
-*&lt;Konzept n&gt;* {#__emphasis_konzept_n_emphasis}
+*&lt;Konzept n&gt;*
 -------------------
 
 *&lt;Erklärung&gt;*
 
-Entwurfsentscheidungen {#section-design-decisions}
+Entwurfsentscheidungen
 ======================
 
-Qualitätsanforderungen {#section-quality-scenarios}
+Qualitätsanforderungen
 ======================
 
-Qualitätsbaum {#_qualit_tsbaum}
+Qualitätsbaum
 -------------
 
-Qualitätsszenarien {#_qualit_tsszenarien}
+Qualitätsszenarien
 ------------------
 
-Risiken und technische Schulden {#section-technical-risks}
+Risiken und technische Schulden
 ===============================
 
-Glossar {#section-glossary}
+Glossar
 =======
 
-+----------------------+----------------------------------------------+
-| Begriff              | Definition                                   |
-+======================+==============================================+
-| *&lt;Begriff-1&gt;*  | *&lt;Definition-1&gt;*                       |
-+----------------------+----------------------------------------------+
-| *&lt;Begriff-2*      | *&lt;Definition-2&gt;*                       |
-+----------------------+----------------------------------------------+
-
-
+| Begriff | Definition |
+| --- | --- |
+| *ETL* | [Extract, Transform, Load](https://de.wikipedia.org/wiki/ETL-Prozess) |
