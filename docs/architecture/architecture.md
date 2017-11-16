@@ -4,7 +4,7 @@ Einführung und Ziele
 Dieses Dokument ist nach [arc42](http://www.arc42.de/) Template Revision 7.0 strukturiert.
 
 Diagramme werden online auf [draw.io](https://www.draw.io/) erstellt.
-Die XML Definitionen der Diagramme liegen neben den exortierten Bildern.
+Die XML Definitionen der Diagramme liegen neben den exportierten Bildern.
 
 Aufgabenstellung
 ----------------
@@ -21,15 +21,10 @@ Qualitätsziele
 Stakeholder
 -----------
 
-+-----------------+-----------------+-----------------------------------+
-| Rolle           | Kontakt         | Erwartungshaltung                 |
-+=================+=================+===================================+
-| *&lt;Rolle-1&gt | *&lt;Kontakt-1& | *&lt;Erwartung-1&gt;*             |
-| ;*              | gt;*            |                                   |
-+-----------------+-----------------+-----------------------------------+
-| *&lt;Rolle-2&gt | *&lt;Kontakt-2& | *&lt;Erwartung-2&gt;*             |
-| ;*              | gt;*            |                                   |
-+-----------------+-----------------+-----------------------------------+
+| Rolle | Kontakt | Erwartungshaltung |
+| --- | --- | --- |
+| *&lt;Rolle-1&gt;* | *&lt;Kontakt-1&gt;* | *&lt;Erwartung-1&gt;* |
+| *&lt;Rolle-2&gt;* | *&lt;Kontakt-2&gt;* | *&lt;Erwartung-2&gt;* |
 
 Randbedingungen
 ===============
@@ -232,6 +227,64 @@ Querschnittliche Konzepte
 
 Entwurfsentscheidungen
 ======================
+
+Gradle als Job Runtime
+----------------------
+
+### Fragestellung
+Wieso wird Gradle als Runtime eingesetzt?
+
+### Entscheigung
+TODO
+
+GRETL als Gradle Plugin
+-----------------------
+
+### Fragestellung
+Wieso wird die ETL Logik als Gradle Plugin geschrieben?
+
+### Entscheigung
+TODO
+
+Jenkins als Benutzeroberfläche
+------------------------------
+
+### Fragestellung
+Warum ist Jenkins das UI?
+
+### Entscheigung
+TODO
+
+
+GRETL Job Ausführung auf Build-Container
+----------------------------------------
+
+### Fragestellung
+Wieso wird für jede Job Ausführung ein eigener Container gestartet?
+
+### Alternativen
+1. Einzelner Server läuft und steht für Jobs zur Verfügung.
+2. Jeder Job hat einen laufenden Container.
+
+### Entscheigung
+Es wird das Prinzip vom Build-Container eingesetzt.
+Da das Scheduling von Jenkins übernommen wird, braucht es keine lang-laufenden Container.
+Zum Ausnützen der Stärken von Container Plattformen werden kurz-lebige Container eingesetzt.
+Dadurch sind sie unabhängig von einander und die Resourcen können besser genutzt werden.
+
+
+GRETL Runtime als Jenkins Slave
+-------------------------------
+
+### Fragestellung
+Wieso ist die GRETL Runtime als Jenkins Slave realisiert?
+
+### Alternativen
+1. Einzelner Server läuft immer und arbeitet Jobs bei Aufruf ab.
+
+### Entscheigung
+TODO
+
 
 Qualitätsanforderungen
 ======================
