@@ -12,6 +12,10 @@ The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql
 
 gretl is licensed under the [MIT License](LICENSE).
 
+## Architecture
+The description of the architecture can be found here: [docs/architecture/](docs/architecture/architecture.md)
+
+
 ## Status
 
 gretl is in development state.
