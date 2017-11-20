@@ -10,6 +10,9 @@ allprojects {
         dependencies {
             classpath group: 'ch.so.agi', name: 'gretl', version: '1.0.4-SNAPSHOT'
             classpath group: 'ch.ehi', name: 'ehibasics', version: '1.1.0'
+
+            // https://mvnrepository.com/artifact/org.postgresql/postgresql
+            classpath group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
         }
     }
 }

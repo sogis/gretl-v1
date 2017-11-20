@@ -19,7 +19,11 @@ The script ```build-gretl.sh``` builds the runtime as Docker image with the name
 ### run
 The script ```start-gretl.sh``` runs the image *gretl-runtime*.
 Therefore  the image has to be built before, see the build section.
-It also asks for the GRETL job to be executed and the parameter to be passed to the job execution.
+
+Script execution:  
+```start-gretl.sh --job_directory /home/gretl --task_name gradleTaskName -Pparam1=1 -Pparam2=2```
+
+The *n* parameter are passed directly to the gradle task execution.
 
 ### test
 The script ```test-gretl.sh``` holds job name and parameter to test the runtime with the *afu_altlasten_pub* job.

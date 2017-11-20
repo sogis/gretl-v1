@@ -1,25 +1,28 @@
 #!/bin/bash
 
-read -p 'job directory: ' jobDirectory
-read -p 'task name: ' taskName
+# use like this:
+# start-gretl.sh --job_directory /home/gretl --task_name gradleTaskName -Pparam1=1 -Pparam2=2
 
-# TODO: no fix parameter amount and names
-read -p 'sourceDbUrl: ' sourceDbUrl
-read -p 'sourceDbUser: ' sourceDbUser
-read -sp 'sourceDbPass: ' sourceDbPass
-read -p 'targetDbUrl: ' targetDbUrl
-read -p 'targetDbUser: ' targetDbUser
-read -sp 'targetDbPass: ' targetDbPass
+task_parameter=()
+
+while [ $# -gt 0 ]; do
+    if [[ $1 == *"--"* ]]; then
+        v="${1/--/}"
+        declare $v="$2"
+   elif [[ "$1" =~ ^"-P" ]]; then
+        task_parameter+=($1)
+   fi
+  shift
+done
+
+echo "======================================================="
+echo "Starts the GRETL runtime to execute the given GRETL job"
+echo "task name: $task_name"
+echo "job directory: $job_directory"
+echo "task_parameter: ${task_parameter[@]}"
+echo "======================================================="
 
 docker run -i --rm \
-    -v "$jobDirectory":/home/gradle/project \
+    -v "$job_directory":/home/gradle/project \
     -w /home/gradle/project \
-    gretl-runtime "$taskName" \
-    -PsourceDbUrl="$sourceDbUrl" \
-    -PsourceDbUser="$sourceDbUser" \
-    -PsourceDbPass="$sourceDbPass" \
-    -PtargetDbUrl="$targetDbUrl" \
-    -PtargetDbUser="$targetDbUser" \
-    -PtargetDbPass="$targetDbPass"
-
-
+    gretl-runtime "$task_name" "${task_parameter[@]}"

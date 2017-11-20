@@ -30,7 +30,7 @@ dependencies {
     // Additional driver possibilities when the need arises:
     // - oracle jdbc driver
     // - sqlserver jdbc driver (Microsoft)
-    compile gradleApi()
+    //compile gradleApi()
 }
 
 task copyToLibs(type: Copy) {
