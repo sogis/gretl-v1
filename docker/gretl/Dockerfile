@@ -9,5 +9,7 @@ COPY gretl-1.0.4-SNAPSHOT.jar /home/gradle/libs
 RUN gradle copyToLibs
 RUN ls -la libs
 
+RUN rm /home/gradle/build.gradle
+
 ENTRYPOINT ["gradle", "--offline", "--init-script", "/home/gradle/init.gradle"]
 CMD ["showRepos"]
