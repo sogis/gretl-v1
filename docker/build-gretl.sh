@@ -9,14 +9,9 @@ echo "=============================================================="
 
 cp ../build/libs/gretl-1.0.4-SNAPSHOT.jar gretl
 
-# TODO fix dependency in gretl/init.gradle
-wget -O postgresql-42.1.4.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.1.4/postgresql-42.1.4.jar
-mv postgresql-42.1.4.jar gretl
-
 docker build --no-cache --force-rm -t gretl-runtime -f gretl/Dockerfile gretl
 
 rm gretl/gretl*.jar
-rm gretl/postgresql*.jar
 
 # look into the container:
 # docker run -it --entrypoint=/bin/sh gretl-runtime
