@@ -25,4 +25,4 @@ echo "======================================================="
 docker run -i --rm \
     -v "$job_directory":/home/gradle/project \
     -w /home/gradle/project \
-    gretl-runtime "$task_name" "${task_parameter[@]}"
+    gretl-runtime "$task_name" "${task_parameter[@]}" --stacktrace

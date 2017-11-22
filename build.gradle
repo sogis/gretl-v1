@@ -3,16 +3,15 @@ version '1.0.4'+System.getProperty('release','-SNAPSHOT')
 version env('GRETL_VERSION', "$project.version")
 
 ext {
-    //dependencies
-    junitVersion = '4.12'
-    postgresqlVersion = '42.1.4'
-    ioxIliVersion = '1.20.+' // use SNAPSHOT
-    ilivalidatorVersion = '1.6.+' // use SNAPSHOT
-    ili2pgVersion = '3.11.+' // use SNAPSHOT
-    ioxWkfVersion = '0.+' // use SNAPSHOT
+    //dependency versions
     sqliteJdbcVersion = '3.8.11.2'
     derbyVersion = '10.13.1.1'
     jenkinsClientVersion = '0.3.7'
+
+    // dependencies
+    sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
+    derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
+    jenkinsClientDependency = 'com.offbytwo.jenkins:jenkins-client:' + jenkinsClientVersion
 }
 
 repositories {
@@ -26,8 +25,9 @@ repositories {
     }
 }
 
-apply plugin: 'java'
+apply from: 'dependencies.gradle'
 
+apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
@@ -38,32 +38,32 @@ sourceSets {
 
 configurations.all {
     resolutionStrategy {
-        force group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion
+        force ioxIliDependency
     }
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: junitVersion
+    testCompile junitDependency
 
-    compile group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion
+    compile postgresqlDependency
 
-    compile group: 'ch.interlis', name: 'ilivalidator', version: ilivalidatorVersion
-    compile group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion
-    compile group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion
-    compile group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion
+    compile ilivalidatorDependency
+    compile ili2pgDependency
+    compile ioxWkfDependency
+    compile ioxIliDependency
 
-    compile group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion
-    compile group: 'org.apache.derby', name: 'derby', version: derbyVersion
+    compile sqliteJdbcDependency
+    compile derbyDependency
 
     // Additional driver possibilities when the need arises:
     // - oracle jdbc driver
     // - sqlserver jdbc driver (Microsoft)
     compile gradleApi()
 
-    testIntegrationCompile group: 'junit', name: 'junit', version: junitVersion
+    testIntegrationCompile junitDependency
 
-    testSystemCompile group: 'junit', name: 'junit', version: junitVersion
-    testSystemCompile 'com.offbytwo.jenkins:jenkins-client:' + jenkinsClientVersion
+    testSystemCompile junitDependency
+    testSystemCompile jenkinsClientDependency
 }
 
 

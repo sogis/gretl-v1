@@ -1,14 +1,30 @@
-group 'ch.so.agi'
-version '1.0.1-SNAPSHOT'
+buildscript {
 
-apply plugin: 'java'
+    apply from: '../dependencies.gradle'
 
-sourceCompatibility = 1.8
+    ext {
+        //dependency versions
+        ehibasicsVersion = '1.1.0'
 
-repositories {
-    mavenCentral()
-}
+        // dependencies
+        ehibasicsDependency = [ group: 'ch.ehi', name: 'ehibasics', version: ehibasicsVersion ]
+    }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    repositories {
+        maven {
+            url "http://jars.interlis.ch"
+        }
+        maven {
+            url "http://download.osgeo.org/webdav/geotools/"
+        }
+        mavenCentral()
+    }
+
+    dependencies {
+        // TODO no version lock
+        classpath files('../build/libs/gretl-1.0.4-SNAPSHOT.jar')
+
+        classpath ilivalidatorDependency
+        classpath ehibasicsDependency
+    }
 }
