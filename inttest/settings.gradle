@@ -1,1 +1,3 @@
 rootProject.name = 'inttest'
+
+include 'jobs/iliValidator'
