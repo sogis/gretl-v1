@@ -1,3 +1,6 @@
 rootProject.name = 'inttest'
 
-include 'jobs/iliValidator'
+file('jobs').eachDir { dir ->
+    include dir.name
+    project(":${dir.name}").projectDir = dir
+}
