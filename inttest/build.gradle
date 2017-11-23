@@ -1,30 +1,13 @@
-buildscript {
+plugins {
+    id 'java'
+}
 
-    apply from: '../dependencies.gradle'
+apply from: '../dependencies.gradle'
 
-    ext {
-        //dependency versions
-        ehibasicsVersion = '1.1.0'
+repositories {
+    mavenCentral()
+}
 
-        // dependencies
-        ehibasicsDependency = [ group: 'ch.ehi', name: 'ehibasics', version: ehibasicsVersion ]
-    }
-
-    repositories {
-        maven {
-            url "http://jars.interlis.ch"
-        }
-        maven {
-            url "http://download.osgeo.org/webdav/geotools/"
-        }
-        mavenCentral()
-    }
-
-    dependencies {
-        // TODO no version lock
-        classpath files('../build/libs/gretl-1.0.4-SNAPSHOT.jar')
-
-        classpath ilivalidatorDependency
-        classpath ehibasicsDependency
-    }
+dependencies {
+    testCompile junitDependency
 }
