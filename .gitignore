@@ -6,6 +6,9 @@
 # Do not add build directory.
 build/
 
+# Do not add gradle directory.
+gradle/
+
 # Created by https://www.gitignore.io/api/osx,java,gradle,intellij,intellij+iml
 
 ### Intellij ###
@@ -166,7 +169,7 @@ Temporary Items
 gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
+#!gradle-wrapper.jar
 
 # Cache of project
 .gradletasknamecache
