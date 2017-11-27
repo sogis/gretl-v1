@@ -1,3 +1,5 @@
+apply plugin: 'java'
+
 buildscript {
 
     apply from: '../dependencies.gradle'
@@ -27,4 +29,37 @@ buildscript {
         classpath ilivalidatorDependency
         classpath ehibasicsDependency
     }
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    testIntegration
+    testSystem
+}
+
+dependencies {
+    compile 'org.testng:testng:6.9.6'
+    compile 'junit:junit:4.12'
+
+    testIntegrationCompile junitDependency
+    testSystemCompile junitDependency
+}
+
+task testIntegration(type: Test) {
+    group = 'Verification'
+    description = 'Runs integration tests'
+
+    testClassesDirs = sourceSets.testIntegration.output.classesDirs
+    classpath = sourceSets.testIntegration.runtimeClasspath
+}
+
+task testSystem(type: Test) {
+    group = 'Verification'
+    description = 'Runs system tests including Jenkins'
+
+    testClassesDirs = sourceSets.testSystem.output.classesDirs
+    classpath = sourceSets.testSystem.runtimeClasspath
 }
