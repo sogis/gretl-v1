@@ -1,3 +1,4 @@
+/*
 package ch.so.agi.gretl.jenkins;
 
 import com.offbytwo.jenkins.JenkinsServer;
@@ -59,3 +60,4 @@ public class JenkinsTest {
         assertThat(result.getQueueItemUrlPart(), is("http://localhost:8080/queue/item/1/"));
     }
 }
+*/
