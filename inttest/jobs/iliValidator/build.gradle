@@ -1,0 +1,8 @@
+import ch.so.agi.gretl.tasks.*
+
+defaultTasks 'validate'
+
+task validate(type: IliValidator){
+    dataFiles = ["Beispiel2a.xtf"]
+    logFile = "ilivalidator.log"
+}
