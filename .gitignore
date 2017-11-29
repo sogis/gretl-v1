@@ -6,8 +6,8 @@
 # Do not add build directory.
 build/
 
-# Do not add gradle directory.
-gradle/
+# Do not add gradle directory on any level.
+**/gradle/
 
 # Created by https://www.gitignore.io/api/osx,java,gradle,intellij,intellij+iml
 
