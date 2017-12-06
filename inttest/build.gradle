@@ -12,8 +12,16 @@ allprojects {
 
     dependencies {
         testCompile junitDependency
+
+        testRuntime postgresqlDependency
     }
 }
+/*
+sourceSets {
+    testIntegration
+    testSystem
+}
+*/
 
 subprojects {
 
@@ -51,8 +59,6 @@ subprojects {
 
         dependencies {
             classpath fileTree(dir: rootProject.ext.jarDir, include: '*.jar')
-
-            //compile group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion
 
             classpath group: 'ch.interlis', name: 'ilivalidator', version: ilivalidatorVersion
             classpath group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion

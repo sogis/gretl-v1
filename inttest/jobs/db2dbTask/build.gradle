@@ -1,0 +1,26 @@
+import ch.so.agi.gretl.steps.*
+
+def db_url = "jdbc:postgresql://localhost:5432/gretl";
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+defaultTasks 'bToA'
+
+task aToB(type: Db2DbTask) {
+    sourceDb =  [db_url,db_user,db_pass]
+    targetDb = [db_url,db_user,db_pass]
+    transferSets = [
+            new TransferSet('statementChain_AToB.sql', 'db2dbtaskchain.albums_intermediate', true)
+    ];
+}
+
+task bToA(type: Db2DbTask, dependsOn: 'aToB'){
+    sourceDb =  [db_url,db_user,db_pass]
+    targetDb = [db_url,db_user,db_pass]
+    transferSets = [
+            new TransferSet('statementChain_BToA.sql', 'db2dbtaskchain.albums_dest', true)
+    ];
+}
+
+
+
