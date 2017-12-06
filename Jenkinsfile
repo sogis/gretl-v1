@@ -20,11 +20,14 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh './gradlew clean build'
+                sh './gradlew clean build --refresh-dependencies'
             }
             post {
                 always {
                     junit 'build/test-results/**/*.xml'  // Requires JUnit plugin
+                }
+                success {
+                    archiveArtifacts 'build/libs/*.?ar'
                 }
             }
         }
