@@ -9,7 +9,7 @@ import java.sql.*;
 
 public class Db2DbTaskTest {
 
-    private static final String PG_CON_URI = System.getProperty("ch.so.agi.pgURL"); //"jdbc:postgresql://localhost:5432/gretl";
+    private static final String PG_CON_URI = "jdbc:postgresql://localhost:5432/gretl"; //System.getProperty("ch.so.agi.pgURL"); //
     private static final String PG_CON_USER = "ddluser";
     private static final String PG_CON_PASS = "ddluser";
 
