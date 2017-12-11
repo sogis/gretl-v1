@@ -14,26 +14,24 @@ import java.sql.Statement;
 
 public class SqlExecutorTaskTest {
     /*
-    Test's that a chain of statements executes properly and results in the correct
-    number of inserts (corresponding to the last statement)
-    1. statement: create the schema for the tables
-    2. statement: fill the source table with rows
-    3. statement: execute the "insert into select from" statement
+    Test's that a chain of statements executes properly
+    1. statement: fill the source table with rows
+    2. statement: execute the "insert into select from" statement
     */
     @Test
-    public void sqlExecuterTaskChainTest() throws Exception {
+    public void taskChainTest() throws Exception {
         String schemaName = "sqlExecuterTaskChain".toLowerCase();
         Connection con = null;
         try{
             con = TestUtilSql.connectPG();
             TestUtilSql.createOrReplaceSchema(con, schemaName);
-            createSqlExecuterTaskChainTables(con, schemaName);
+            TestUtilSql.createSqlExecuterTaskChainTables(con, schemaName);
 
             con.commit();
             TestUtilSql.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSql.VARNAME_PG_CON_URI, TestUtilSql.PG_CON_URI)};
-            TestUtil.runJob("jobs/sqlExecutorTask", gvs);
+            TestUtil.runJob("jobs/sqlExecutorTaskChain", gvs);
 
             //reconnect to check results
             con = TestUtilSql.connectPG();
@@ -52,28 +50,29 @@ public class SqlExecutorTaskTest {
         }
     }
 
-    private static void createSqlExecuterTaskChainTables(Connection con, String schemaName){
-
-        String ddlBase = "CREATE TABLE %s.albums_%s(" +
-                "title text, artist text, release_date text," +
-                "publisher text, media_type text)";
-
+    /**
+     * Test's if the sql-files can be configured using a relative path.
+     *
+     * The relative path relates to the location of the build.gradle file
+     * of the corresponding gretl job.
+     */
+    @Test
+    public void relPathTest() throws Exception {
+        String schemaName = "sqlExecuterRelPath".toLowerCase();
+        Connection con = null;
         try{
-            //source table
-            Statement s1 = con.createStatement();
-            System.out.println(String.format(ddlBase, schemaName, "src"));
-            s1.execute(String.format(ddlBase, schemaName, "src"));
-            s1.close();
+            con = TestUtilSql.connectPG();
+            TestUtilSql.createOrReplaceSchema(con, schemaName);
+            TestUtilSql.createSqlExecuterTaskChainTables(con, schemaName);
 
-            //dest table
-            Statement s2 = con.createStatement();
-            s2.execute(String.format(ddlBase, schemaName,"dest"));
-            s2.close();
+            con.commit();
+            TestUtilSql.closeCon(con);
 
-            TestUtilSql.grantTableModsInSchemaToUser(con, schemaName, "dmlUser");
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSql.VARNAME_PG_CON_URI, TestUtilSql.PG_CON_URI)};
+            TestUtil.runJob("jobs/sqlExecutorTaskRelPath", gvs);
         }
-        catch(SQLException se){
-            throw new RuntimeException(se);
+        finally {
+            TestUtilSql.closeCon(con);
         }
     }
 }

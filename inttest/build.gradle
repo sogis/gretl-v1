@@ -9,12 +9,41 @@ allprojects {
     repositories {
         mavenCentral()
     }
+}
 
-    dependencies {
-        testCompile junitDependency
-
-        testRuntime postgresqlDependency
+sourceSets {
+    testIntegration {
+        compileClasspath += sourceSets.test.runtimeClasspath
+        runtimeClasspath += sourceSets.test.runtimeClasspath
     }
+
+    testSystem {
+        compileClasspath += sourceSets.test.runtimeClasspath
+        runtimeClasspath += sourceSets.test.runtimeClasspath
+    }
+}
+
+dependencies{
+    compile junitDependency
+    runtime postgresqlDependency
+    testSystemCompile junitDependency
+    testIntegrationCompile junitDependency
+}
+
+task testIntegration(type: Test) {
+    group = 'Verification'
+    description = 'Runs integration tests'
+
+    testClassesDirs = sourceSets.testIntegration.output.classesDirs
+    classpath = sourceSets.testIntegration.runtimeClasspath
+}
+
+task testSystem(type: Test) {
+    group = 'Verification'
+    description = 'Runs system tests including Jenkins'
+
+    testClassesDirs = sourceSets.testSystem.output.classesDirs
+    classpath = sourceSets.testSystem.runtimeClasspath
 }
 
 // Transfer the required configuration variables to the unit test code.
@@ -25,13 +54,6 @@ tasks.withType(Test) {
 
     println 'dburi: ' + getSystemProperties().getAt(GRETLTEST_DBURI)
 }
-
-/*
-sourceSets {
-    testIntegration
-    testSystem
-}
-*/
 
 subprojects {
 
@@ -77,5 +99,4 @@ subprojects {
         }
     }
 }
-
 

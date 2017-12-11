@@ -117,4 +117,80 @@ public class TestUtilSql {
         }
     }
 
+    public static void createSqlExecuterTaskChainTables(Connection con, String schemaName){
+
+        String ddlBase = "CREATE TABLE %s.albums_%s(" +
+                "title text, artist text, release_date text," +
+                "publisher text, media_type text)";
+
+        try{
+            //source table
+            Statement s1 = con.createStatement();
+            System.out.println(String.format(ddlBase, schemaName, "src"));
+            s1.execute(String.format(ddlBase, schemaName, "src"));
+            s1.close();
+
+            //dest table
+            Statement s2 = con.createStatement();
+            s2.execute(String.format(ddlBase, schemaName,"dest"));
+            s2.close();
+
+            TestUtilSql.grantTableModsInSchemaToUser(con, schemaName, "dmlUser");
+        }
+        catch(SQLException se){
+            throw new RuntimeException(se);
+        }
+    }
+
+    public static int prepareDb2DbChainTables(Connection con, String schemaName){
+        int srcRowCount = 4;
+
+
+        String ddlBase = "CREATE TABLE %s.albums_%s(" +
+                "title text, artist text, release_date text," +
+                "publisher text, media_type text)";
+
+        try{
+            //source table
+            Statement s1 = con.createStatement();
+            System.out.println(String.format(ddlBase, schemaName, "src"));
+            s1.execute(String.format(ddlBase, schemaName, "src"));
+            s1.close();
+
+            //dest table
+            Statement s2 = con.createStatement();
+            s2.execute(String.format(ddlBase, schemaName,"dest"));
+            s2.close();
+
+            //intermediate table
+            Statement s3 = con.createStatement();
+            s3.execute(String.format(ddlBase, schemaName,"intermediate"));
+            s3.close();
+
+            insertRowsInAlbumsTable(con, schemaName, "src", 4);
+
+            TestUtilSql.grantTableModsInSchemaToUser(con, schemaName, "dmlUser");
+        }
+        catch(SQLException se){
+            throw new RuntimeException(se);
+        }
+
+        return srcRowCount;
+    }
+
+
+    public static void insertRowsInAlbumsTable(Connection con, String schemaName, String tableSuffix, int numRows) throws SQLException{
+        PreparedStatement ps = con.prepareStatement(
+                String.format("INSERT INTO %s.albums_%s VALUES (?,?,?,?,?)", schemaName, tableSuffix)
+        );
+
+        String[] row = {"Exodus", "Andy Hunter", "7/9/2002", "Sparrow Records", "CD"};
+        for(int i=0; i<numRows; i++){
+            for(int j=0; j<row.length; j++){
+                ps.setString(j+1, row[j]);
+            }
+            ps.executeUpdate();
+        }
+        ps.close();
+    }
 }
