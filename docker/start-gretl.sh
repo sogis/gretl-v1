@@ -22,7 +22,18 @@ echo "job directory: $job_directory"
 echo "task_parameter: ${task_parameter[@]}"
 echo "======================================================="
 
+# special run configuration for jenkins-slave based image:
+# 1. use a shell as entry point
+# 2. mount job directory as volume
+# 3. run as current user to avoid permission problems on generated .gradle directory
+# 4. gretl-runtime image with tag latest
+# 5. executed commands seperated by semicolon:
+#    a. jenkins jnlp client
+#    b. change to project directory
+#    c. run gradle with given task and parameter using init script from image
+
 docker run -i --rm \
+    --entrypoint="/bin/sh" \
     -v "$job_directory":/home/gradle/project \
-    -w /home/gradle/project \
-    gretl-runtime "$task_name" "${task_parameter[@]}" --stacktrace
+    -e USERID=$UID \
+    gretl-runtime "-c" "/usr/local/bin/run-jnlp-client;cd /home/gradle/project;gradle $task_name ${task_parameter[@]} --init-script /home/gradle/init.gradle --stacktrace"

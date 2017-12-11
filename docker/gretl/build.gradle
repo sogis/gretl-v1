@@ -42,7 +42,7 @@ dependencies {
 }
 
 task copyToLibs(type: Copy) {
-    into "libs"
+    into "/home/gradle/libs"
     from configurations.compile
     from configurations.runtime
 }
