@@ -2,6 +2,8 @@ FROM openshift/jenkins-slave-maven-centos7
 
 USER root
 
+COPY gretl /usr/local/bin
+
 COPY init.gradle /home/gradle/
 COPY build.gradle /home/gradle/
 COPY dependencies.gradle /home/gradle/
