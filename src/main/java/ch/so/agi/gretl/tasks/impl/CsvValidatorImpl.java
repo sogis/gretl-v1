@@ -17,7 +17,7 @@ public class CsvValidatorImpl extends Validator {
 	@Override
 	protected IoxReader createReader(String filename, TransferDescription td, LogEventFactory errFactory,Settings settings)
 			throws IoxException {
-		CsvReader reader=new CsvReader(new File(filename));
+		CsvReader reader=new CsvReader(new File(filename),settings);
 		reader.setModel(td);
 		boolean firstLineIsHeader=false;
 		{
