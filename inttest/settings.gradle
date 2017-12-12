@@ -1,6 +1,1 @@
 rootProject.name = 'inttest'
-
-file('jobs').eachDir { dir ->
-    include dir.name
-    project(":${dir.name}").projectDir = dir
-}

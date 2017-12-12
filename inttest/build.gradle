@@ -50,40 +50,7 @@ task testSystem(type: Test) {
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
     def GRETLTEST_DBURI = 'gretltest_dburi'
-    systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
-
+    systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ?
+        findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
     println 'dburi: ' + getSystemProperties().getAt(GRETLTEST_DBURI)
-}
-
-subprojects {
-
-    buildscript {
-        repositories {
-            maven {
-                url "http://download.osgeo.org/webdav/geotools/"
-            }
-            mavenCentral()
-            maven {
-                url "http://jars.interlis.ch"
-            }
-            maven {
-                url "http://jars.umleditor.org"
-            }
-        }
-
-        configurations.all {
-            resolutionStrategy {
-                force ioxIliDependency
-            }
-        }
-
-        dependencies {
-            classpath fileTree(dir: rootProject.ext.jarDir, include: '*.jar')
-
-            classpath ilivalidatorDependency
-            classpath ili2pgDependency
-            classpath ioxWkfDependency
-            classpath ioxIliDependency
-        }
-    }
 }
