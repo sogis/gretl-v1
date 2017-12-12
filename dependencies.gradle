@@ -1,0 +1,19 @@
+ext {
+    //dependency versions
+    ioxIliVersion = '1.20.+' // use SNAPSHOT
+    ilivalidatorVersion = '1.6.+' // use SNAPSHOT
+    ili2pgVersion = '3.11.+' // use SNAPSHOT
+    ioxWkfVersion = '0.+' // use SNAPSHOT
+
+    postgresqlVersion = '42.1.4'
+    junitVersion = '4.12'
+
+    // dependencies
+    ioxIliDependency = [ group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion ]
+    ilivalidatorDependency = [ group: 'ch.interlis', name: 'ilivalidator', version: ilivalidatorVersion ]
+    ili2pgDependency = [ group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion ]
+    ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
+
+    postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
+    junitDependency = [ group: 'junit', name: 'junit', version: junitVersion ]
+}

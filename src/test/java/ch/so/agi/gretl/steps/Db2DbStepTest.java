@@ -192,6 +192,8 @@ public class Db2DbStepTest {
 
     }
 
+    //todo was tested diese methode? Fehler bei leerer sql datei oder Fehler bei falschem sql?
+    //--> Bitte aufräumen und methode besser benennen
     @Test
     public void SQLExceptionTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);

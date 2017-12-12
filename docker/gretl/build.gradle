@@ -1,0 +1,43 @@
+ext {
+    //dependencies
+    sqliteJdbcVersion = '3.8.11.2'
+    derbyVersion = '10.13.1.1'
+}
+apply from: '/home/gradle/dependencies.gradle'
+
+repositories {
+    maven {
+        url "http://jars.interlis.ch"
+    }
+    maven {
+        url "http://download.osgeo.org/webdav/geotools/"
+    }
+    mavenCentral()
+    mavenLocal()
+}
+
+apply plugin: 'java'
+
+configurations.all {
+    resolutionStrategy {
+        force ioxIliDependency
+    }
+}
+
+dependencies {
+    compile postgresqlDependency
+
+    compile ilivalidatorDependency
+    compile ili2pgDependency
+    compile ioxWkfDependency
+    compile ioxIliDependency
+
+    compile group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion
+    compile group: 'org.apache.derby', name: 'derby', version: derbyVersion
+}
+
+task copyToLibs(type: Copy) {
+    into "/home/gradle/libs"
+    from configurations.compile
+    from configurations.runtime
+}
