@@ -42,6 +42,8 @@ public class CsvExport extends DefaultTask {
     @Input
     @Optional
 	public String schemaName=null;
+    @Optional
+	public String attributes[]=null;
 	
     @TaskAction
     public void exportData()
@@ -78,6 +80,9 @@ public class CsvExport extends DefaultTask {
             	throw new IllegalArgumentException("connection must not be null");
         	}
     		Db2Csv db2csv=new Db2Csv();
+    		if(attributes!=null) {
+    			db2csv.setAttributes(attributes);
+    		}
     		db2csv.exportData(data, conn, settings);
         	conn.commit();
         	conn.close();
