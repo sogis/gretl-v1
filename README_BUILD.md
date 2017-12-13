@@ -61,3 +61,51 @@ Token: [from service account]
 ID: [OpenShift project name]_deploy_token
 
 Description: oc tool login token for project [OpenShift project name]
+
+OpenShift build project
+-----------------------
+
+### GRETL runtime Docker image
+Project used to build GRETL runtime Docker image and push it to dockerhub.
+
+Documentation: https://blog.openshift.com/pushing-application-images-to-an-external-registry/
+
+
+```
+new-project gretl-build
+oc secrets new dockerhub ~/.docker/config.json
+oc describe secret dockerhub
+oc edit sa builder
+oc new-build --name=gretl --strategy=Docker --binary=true
+oc edit bc gretl
+```
+```
+    to:
+      kind: DockerImage   
+      name: docker.io/chrira/jobrunner:latest
+    pushSecret:
+      name: dockerhub
+```
+
+
+```
+cd docker/gretl
+cp ../../dependencies.gradle .
+cp ../../build/libs/gretl-1.0.4-SNAPSHOT.jar .
+oc start-build gretl --from-dir . --follow
+
+```
+
+```
+oc process -f jenkins-s2i-template.json \
+  -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/chrira/openshift-jenkins.git" \
+  -p GRETL_JOB_REPO_URL="git://github.com/chrira/gretljobs.git" \
+  | oc apply -f -
+```
+
+
+```
+oc process -f gretl-build-template.yaml \
+  -p GRETL_RUNTIME_IMAGE="chrira/jobrunner:latest" \
+  | oc apply -f -
+```

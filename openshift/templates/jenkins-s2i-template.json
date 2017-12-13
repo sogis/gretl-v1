@@ -196,6 +196,14 @@
                   {
                     "name": "GRETL_JOB_REPO_URL",
                     "value": "${GRETL_JOB_REPO_URL}"
+                  },
+                  {
+                    "name": "GRETL_JOB_FILE_PATH",
+                    "value": "${GRETL_JOB_FILE_PATH}"
+                  },
+                  {
+                    "name": "GRETL_JOB_FILE_NAME",
+                    "value": "${GRETL_JOB_FILE_NAME}"
                   }
                 ],
                 "resources": {
@@ -329,34 +337,10 @@
             "annotations": null,
             "from": {
               "kind": "DockerImage",
-              "name": "gretl:latest"
+              "name": "${GRETL_RUNTIME_IMAGE}"
             }
           }
         ]
-      }
-    },
-    {
-      "kind": "BuildConfig",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "gretl"
-      },
-      "spec": {
-        "runPolicy": "Serial",
-        "source": {
-          "type": "Binary",
-          "binary": {}
-        },
-        "strategy": {
-          "type": "Docker",
-          "dockerStrategy": {}
-        },
-        "output": {
-          "to": {
-            "kind": "ImageStreamTag",
-            "name": "gretl:latest"
-          }
-        }
       }
     }
   ],
@@ -408,6 +392,24 @@
       "displayName": "Git repo containing GRETL jobs",
       "description": "Url of the Git repo holding the GRETL Job configurations.",
       "value": "git://github.com/chrira/gretljobs.git"
+    },
+    {
+      "name": "GRETL_JOB_FILE_PATH",
+      "displayName": "Job dir definition inside Git repo",
+      "description": "GRETL Job directory definition as ANT fileset pattern conventions.",
+      "value": "**"
+    },
+    {
+      "name": "GRETL_JOB_FILE_NAME",
+      "displayName": "GRETL Job pipeline file",
+      "description": "GRETL Job configuration filename.",
+      "value": "gretl-job.groovy"
+    },
+    {
+      "name": "GRETL_RUNTIME_IMAGE",
+      "displayName": "Docker image of GRETL runtime",
+      "description": "Docker image and version of GRETL runtime to be pulled from Dockerhub.",
+      "value": "chrira/jobrunner:latest"
     }
   ]
 }

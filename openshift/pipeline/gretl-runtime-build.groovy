@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     parameters {
-        string(defaultValue: "TEST", description: 'What environment?', name: 'userFlag')
         string(name: 'buildProject',
                description: 'Which project builds the GRETL jar?',
                defaultValue: 'sogis/gretl-multibranch/master')
@@ -45,12 +44,21 @@ pipeline {
                                 openshift.withProject("${params.openShiftProject}") {
                                     echo "Running in project: ${openshift.project()}"
 
+                                    // update docker image tag with build number
+                                    def imageRef = "docker.io/chrira/jobrunner:${BUILD_NUMBER}"
+                                    def bc = openshift.selector('bc/gretl').object()
+                                    bc.spec.output.to['name'] = imageRef
+                                    openshift.apply(bc)
+
+
                                     def builds = openshift.startBuild("gretl","--from-dir=./build-tmp/")
                                     builds.untilEach(1) {
                                         echo "Created builds so far: ${it.names()}"
 
                                         return it.object().status.phase == "Complete"
                                     }
+
+                                    echo "created and pushed image: ${imageRef}"
                                 }
 
                                   //  echo "Running in project: ${openshift.project()}"
