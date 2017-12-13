@@ -24,7 +24,7 @@ public class TestUtil {
             varText = buf.toString();
         }
 
-        String command = String.format("./gradlew --project-dir %s %s", jobPath, varText);
+        String command = String.format("./gradlew --init-script ../init.gradle --project-dir %s %s", jobPath, varText);
         Process p = Runtime.getRuntime().exec(command);
 
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));

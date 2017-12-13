@@ -14,6 +14,7 @@ import org.gradle.api.tasks.TaskAction;
 import ch.ehi.basics.settings.Settings;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.interlis.ioxwkf.dbtools.Shp2db;
+import ch.interlis.ioxwkf.shp.ShapeReader;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.steps.Connector;
@@ -31,6 +32,9 @@ public class ShpImport extends DefaultTask {
     @Input
     @Optional
 	public String schemaName=null;
+    @Input
+    @Optional
+	public String encoding=null;
 	
     @TaskAction
     public void importData()
@@ -50,6 +54,9 @@ public class ShpImport extends DefaultTask {
         // set optional parameters
     	if(schemaName!=null) {
             settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA,schemaName);
+    	}
+    	if(encoding!=null) {
+    		settings.setValue(ShapeReader.ENCODING, encoding);
     	}
         
         File data=this.getProject().file(dataFile);

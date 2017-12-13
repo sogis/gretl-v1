@@ -2,6 +2,7 @@ package ch.so.agi.gretl.tasks;
 
 
 import ch.ehi.basics.settings.Settings;
+import ch.interlis.ioxwkf.shp.ShapeReader;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.tasks.impl.AbstractValidatorTask;
@@ -27,6 +28,9 @@ import java.util.List;
 
 public class ShpValidator extends AbstractValidatorTask {
     private GretlLogger log;
+    @Input
+    @Optional
+	public String encoding=null;
 
     @TaskAction
     public void validate() {
@@ -43,6 +47,9 @@ public class ShpValidator extends AbstractValidatorTask {
         
         Settings settings=new Settings();
         initSettings(settings);
+    	if(encoding!=null) {
+    		settings.setValue(ShapeReader.ENCODING, encoding);
+    	}
         
     	validationOk=new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
     	if(!validationOk && failOnError) {

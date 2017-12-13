@@ -13,6 +13,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import ch.ehi.basics.settings.Settings;
+import ch.interlis.iom_j.csv.CsvReader;
 import ch.interlis.ioxwkf.dbtools.Csv2db;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.logging.GretlLogger;
@@ -41,6 +42,8 @@ public class CsvImport extends DefaultTask {
     @Input
     @Optional
 	public String schemaName=null;
+    @Optional
+	public String encoding=null;
 	
     @TaskAction
     public void importData()
@@ -67,6 +70,9 @@ public class CsvImport extends DefaultTask {
     	}
     	if(schemaName!=null) {
             settings.setValue(IoxWkfConfig.SETTING_DBSCHEMA,schemaName);
+    	}
+    	if(encoding!=null) {
+    		settings.setValue(CsvReader.ENCODING, encoding);
     	}
         
         File data=this.getProject().file(dataFile);

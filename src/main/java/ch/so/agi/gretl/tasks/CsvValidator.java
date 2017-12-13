@@ -2,6 +2,7 @@ package ch.so.agi.gretl.tasks;
 
 
 import ch.ehi.basics.settings.Settings;
+import ch.interlis.iom_j.csv.CsvReader;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
@@ -38,6 +39,8 @@ public class CsvValidator extends AbstractValidatorTask {
     @Input
     @Optional
 	public Character valueSeparator=null;
+    @Optional
+	public String encoding=null;
 
     @TaskAction
     public void validate() {
@@ -61,6 +64,9 @@ public class CsvValidator extends AbstractValidatorTask {
     	}
     	if(valueSeparator!=null) {
             settings.setValue(IoxWkfConfig.SETTING_VALUESEPARATOR,valueSeparator.toString());
+    	}
+    	if(encoding!=null) {
+    		settings.setValue(CsvReader.ENCODING, encoding);
     	}
 
     	validationOk=new CsvValidatorImpl().validate(files.toArray(new String[files.size()]), settings);

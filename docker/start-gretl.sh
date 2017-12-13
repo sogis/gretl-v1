@@ -36,4 +36,4 @@ docker run -i --rm \
     --entrypoint="/bin/sh" \
     -v "$job_directory":/home/gradle/project \
     -e USERID=$UID \
-    gretl-runtime "-c" "/usr/local/bin/run-jnlp-client;cd /home/gradle/project;gradle $task_name ${task_parameter[@]} --init-script /home/gradle/init.gradle --stacktrace"
+    gretl-runtime "-c" "/usr/local/bin/run-jnlp-client;cd /home/gradle/project;gretl $task_name ${task_parameter[@]}"

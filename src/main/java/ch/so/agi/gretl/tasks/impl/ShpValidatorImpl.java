@@ -16,7 +16,7 @@ public class ShpValidatorImpl extends Validator {
 	@Override
 	protected IoxReader createReader(String filename, TransferDescription td, LogEventFactory errFactory,Settings settings)
 			throws IoxException {
-		ShapeReader reader=new ShapeReader(new File(filename));
+		ShapeReader reader=new ShapeReader(new File(filename),settings);
 		reader.setModel(td);
 		return reader;
 	}

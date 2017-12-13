@@ -50,53 +50,7 @@ task testSystem(type: Test) {
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
     def GRETLTEST_DBURI = 'gretltest_dburi'
-    systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
-
+    systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ?
+        findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
     println 'dburi: ' + getSystemProperties().getAt(GRETLTEST_DBURI)
 }
-
-subprojects {
-
-    buildscript {
-        ext {
-            //dependencies
-            postgresqlVersion = '42.1.4'
-            // TODO no snapshot versions
-            ioxIliVersion = '1.20.0-SNAPSHOT'
-            ilivalidatorVersion = '1.6.0-SNAPSHOT'
-            ili2pgVersion = '3.11.0-SNAPSHOT'
-            ioxWkfVersion = '0.9.0-SNAPSHOT'
-            sqliteJdbcVersion = '3.8.11.2'
-            derbyVersion = '10.13.1.1'
-        }
-
-        repositories {
-            maven {
-                url "http://download.osgeo.org/webdav/geotools/"
-            }
-            mavenCentral()
-            maven {
-                url "http://jars.interlis.ch"
-            }
-            maven {
-                url "http://jars.umleditor.org"
-            }
-        }
-
-        configurations.all {
-            resolutionStrategy {
-                force group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion
-            }
-        }
-
-        dependencies {
-            classpath fileTree(dir: rootProject.ext.jarDir, include: '*.jar')
-
-            classpath group: 'ch.interlis', name: 'ilivalidator', version: ilivalidatorVersion
-            classpath group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion
-            classpath group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion
-            classpath group: 'ch.interlis', name: 'iox-ili', version: ioxIliVersion
-        }
-    }
-}
-
