@@ -10,10 +10,15 @@ echo "======================================================================="
 cp ../build/libs/gretl-1.0.4-SNAPSHOT.jar gretl
 cp ../dependencies.gradle gretl
 
+# build infos
+echo "local build" > gretl/build.info
+echo `date '+%Y-%m-%d %H:%M:%S'` >> gretl/build.info
+
 docker build --no-cache --force-rm -t gretl-runtime -f gretl/Dockerfile gretl
 
 rm gretl/gretl*.jar
 rm gretl/dependencies.gradle
+rm gretl/build.info
 
 # look into the container:
 # docker run -it --entrypoint=/bin/sh gretl-runtime
