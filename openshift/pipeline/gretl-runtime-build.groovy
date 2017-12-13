@@ -27,6 +27,11 @@ pipeline {
                           projectName: "${params.buildProject}",
                           flatten    : true
                     ]);
+
+                    sh "echo 'jenkins build' > build.info"
+                    sh "echo date: `date '+%Y-%m-%d %H:%M:%S'` >> build.info"
+                    sh "echo BUILD_NUMBER: ${BUILD_NUMBER} >> build.info"
+                    sh "echo BUILD_TAG: ${BUILD_TAG} >> build.info"
                 }
 
                 sh 'ls -la build-tmp'
