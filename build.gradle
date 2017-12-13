@@ -31,11 +31,6 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
-sourceSets {
-    testIntegration
-    testSystem
-}
-
 configurations.all {
     resolutionStrategy {
         force ioxIliDependency
@@ -59,21 +54,39 @@ dependencies {
     // - oracle jdbc driver
     // - sqlserver jdbc driver (Microsoft)
     compile gradleApi()
-
-    testIntegrationCompile junitDependency
-
-    testSystemCompile junitDependency
-    testSystemCompile jenkinsClientDependency
 }
 
 
 sourceCompatibility = 1.8
 
+/*
 test {
     exclude 'ch/so/agi/gretl/steps/**.*'
 
     //testLogging.showStandardStreams = true
     testLogging.exceptionFormat = 'full'
+}
+*/
+
+test{
+    useJUnit{
+        // Exclude all Tests with dependency to a db server (pg, oracle, ..)
+        excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
+    }
+}
+
+task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
+    useJUnit{
+        // Runs all tests with dependency to a db server
+        includeCategories 'ch.so.agi.gretl.testutil.DbTest'
+    }
+}
+
+// Transfer the required configuration variables to the unit test code.
+// (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
+tasks.withType(Test) {
+    def GRETLTEST_DBURI = 'gretltest_dburi'
+    systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
 }
 
 publishing{
@@ -113,7 +126,7 @@ def env(environmentVariableName, defaultValue){
     }
     return var;
 }
-
+/*
 task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
     exclude 'ch/so/agi/gretl/logging/**.*'
     exclude 'ch/so/agi/gretl/util/**.*'
@@ -134,43 +147,9 @@ configure(dbTest) {
     group = 'Verification'
     description = 'Runs tests with dockered database'
 }
-
-task testIntegration(type: Test) {
-    group = 'Verification'
-    description = 'Runs integration tests'
-
-    testClassesDirs = sourceSets.testIntegration.output.classesDirs
-    classpath = sourceSets.testIntegration.runtimeClasspath
-}
-
-task testSystem(type: Test) {
-    group = 'Verification'
-    description = 'Runs system tests including Jenkins'
-
-    testClassesDirs = sourceSets.testSystem.output.classesDirs
-    classpath = sourceSets.testSystem.runtimeClasspath
-}
+*/
 
 
-/*
-Anforderungen:
-* Auch lokal ausführbar
-* Möglichst auf der Kommandozeile ausführbar (IDE-Unabhängig)
-* Nutzt für DB-Setup jdbc (gleiche Versionen wie GRETL selbst)
-* Möglichst einfache Integration in IDE und Buildserver (Jenkins)
-
-
-PG JUnit Tests:
-* Geometrie schreiben
-* Load test
-* DBa lesen DBb schreiben (pg -> sqlite / sqlite -> db)
-
-Integration Tests:
-* Sonnenpfad
-* Relatver Pfad zu build.gradle
-* Taskverkettung in Build.gradle
-* Rückgabetyp von gradle build
- */
 
 /*
 tasks.withType(FindBugs) {

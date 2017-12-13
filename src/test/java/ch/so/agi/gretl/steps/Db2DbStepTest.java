@@ -2,14 +2,15 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.testutil.DbTest;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.GretlException;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,21 +30,8 @@ public class Db2DbStepTest {
 
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
 
-    private static final String PG_DDL_CONNECTION_URL = 
-	        System.getProperty("dburl"); //,"jdbc:postgresql://192.168.56.31:5432/automatedtest");
-    private static final String PG_DDL_CONNECTION_USR=System.getProperty("dbusr","ddluser");
-    private static final String PG_DDL_CONNECTION_PWD=System.getProperty("dbpwd","ddluser");
-    
-    private static final String PG_WRITER_CONNECTION_URL = PG_DDL_CONNECTION_URL; 
-    private static final String PG_WRITER_CONNECTION_USR="dmluser";  // FIXME following code should ref this constant, but contains hard coded strings
-    private static final String PG_WRITER_CONNECTION_PWD="dmluser";
-
-    private static final String PG_READER_CONNECTION_URL = PG_DDL_CONNECTION_URL;
-    private static final String PG_READER_CONNECTION_USR="readeruser"; // FIXME following code should ref this constant, but contains hard coded strings
-    private static final String PG_READER_CONNECTION_PWD="readeruser";
-
     //Konstruktor//
-    public Db2DbStepTest () {
+    public Db2DbStepTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
     }
@@ -469,6 +457,7 @@ public class Db2DbStepTest {
         }
     }
 
+    @Category(DbTest.class)
     @Test
     public void canWriteGeomFromWkbTest() throws Exception {
         String schemaName = "GeomFromWkbTest";
@@ -484,8 +473,8 @@ public class Db2DbStepTest {
                     String.format("select ST_AsBinary(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
-            Connector src = new Connector(PG_READER_CONNECTION_URL, PG_READER_CONNECTION_USR, PG_READER_CONNECTION_PWD);
-            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
+            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
+            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".SINK",
@@ -505,6 +494,7 @@ public class Db2DbStepTest {
         }
     }
 
+    @Category(DbTest.class)
     @Test
     public void canWriteGeomFromWktTest() throws Exception {
         String schemaName = "GeomFromWktTest";
@@ -521,8 +511,8 @@ public class Db2DbStepTest {
                     String.format("select ST_AsText(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
-            Connector src = new Connector(PG_READER_CONNECTION_URL, PG_READER_CONNECTION_USR, PG_READER_CONNECTION_PWD);
-            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
+            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
+            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".SINK",
@@ -542,6 +532,7 @@ public class Db2DbStepTest {
         }
     }
 
+    @Category(DbTest.class)
     @Test
     public void canWriteGeomFromGeoJsonTest() throws Exception {
         String schemaName = "GeomFromGeoJsonTest";
@@ -557,8 +548,8 @@ public class Db2DbStepTest {
                     String.format("select ST_AsGeoJSON(geom) as geom from %s.source", schemaName),
                     "select.sql");
 
-            Connector src = new Connector(PG_READER_CONNECTION_URL, PG_READER_CONNECTION_USR, PG_READER_CONNECTION_PWD);
-            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
+            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
+            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".SINK",
@@ -582,6 +573,7 @@ public class Db2DbStepTest {
      * Test's loading several hundred thousand rows from sqlite to postgis.
      * Loading 300'000 rows should take about 15 seconds
      */
+    @Category(DbTest.class)
     @Test
     public void positiveBulkLoadPostgisTest() throws Exception {
         int numRows = 300000;
@@ -602,7 +594,7 @@ public class Db2DbStepTest {
             File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
-            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
+            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".DTYPES",
@@ -633,6 +625,7 @@ public class Db2DbStepTest {
      * Tests if the sqlite datatypes and geometry as wkt are transferred
      * faultfree from sqlite to postgis
      */
+    @Category(DbTest.class)
     @Test
     public void positiveSqlite2PostgisTest() throws Exception {
         String schemaName = "SQLITE2POSTGIS";
@@ -652,7 +645,7 @@ public class Db2DbStepTest {
             File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
 
             Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
-            Connector sink = new Connector(PG_WRITER_CONNECTION_URL, PG_WRITER_CONNECTION_USR, PG_WRITER_CONNECTION_PWD);
+            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
                     schemaName + ".DTYPES",
@@ -690,7 +683,7 @@ public class Db2DbStepTest {
         Statement s = con.createStatement();
         s.addBatch(create);
 
-        String grant = String.format("GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO DMLUSER", schemaName);
+        String grant = String.format("GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_DMLUSR_USR);
         s.addBatch(grant);
         s.executeBatch();
 
@@ -750,6 +743,7 @@ public class Db2DbStepTest {
      * Tests if the "special" datatypes (Date, Time, GUID, Geometry, ..) are transferred
      * faultfree from Postgis to sqlite
      */
+    @Category(DbTest.class)
     @Test
     public void positivePostgis2SqliteTest() throws Exception {
         String schemaName = "POSTGIS2SQLITE";
@@ -773,7 +767,7 @@ public class Db2DbStepTest {
             File queryFile = TestUtil.createFile(folder, select,"select.sql");
 
 
-            Connector src = new Connector(PG_READER_CONNECTION_URL, PG_READER_CONNECTION_USR, PG_READER_CONNECTION_PWD);
+            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
             Connector sink = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
             TransferSet tSet = new TransferSet(
                     queryFile.getAbsolutePath(),
@@ -822,7 +816,7 @@ public class Db2DbStepTest {
                 GEOM_WKT);
         s.addBatch(insert);
 
-        String grant = String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO READERUSER", schemaName);
+        String grant = String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_READERUSR_USR);
         s.addBatch(grant);
         s.executeBatch();
 
@@ -845,8 +839,8 @@ public class Db2DbStepTest {
         prep.addBatch(String.format("CREATE TABLE %s.SINK (geom geometry(LINESTRING,2056) );",schemaName));
         prep.addBatch(String.format("INSERT INTO %s.SOURCE VALUES ( ST_GeomFromText('%s', 2056) )", schemaName, GEOM_WKT));
 
-        prep.addBatch(String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO READERUSER", schemaName));
-        prep.addBatch(String.format("GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO DMLUSER", schemaName));
+        prep.addBatch(String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_READERUSR_USR));
+        prep.addBatch(String.format("GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_DMLUSR_USR));
 
         prep.executeBatch();
         con.commit();
@@ -864,17 +858,17 @@ public class Db2DbStepTest {
         DriverManager.registerDriver(pgDriver);
 
         Connection con = DriverManager.getConnection(
-            PG_DDL_CONNECTION_URL,
-            PG_DDL_CONNECTION_USR,
-            PG_DDL_CONNECTION_PWD);
+            TestUtil.PG_CONNECTION_URI,
+            TestUtil.PG_DDLUSR_USR,
+            TestUtil.PG_DDLUSR_PWD);
 
         con.setAutoCommit(false);
 
         Statement s = con.createStatement();
         s.addBatch(String.format("drop schema if exists %s cascade", schemaName));
         s.addBatch("create schema " + schemaName);
-        s.addBatch(String.format("grant usage on schema %s to dmluser", schemaName));
-        s.addBatch(String.format("grant usage on schema %s to readeruser", schemaName));
+        s.addBatch(String.format("grant usage on schema %s to %s", schemaName, TestUtil.PG_DMLUSR_USR));
+        s.addBatch(String.format("grant usage on schema %s to %s", schemaName, TestUtil.PG_READERUSR_USR));
         s.executeBatch();
         con.commit();
 

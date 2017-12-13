@@ -2,16 +2,18 @@ package ch.so.agi.gretl.steps;
 
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
+import ch.so.agi.gretl.testutil.DbTest;
+import ch.so.agi.gretl.testutil.TestUtil;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.GretlException;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import org.junit.*;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -167,10 +169,12 @@ public class SqlExecutorStepTest {
 
         x.execute(sourceDb,sqlListe);
     }
+
+    @Category(DbTest.class)
     @Test
     public void executePostgisVersionTest() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
-        Connector sourceDb = new Connector(System.getProperty("dburl"), System.getProperty("dbusr"),System.getProperty("dbpwd"));
+        Connector sourceDb = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
 
         File sqlFile = folder.newFile("postgisversion.sql");
         FileWriter sqlWriter=null;
