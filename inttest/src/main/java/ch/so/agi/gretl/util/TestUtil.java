@@ -25,6 +25,8 @@ public class TestUtil {
         }
 
         String command = String.format("./gradlew --init-script ../init.gradle --project-dir %s %s", jobPath, varText);
+       // String command = String.format("./gradlew --init-script ../init.gradle --project-dir %s -Pgretltest_dburi=jdbc:postgresql://localhost:5432/gretl", jobPath);
+        System.out.println("command:" + command);
         Process p = Runtime.getRuntime().exec(command);
 
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
