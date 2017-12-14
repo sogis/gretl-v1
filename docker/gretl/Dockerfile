@@ -7,6 +7,7 @@ COPY gretl /usr/local/bin
 COPY init.gradle /home/gradle/
 COPY build.gradle /home/gradle/
 COPY dependencies.gradle /home/gradle/
+COPY build.info /home/gradle/
 
 RUN mkdir -p /home/gradle/libs
 RUN cd /home/gradle && \
