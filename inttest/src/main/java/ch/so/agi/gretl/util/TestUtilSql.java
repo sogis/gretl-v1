@@ -9,8 +9,9 @@ public class TestUtilSql {
     public static final String VARNAME_PG_CON_URI = "gretltest_dburi";
     public static final String PG_CON_URI = System.getProperty(VARNAME_PG_CON_URI);//"jdbc:postgresql://localhost:5432/gretl"
 
-    public static final String PG_CON_USER = "ddluser";
-    public static final String PG_CON_PASS = "ddluser";
+    public static final String PG_CON_DDLUSER = "ddluser";
+    public static final String PG_CON_DDLPASS = "ddluser";
+    public static final String PG_CON_DMLUSER = "dmluser";
 
     private static void dropSchema(String schemaName, Connection con) throws SQLException {
         if(con == null){ return; }
@@ -36,8 +37,8 @@ public class TestUtilSql {
 
             con = DriverManager.getConnection(
                     PG_CON_URI,
-                    PG_CON_USER,
-                    PG_CON_PASS);
+                    PG_CON_DDLUSER,
+                    PG_CON_DDLPASS);
 
             con.setAutoCommit(false);
         }
@@ -91,15 +92,19 @@ public class TestUtilSql {
         }
         return count;
     }
-
-    public static void grantTableModsInSchemaToUser(Connection con, String schemaName, String userName){
+    /** grant data modification rights to all tables in given schema.
+     * Data modification includes select, insert, update, delete.
+     * @param con connection handle to db
+     * @param schemaName name of schema in db
+     * @param userName user to give rights to
+     */
+    public static void grantDataModsInSchemaToUser(Connection con, String schemaName, String userName){
 
         String sql = String.format("grant select, insert, update, delete on all tables in schema %s to %s", schemaName, userName);
-        //grant permissions to dmluser on all objects in the schema
         Statement s = null;
         try {
             s = con.createStatement();
-            s.execute(String.format("grant select, insert, update, delete on all tables in schema %s to dmluser", schemaName));
+            s.execute(sql);
             s.close();
         }
         catch (SQLException se){
@@ -135,7 +140,7 @@ public class TestUtilSql {
             s2.execute(String.format(ddlBase, schemaName,"dest"));
             s2.close();
 
-            TestUtilSql.grantTableModsInSchemaToUser(con, schemaName, "dmlUser");
+            TestUtilSql.grantDataModsInSchemaToUser(con, schemaName, PG_CON_DMLUSER);
         }
         catch(SQLException se){
             throw new RuntimeException(se);
@@ -169,7 +174,7 @@ public class TestUtilSql {
 
             insertRowsInAlbumsTable(con, schemaName, "src", 4);
 
-            TestUtilSql.grantTableModsInSchemaToUser(con, schemaName, "dmlUser");
+            TestUtilSql.grantDataModsInSchemaToUser(con, schemaName, PG_CON_DMLUSER);
         }
         catch(SQLException se){
             throw new RuntimeException(se);
