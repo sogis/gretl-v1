@@ -1,6 +1,7 @@
 package ch.so.agi.gretl.util;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -13,11 +14,16 @@ public class TestUtil {
     }
 
     public static void runJob(String jobPath, GradleVariable[] variables) throws Exception {
-    	int ret=runJob(jobPath,variables,null,null);
+    	int ret=runJob(jobPath,variables,new StringBuffer(),new StringBuffer());
         assertThat(ret, is(0));
     }
     public static int runJob(String jobPath, GradleVariable[] variables,StringBuffer stderr,StringBuffer stdout) throws Exception {
-
+    	if(stderr==null) {
+    		throw new IllegalArgumentException("stderr must not be null");
+    	}
+    	if(stdout==null) {
+    		throw new IllegalArgumentException("stdout must not be null");
+    	}
         String varText = "";
         if(variables != null && variables.length > 0){
             StringBuffer buf = new StringBuffer();
@@ -39,29 +45,47 @@ public class TestUtil {
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-        String s;
 
         // read the output from the command
-        System.out.println(String.format("Here is the standard output of the command [%s]:\n", command));
-        while ((s = stdInput.readLine()) != null) {
-            System.out.println(s);
-            if(stdout!=null) {
-            	stdout.append(s);
-            	stdout.append(newline);
-            }
-        }
+        new Thread() {
+        	public void run() {
+                try {
+                    String s;
+					while ((s = stdInput.readLine()) != null) {
+					    System.out.println(s);
+					    if(stdout!=null) {
+					    	stdout.append(s);
+					    	stdout.append(newline);
+					    }
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        }.start();
 
         // read any errors from the attempted command
-        System.out.println(String.format("Here is the standard error of the command [%s] (if any):\n", command));
-        while ((s = stdError.readLine()) != null) {
-            System.out.println(s);
-            if(stderr!=null) {
-            	stderr.append(s);
-            	stderr.append(newline);
-            }
-        }
+        new Thread() {
+        	public void run() {
+                try {
+                    String s;
+					while ((s = stdError.readLine()) != null) {
+				    	stderr.append(s);
+				    	stderr.append(newline);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        }.start();
 
         p.waitFor();
+        System.out.println(String.format("Here is the standard output of the command [%s]:\n", command));
+        System.out.print(stdout);
+        System.out.println(String.format("Here is the standard error of the command [%s] (if any):\n", command));
+        System.out.print(stderr);
 
         return p.exitValue();
     }
