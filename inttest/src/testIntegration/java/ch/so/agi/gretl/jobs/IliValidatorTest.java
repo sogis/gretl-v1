@@ -14,7 +14,7 @@ public class IliValidatorTest {
     @Test
     public void validationFail() throws Exception {
         GradleVariable[] gvs = null; // {GradleVariable.newGradleProperty(TestUtilSql.VARNAME_PG_CON_URI, TestUtilSql.PG_CON_URI)};
-        assertEquals(1,TestUtil.runJob("jobs/iliValidatorFail", gvs,null,null));
+        assertEquals(1,TestUtil.runJob("jobs/iliValidatorFail", gvs,new StringBuffer(),new StringBuffer()));
     }
 
 }

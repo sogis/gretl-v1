@@ -15,7 +15,7 @@ public class CsvValidatorTest {
     @Test
     public void validationFail() throws Exception {
         GradleVariable[] gvs = null; // {GradleVariable.newGradleProperty(TestUtilSql.VARNAME_PG_CON_URI, TestUtilSql.PG_CON_URI)};
-        assertEquals(1,TestUtil.runJob("jobs/CsvValidatorFail", gvs,null,null));
+        assertEquals(1,TestUtil.runJob("jobs/CsvValidatorFail", gvs,new StringBuffer(),new StringBuffer()));
     }
 
 }
