@@ -45,7 +45,7 @@ pipeline {
                         withEnv(["PATH+OC=${ocDir}"]) {
                             sh "oc version"
                             openshift.withCluster("${params.openShiftCluster}", "${params.openShiftProject}_deploy_token") {
-                                openshift.verbose()
+                                //openshift.verbose()
                                 openshift.withProject("${params.openShiftProject}") {
                                     echo "Running in project: ${openshift.project()}"
 
