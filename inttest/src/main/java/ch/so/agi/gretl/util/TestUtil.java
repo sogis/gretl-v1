@@ -33,7 +33,7 @@ public class TestUtil {
             }
             varText = buf.toString();
         }
-        String tool="gradle";
+        String tool="gradlew";
         if(System.getProperty("os.name").contains("Windows")){
         	tool="gradlew.bat";
         }
