@@ -28,7 +28,7 @@ allprojects {
             classpath ili2pgDependency
             classpath ioxWkfDependency
             classpath ioxIliDependency
-            
+
             classpath postgresqlDependency
         }
     }
