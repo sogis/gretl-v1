@@ -35,5 +35,6 @@ echo "======================================================="
 docker run -i --rm \
     --entrypoint="/bin/sh" \
     -v "$job_directory":/home/gradle/project \
-    -e USERID=$UID \
-    gretl-runtime "-c" "/usr/local/bin/run-jnlp-client;cd /home/gradle/project;gretl $task_name ${task_parameter[@]}"
+    --user $UID \
+    gretl-runtime "-c" \
+        "/usr/local/bin/run-jnlp-client > /dev/null 2>&1;cd /home/gradle/project;gretl $task_name ${task_parameter[@]}"
