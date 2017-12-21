@@ -26,6 +26,7 @@ before_script:
   
 script: 
   - gradle -Dgretltest_dburi=jdbc:postgresql:gretl build dbTest
+  - cd inttest; gradle -Dgretltest_dburi=jdbc:postgresql:gretl testIntegration
 
 deploy:
   - provider: script
