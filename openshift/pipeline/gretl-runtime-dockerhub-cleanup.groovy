@@ -5,33 +5,26 @@ import com.puzzleitc.jenkins.DockerHub
  * Needed parameter:
  * - dockerHubUser: Docker Hub user for authentication (text parameter)
  * - dockerHubPwd: Docker Hub password for authentication (password parameter)
- * - organisation: organisation of the repository (text parameter)
+ * - organisation: user / organisation of the repository (text parameter)
  * - repository: repository to check the tags (text parameter)
  * - numberOfTagsToKeep: amount of tags to keep (text parameter)
  * - testMode: true does not delete any tags (boolean parameter)
  */
-
-def checkMandatoryParameter(parameterName) {
-    if (!params.containsKey(parameterName)) {
-        currentBuild.result = 'ABORTED'
-        error('missing parameter: ' + parameterName)
-    }
-}
 
 node {
     def dockerHub = new DockerHub(this)
     def token
     def buildNumberTags
 
-    stage ('check parameter') {
-        checkMandatoryParameter('dockerHubUser')
-        checkMandatoryParameter('dockerHubPwd')
-        checkMandatoryParameter('organisation')
-        checkMandatoryParameter('repository')
-        checkMandatoryParameter('numberOfTagsToKeep')
-        checkMandatoryParameter('testMode')
+    stage('check parameter') {
+        check.mandatoryParameter('dockerHubUser')
+        check.mandatoryParameter('dockerHubPwd')
+        check.mandatoryParameter('organisation')
+        check.mandatoryParameter('repository')
+        check.mandatoryParameter('numberOfTagsToKeep')
+        check.mandatoryParameter('testMode')
     }
-    stage ('login') {
+    stage('login') {
         token = dockerHub.createLoginToken(params.dockerHubUser, dockerHubPwd)
         if (token == null) {
             currentBuild.result = 'FAILURE'

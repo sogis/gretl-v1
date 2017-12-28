@@ -1,19 +1,31 @@
+/**
+ * Gets the prepared GRETL jar and starts an OpenShift Docker build.
+ * The Docker image will be pushed to the repository with the build number as tag.
+ * Needed parameter:
+ * - buildProject: Jenkins project that builds the GRETL jar (text parameter)
+ * - repository: repository incl. user / organisation to push the Docker image to (text parameter)
+ * - openShiftCluster: OpenShift Cluster to be used. (text parameter)
+ * - openShiftProject: OpenShift project to be used (text parameter)
+ * - ocToolName: Jenkins custom tool name of oc client (text parameter)
+ * - openShiftDeployTokenName: amount of tags to keep (text parameter)
+ */
+
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'buildProject',
-               description: 'Which project builds the GRETL jar?',
-               defaultValue: 'sogis/gretl-multibranch/master')
-        string(name: 'openShiftCluster',
-               description: 'Which OpenShift Cluster should be used?',
-               defaultValue: 'OpenShiftAioProduction')
-        string(name: 'openShiftProject',
-               description: 'Which OpenShift project should be used?',
-               defaultValue: 'sogis-gretl-dev')
-    }
-
     stages {
+        stage('check parameter') {
+            steps {
+                script {
+                    check.mandatoryParameter('buildProject')
+                    check.mandatoryParameter('repository')
+                    check.mandatoryParameter('openShiftCluster')
+                    check.mandatoryParameter('openShiftProject')
+                    check.mandatoryParameter('ocToolName')
+                    check.mandatoryParameter('openShiftDeployTokenName')
+                }
+            }
+        }
         stage('prepare') {
             steps {
                 sh 'rm -rf build-tmp'
@@ -24,7 +36,7 @@ pipeline {
 
                 dir('build-tmp') {
                     step([$class     : 'CopyArtifact',
-                          projectName: "${params.buildProject}",
+                          projectName: params.buildProject,
                           flatten    : true
                     ]);
 
@@ -41,16 +53,15 @@ pipeline {
             steps {
                 script{
                     timeout(20) {
-                        def ocDir = tool "oc3.7.0"
+                        def ocDir = tool params.ocToolName
                         withEnv(["PATH+OC=${ocDir}"]) {
                             sh "oc version"
-                            openshift.withCluster("${params.openShiftCluster}", "${params.openShiftProject}_deploy_token") {
-                                //openshift.verbose()
-                                openshift.withProject("${params.openShiftProject}") {
+                            openshift.withCluster(params.openShiftCluster, params.openShiftDeployTokenName) {
+                                openshift.withProject(params.openShiftProject) {
                                     echo "Running in project: ${openshift.project()}"
 
                                     // update docker image tag with build number
-                                    def imageRef = "docker.io/chrira/jobrunner:${BUILD_NUMBER}"
+                                    def imageRef = "docker.io/${params.repository}:${BUILD_NUMBER}"
                                     def bc = openshift.selector('bc/gretl').object()
                                     bc.spec.output.to['name'] = imageRef
                                     openshift.apply(bc)
@@ -65,38 +76,11 @@ pipeline {
 
                                     echo "created and pushed image: ${imageRef}"
                                 }
-
-                                  //  echo "Running in project: ${openshift.project()}"
-                                  //  def builds = openshift.startBuild("gretl","--from-dir=./build-tmp/")
-
-
-                                 //  def result = buildSelector.logs('-f')
-
-                                    // You can even see exactly what oc command was executed.
-                                    //echo "Logs executed: ${result.actions[0].cmd}"
-
-                                    // And even obtain the standard output and standard error of the command.
-                                 //   def logsString = result.actions[0].out
-                                 //   def logsErr = result.actions[0].err
-        							//println logsErr
-
-                                //    echo "Build status: ${result.out}"
                             }
                         }
                     }
                 }
             }
-        }
-    }
-    post {
-        success {
-            echo 'Success'
-        }
-        unstable {
-            echo 'Unstable'
-        }
-        failure {
-            echo 'Error'
         }
     }
 }
