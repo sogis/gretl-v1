@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 psql -c "CREATE ROLE ddluser WITH LOGIN PASSWORD 'ddluser';" -U postgres
 psql -c "GRANT CREATE ON DATABASE gretl TO ddluser;" -U postgres
@@ -8,4 +8,3 @@ psql -c 'select version();' -d gretl -U postgres
 psql -c 'create extension postgis;' -d gretl -U postgres
 psql -c 'create extension "uuid-ossp";' -d gretl -U postgres
 psql -c 'select postgis_full_version();' -d gretl -U postgres
-

@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: gretl-build
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      build: gretl
+    name: gretl
+  spec:
+    nodeSelector: null
+    output:
+      pushSecret:
+        name: dockerhub
+      to:
+        kind: DockerImage
+        name: docker.io/${GRETL_RUNTIME_IMAGE}
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      binary: {}
+      type: Binary
+    strategy:
+      dockerStrategy: {}
+      type: Docker
+    triggers:
+    - github:
+        secret: ItFa-V5Vq3TEi-w0Kz10
+      type: GitHub
+    - generic:
+        secret: FEvl3j8owPGQKyQDe8kK
+      type: Generic
+  status:
+    lastVersion: 0
+parameters:
+  - name: GRETL_RUNTIME_IMAGE
+    displayName: Docker image of GRETL runtime
+    description: Docker image path, name and version of builded docker image.
+    value: chrira/jobrunner:latest
+    required: true
