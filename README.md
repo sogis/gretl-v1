@@ -85,3 +85,6 @@ This task can be used to execute _any_ sql statement in one database.
 `database`: A list with a valid jdbc database url, the login name and the password.
 
 `sqlFiles`: A list with files names containing _any_ sql statements.
+
+## OpenShift build environment
+See the build read-me: [README_BUILD.md](openshift/README_BUILD.md)
