@@ -1,6 +1,6 @@
 GRETL Jenkins Pipeline Setup
 ============================
-Requirements and guide for build and deploy of GRETL platform.
+Requirements and guide for build and deploy of the GRETL platform.
 
 Plugins
 -------
@@ -64,21 +64,39 @@ Description: oc tool login token for project [OpenShift project name]
 
 OpenShift build project
 -----------------------
+Prepare an OpenShift build project and use this pipeline: **openshift/pipeline/gretl-runtime-build.groovy**
 
 ### GRETL runtime Docker image
 Project used to build GRETL runtime Docker image and push it to dockerhub.
 
 Documentation: https://blog.openshift.com/pushing-application-images-to-an-external-registry/
 
+#### OpenShift project setup
+Create project and give access to push to Docker Hub.
 
 ```
 new-project gretl-build
 oc secrets new dockerhub ~/.docker/config.json
 oc describe secret dockerhub
 oc edit sa builder
+```
+
+##### Create build configuration by template
+```
+oc process -f openshift/templates/gretl-build-template.yaml \
+  -p GRETL_RUNTIME_IMAGE="chrira/jobrunner:latest" \
+  | oc apply -f -
+```
+
+##### Manual build configuration
+Not used, when template was applied.
+```
 oc new-build --name=gretl --strategy=Docker --binary=true
+```
+```
 oc edit bc gretl
 ```
+Change destination to your Docker Hub repository.
 ```
     to:
       kind: DockerImage   
@@ -87,6 +105,8 @@ oc edit bc gretl
       name: dockerhub
 ```
 
+###### Build from local machine
+Login to OpenShift and use the build project.
 
 ```
 cd docker/gretl
@@ -96,16 +116,28 @@ oc start-build gretl --from-dir . --follow
 
 ```
 
+
+OpenShift integration test project
+----------------------------------
+Prepare an OpenShift test project and use this pipeline: **openshift/pipeline/gretl-integration-test.groovy**
+
+### OpenShift project setup
+Login to OpenShift and use the integration-test project.
+
+Create the needed database:
+```
+oc process postgresql-ephemeral -n openshift \
+  -p POSTGRESQL_DATABASE='gretl' \
+  -p DATABASE_SERVICE_NAME='postgresql' \
+  | oc create -f -
+```
+
+OpenShift Jenkins project
+-------------------------
+
 ```
 oc process -f jenkins-s2i-template.json \
   -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/chrira/openshift-jenkins.git" \
   -p GRETL_JOB_REPO_URL="git://github.com/chrira/gretljobs.git" \
-  | oc apply -f -
-```
-
-
-```
-oc process -f gretl-build-template.yaml \
-  -p GRETL_RUNTIME_IMAGE="chrira/jobrunner:latest" \
   | oc apply -f -
 ```
