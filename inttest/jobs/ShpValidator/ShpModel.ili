@@ -14,7 +14,7 @@ MODEL ShpModel (de) AT "mailto:ceis@localhost" VERSION "20170703" =
 		  atext : TEXT*10;
 		  aenum : (rot,blau);
 		  adate : INTERLIS.XMLDate;
-		  the_geom: LKoord;
+		  geom_so: LKoord;
   		END Class1;
 	END Topic12;
 END ShpModel.
