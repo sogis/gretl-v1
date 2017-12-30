@@ -1,13 +1,26 @@
-node ("gretl") {
-   echo 'Hello World'
-   git 'https://github.com/chrira/greteljobs.git'
+properties([
+        // keep only the last 20 builds
+        buildDiscarder(logRotator(numToKeepStr: '20')),
+        // run every weekday at noon
+        pipelineTriggers([
+                cron('H 12 * * 1-5')
+        ])
+])
 
-   sh 'ls -la /home/gradle/libs'
+// kill job if it is running too long
+timeout(time: 10, unit: 'MINUTES') {
+    // name of GRETL runtime Docker container
+    node ("gretl") {
+        // Git repository containing the files for the job
+        git 'https://github.com/sogis/gretl.git'
 
-   dir('inttest/jobs/iliValidator') {
-       sh 'pwd'
-       sh 'ls -la'
+        // directory of this job, relative to the Git repository root
+        dir('inttest/jobs/iliValidator') {
+            // show current location and content
+            sh 'pwd && ls -l'
 
-       sh 'gretl validate'
+            // do the job
+            sh 'gretl validate'
+        }
     }
 }
