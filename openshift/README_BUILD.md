@@ -132,6 +132,28 @@ oc process postgresql-ephemeral -n openshift \
   | oc create -f -
 ```
 
+
+OpenShift system test project
+-----------------------------
+Prepare an OpenShift test project.
+
+### OpenShift project setup
+Create project
+```
+oc new-project gretl-system-test
+```
+Setup runtime
+```
+oc process -f openshift/templates/jenkins-s2i-template.json \
+  -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/chrira/openshift-jenkins.git" \
+  -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
+  -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretl.git" \
+  -p GRETL_JOB_FILE_PATH="inttest/jobs/**" \
+  -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
+  | oc apply -f -
+```
+
+
 OpenShift Jenkins project
 -------------------------
 
