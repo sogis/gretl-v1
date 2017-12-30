@@ -33,9 +33,12 @@ sourceSets {
 dependencies{
     compile junitDependency
     runtime postgresqlDependency
-    testSystemCompile junitDependency
+
     testIntegrationCompile junitDependency
     testIntegrationCompile ioxWkfDependency
+
+    testSystemCompile junitDependency
+    testSystemCompile 'com.offbytwo.jenkins:jenkins-client:0.3.7'
 }
 
 task testIntegration(type: Test) {

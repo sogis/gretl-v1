@@ -1,4 +1,3 @@
-/*
 package ch.so.agi.gretl.jenkins;
 
 import com.offbytwo.jenkins.JenkinsServer;
@@ -9,7 +8,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,19 +43,18 @@ public class JenkinsTest {
     @Test
     public void testGetJob() throws IOException {
         // when
-        Job job = jenkins.getJobs().get("OpenShift Sample");
+        Job job = jenkins.getJobs().get("administration/gretl-job-generator");
 
         // then
-        assertThat(job.getName(), is("OpenShift Sample"));
+        assertThat(job.getName(), is("administration/gretl-job-generator"));
     }
 
     @Test
     public void testBuildJob() throws IOException {
         // when
-        QueueReference result = jenkins.getJobs().get("OpenShift Sample").build();
+        QueueReference result = jenkins.getJobs().get("administration/gretl-job-generator").build();
 
         // then
         assertThat(result.getQueueItemUrlPart(), is("http://localhost:8080/queue/item/1/"));
     }
 }
-*/
