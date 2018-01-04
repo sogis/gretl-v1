@@ -3,6 +3,7 @@ apply from: '../../dependencies.gradle'
 allprojects {
     buildscript {
         repositories {
+        	mavenLocal()
             maven {
                 url "http://download.osgeo.org/webdav/geotools/"
             }
@@ -28,6 +29,7 @@ allprojects {
             classpath ili2pgDependency
             classpath ioxWkfDependency
             classpath ioxIliDependency
+            classpath group: 'org.geotools', name: 'gt-epsg-hsql', version: '10.8'
 
             classpath postgresqlDependency
         }

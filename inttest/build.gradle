@@ -7,7 +7,14 @@ allprojects {
     apply plugin: 'java'
 
     repositories {
-        mavenCentral()
+		mavenLocal()
+		maven {
+			url "http://jars.interlis.ch"
+		}
+		maven {
+			url "http://download.osgeo.org/webdav/geotools/"
+		}
+		mavenCentral()
     }
 }
 
@@ -28,6 +35,7 @@ dependencies{
     runtime postgresqlDependency
     testSystemCompile junitDependency
     testIntegrationCompile junitDependency
+    testIntegrationCompile ioxWkfDependency
 }
 
 task testIntegration(type: Test) {
