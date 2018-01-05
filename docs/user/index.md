@@ -11,30 +11,30 @@ miteinander verknüpft sind.
 
 Ein Job kann aus z.B. aus einer linearen Kette von Tasks bestehen:
 
-    Step 1 – Step 2 – Step 3 – Step n
+    Task 1 – Task 2 – Task 3 – Task n
 
 Beispiel: Datenimport aus INTERLIS-Datei – Datenumbau – Datenexport nach Shapefile
 
 Ein Job kann sich nach einem Task aber auch auf zwei oder mehr verschiedene weitere Tasks
 verzweigen:
 
-          - Step 2 – Step 3 – Step n
-    Step 1 –
-          – Step 4 – Step 5 – Step m
+          - Task 2 – Task 3 – Task n
+    Task 1 –
+          – Task 4 – Task 5 – Task m
 
 Beispiel: Datenimport aus INTERLIS-Datei – Datenumbau in Zielschema 1 und ein zweiter
 Datenumbau in Zielschema 2
 
 Es ist auch möglich, dass zuerst zwei oder mehr Tasks unabhängig voneinander
-ausgeführt werden müssen, bevor ein einzelner weiterer Step ausgeführt wird.
+ausgeführt werden müssen, bevor ein einzelner weiterer Task ausgeführt wird.
 
-    Step 1 –
-           – Step 3 – Step 4 – Step n
-    Step 2 –
+    Task 1 –
+           – Task 3 – Task 4 – Task n
+    Task 2 –
 
 Die Tasks eines Jobs werden per Konfigurationsfile konfiguriert.
 
-## Kleines Besipiel
+## Kleines Beispiel
 
 Erstellen sie in einem neuen Verzeichnis ``gretldemo`` eine neue Datei ``build.gradle``:
 
@@ -168,6 +168,7 @@ encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeins
 Geometrie-Saplten können nicht exportiert werden.
 
 ### CsvImport
+Daten aus einer CSV-Datei werden in eine bestehende Datenbanktabelle importiert.
 
 Beispiel:
 ```
@@ -184,7 +185,27 @@ task csvimport(type: CsvImport){
 }
 ```
 
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank in die importiert werden soll
+dataFile  | Name der CSV Datei, die gelesen werden soll
+tableName | Name der DB-Tabelle, in die importiert werden soll
+schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
+firstLineIsHeader | Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: true
+valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes vorhanden ist. Default ``"``
+valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten interpretiert werden soll. Default: ``,``
+encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+
+Die Tabelle kann weitere Spalten enthalten, die in der CSV-Datei nicht vorkommen. Sie müssen
+aber NULLable sein, oder einen Default-Wert definiert haben.
+
+Geometrie-Saplten können nicht importiert werden.
+
+Die Gross-/Kleinschreibung der CSV-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+
 ### CsvValidator
+
+Prüft eine CSV-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem ilivalidator.
 
 Beispiel:
 ```
@@ -195,26 +216,102 @@ task validate(type: CsvValidator){
 }
 ```
 
+Parameter | Beschreibung
+----------|-------------------
+dataFiles | Liste der CSV-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
+models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
+modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der CSV-Datei.
+configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
+forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
+disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
+multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
+allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
+skipPolygonBuilding | Schaltet die Bildung der Polygone aus (nur ITF). Default: false
+logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
+xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
+pluginFolder | erzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
+proxy | Proxy Server für den Zugriff auf Modell Repositories
+proxyPort | Proxy Port für den Zugriff auf Modell Repositories
+failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
+validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
+firstLineIsHeader | Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: true
+valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes vorhanden ist. Default ``"``
+valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten interpretiert werden soll. Default: ``,``
+encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+
+Falls die CSV-Datei eine Header-Zeile enthält (mit den Spaltennamen), wird im gegebenen Modell eine Klasse gesucht, 
+die genau diese Attribute (wobei die Gross-/Kleinschreibung ignoriert wird) enthält. Wird keine solche Klasse gefunden, 
+gilt das als Validierungsfehler.
+
+Falls die CSV-Datei keine Header-Zeile enthält (mit den Spaltennamen), wird im gegebenen Modell eine Klasse gesucht, 
+die die selbe Anzahl Attribute hat. Wird keine solche Klasse gefunden, 
+gilt das als Validierungsfehler.
+
+
 ### Db2Db
 
+Dies ist prinzipiell ein 1:1 Datenkopie, d.h. es findet kein Datenumbau statt, die Quell- und die Ziel-
+Tabelle hat jeweils identische Attribute. Es werden auf Seite Quelle in der Regel also simple
+SELECT-Queries ausgeführt und die Resultate dieser Queries in Tabellen der Ziel-DB eingefügt.
+Unter bestimmten Bedingungen (insbesondere wenn die Quell-DB eine PostgreSQL-DB ist und es
+sich um einen wenig komplexen Datenumbau handelt), kann dieser Task aber auch zum
+Datenumbau benutzt werden.
+
+Die Queries sind auf mehrere .sql-Files verteilt, d.h. der Task muss die Queries mehrerer .sql-Files
+zu einer Transaktion kombinieren können. Jede .sql-Datei gibt genau eine Resultset (RAMTabelle)
+zurück. Das Resultset wird in die konfigurierte Zieltabelle geschrieben. (Die
+Beziehungen sind: Eine bis mehrere Quelltabellen ergeben ein Resultset; das Resultset entspricht
+bezüglich den Attributen genau der Zieltabelle und wird 1:1 in diese geschrieben.) Der db2db-
+Task verarbeitet innerhalb einer Transaktion 1-n Resultsets und wird entsprechend auch mit 1-n
+SQL-Dateien konfiguriert.
+
+Die Reihenfolge der .sql-Files ist relevant. Dies bedeutet, dass die SQL-Befehle des zuerst
+angegebenen .sql-Files zuerst ausgeführt werden müssen, danach dies SQL-Befehle des an
+zweiter Stelle angegebenen .sql-Files, usw.
+
+Es ist auch möglich sein, in den .sql-Files mehr als nur ein SELECT-Query zu formulieren, z.B.
+ein vorgängiges DELETE.
+
+Alle SELECT-Statements werden in einer Transaktion ausgeführt werden, damit ein konsistenter
+Datenstand gelesen wird. Alle INSERT-Statements werden in einer Transaktion ausgeführt
+werden, damit bei einem Fehler der bisherige Datenstand bestehen bleibt und also kein
+unvollständiger Import zurückgelassen wird.
+
 ```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
 
 task transferSomeData(type: Db2Db) {
-    sourceDb = ['jdbc:postgresql://192.168.50.4:5432/xanadu','login1','password1']
-    targetDb = ['jdbc:sqlite:/road/to/mandalay.sqlite',null,null]
+    sourceDb = [db_uri, db_user, db_pass]
+    targetDb = ['jdbc:sqlite:gretldemo.sqlite',null,null]
     transferSets = [
-            new TransferSet('../../can/be/a/relative/path/some.sql', 'albums_dest', true)
+            new TransferSet('some.sql', 'albums_dest', true)
     ];
 }
 ```
-Copies data from a source database (`sourceDb`) to target database (`targetDb`). It can handle an arbitrary count of transfers in one task.
 
- `sourceDB` / `targetDB`: A list with a valid jdbc database url, the login name and the password.
+Parameter | Beschreibung
+----------|-------------------
+sourceDb | Datenbank aus der gelesen werden soll
+targetDb | Datenbank in die geschrieben werden soll
+transferSets  | Eine Liste von ``TransferSet``s.
 
-`transferSets`: A list of `TransferSet`. A transfer set consists of the path to the file containing the sql select statement, the destination table and the option to delete the destination table contents before adding the new data.
+Eine ``TransferSet`` ist 
 
-Supported Databases: PostgreSQL and SQLite
+- eine SQL-Datei (mit SQL-Anweisungen zum Lesen der Daten aus der sourceDb), 
+- dem Namen der Ziel-Tabelle in der targetDb, und 
+- der Angabe ob in der Ziel-Tabelle vor dem INSERT zuerst alle Records gelöscht werden sollen.
+
+Unterstützte Datenbanken: PostgreSQL and SQLite
+
 ### Ili2pgExport
+
+Exportiert Daten aus der PostgreSQL-Datenbank in eine INTERLIS-Transferdatei.
+
+Mit dem Parameter ``models``, ``topics``, ``baskets`` oder ``dataset`` wird definiert, welche Daten exportiert werden.
+
+Ob die Daten im Interlis 1-, Interlis 2- oder GML-Format geschrieben werden, ergibt sich aus der Dateinamenserweiterung der Ausgabedatei. Für eine Interlis 1-Transferdatei muss die Erweiterung .itf verwendet werden. Für eine GML-Transferdatei muss die Erweiterung .gml verwendet werden.
 
 Beispiel:
 ```
@@ -230,7 +327,44 @@ task exportData(type: Ili2pgExport){
 }
 ```
 
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank aus der exportiert werden soll
+dataFile  | Name der XTF-/ITF-Datei, die erstellt werden soll
+dbschema  | Entspricht der ili2pg Option --dbschema
+proxy  | Entspricht der ili2pg Option --proxy
+proxyPort  | Entspricht der ili2pg Option --proxyPort
+modeldir  | Entspricht der ili2pg Option --modeldir
+models  | Entspricht der ili2pg Option --models
+dataset  | Entspricht der ili2pg Option --dataset
+baskets  | Entspricht der ili2pg Option --baskets
+topics  | Entspricht der ili2pg Option --topics
+preScript  | Entspricht der ili2pg Option --preScript
+postScript  | Entspricht der ili2pg Option --postScript
+deleteData  | Entspricht der ili2pg Option --deleteData
+logFile  | Entspricht der ili2pg Option --logFile
+validConfigFile  | Entspricht der ili2pg Option --validConfigFile
+disableValidation  | Entspricht der ili2pg Option --disableValidation
+disableAreaValidation  | Entspricht der ili2pg Option --disableAreaValidation
+forceTypeValidation  | Entspricht der ili2pg Option --forceTypeValidation
+strokeArcs  | Entspricht der ili2pg Option --strokeArcs
+skipPolygonBuilding  | Entspricht der ili2pg Option --skipPolygonBuilding
+skipGeometryErrors  | Entspricht der ili2pg Option --skipGeometryErrors
+iligml20  | Entspricht der ili2pg Option --iligml20
+
+Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+
 ### Ili2pgImport
+
+Importiert Daten aus einer INTERLIS-Transferdatei in die PostgreSQL-Datenbank.
+
+Die Tabellen werden implizit auch angelegt, falls sie noch nicht vorhanden sind. Falls die Tabellen in der Datenbank 
+schon vorhanden sind, können sie zusätzliche Spalten enthalten (z.B. bfsnr, datum etc.), welche beim Import leer bleiben.
+
+Falls beim Import ein Datensatz-Identifikator (dataset) definiert wird, darf dieser Datensatz-Identifikator in der 
+Datenbank noch nicht vorhanden sein. 
+
+Um die bestehenden (früher importierten) Daten zu ersetzen, kann der Task Ili2pgReplace verwendet werden.
 
 Beispiel:
 ```
@@ -245,7 +379,38 @@ task importData(type: Ili2pgImport){
 }
 ```
 
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank in die importiert werden soll
+dataFile  | Name der XTF-/ITF-Datei, die gelesen werden soll
+dbschema  | Entspricht der ili2pg Option --dbschema
+proxy  | Entspricht der ili2pg Option --proxy
+proxyPort  | Entspricht der ili2pg Option --proxyPort
+modeldir  | Entspricht der ili2pg Option --modeldir
+models  | Entspricht der ili2pg Option --models
+dataset  | Entspricht der ili2pg Option --dataset
+baskets  | Entspricht der ili2pg Option --baskets
+topics  | Entspricht der ili2pg Option --topics
+preScript  | Entspricht der ili2pg Option --preScript
+postScript  | Entspricht der ili2pg Option --postScript
+deleteData  | Entspricht der ili2pg Option --deleteData
+logFile  | Entspricht der ili2pg Option --logFile
+validConfigFile  | Entspricht der ili2pg Option --validConfigFile
+disableValidation  | Entspricht der ili2pg Option --disableValidation
+disableAreaValidation  | Entspricht der ili2pg Option --disableAreaValidation
+forceTypeValidation  | Entspricht der ili2pg Option --forceTypeValidation
+strokeArcs  | Entspricht der ili2pg Option --strokeArcs
+skipPolygonBuilding  | Entspricht der ili2pg Option --skipPolygonBuilding
+skipGeometryErrors  | Entspricht der ili2pg Option --skipGeometryErrors
+iligml20  | Entspricht der ili2pg Option --iligml20
+
+Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+
 ### Ili2pgImportSchema
+
+Erstellt die Tabellenstruktur in der PostgreSQL-Datenbank anhand eines INTERLIS-Modells.
+
+Der Parameter ``iliFile`` oder ``models``  muss gesetzt werden.
 
 Beispiel:
 ```
@@ -261,19 +426,114 @@ task importSchema(type: Ili2pgImportSchema){
 }
 ```
 
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank in die importiert werden soll
+iliFile  | Name der ili-Datei die gelesen werden soll
+models  | Name des ili-Modells, das gelesen werden soll
+dbschema  | Entspricht der ili2pg Option --dbschema
+proxy  | Entspricht der ili2pg Option --proxy
+proxyPort  | Entspricht der ili2pg Option --proxyPort
+modeldir  | Entspricht der ili2pg Option --modeldir
+dataset  | Entspricht der ili2pg Option --dataset
+baskets  | Entspricht der ili2pg Option --baskets
+topics  | Entspricht der ili2pg Option --topics
+preScript  | Entspricht der ili2pg Option --preScript
+postScript  | Entspricht der ili2pg Option --postScript
+logFile  | Entspricht der ili2pg Option --logFile
+strokeArcs  | Entspricht der ili2pg Option --strokeArcs
+oneGeomPerTable | Entspricht der ili2pg Option --oneGeomPerTable
+setupPgExt | Entspricht der ili2pg Option --setupPgExt
+dropscript | Entspricht der ili2pg Option --dropscript
+createscript | Entspricht der ili2pg Option --createscript
+defaultSrsAuth | Entspricht der ili2pg Option --defaultSrsAuth
+defaultSrsCode | Entspricht der ili2pg Option --defaultSrsCode
+createSingleEnumTab | Entspricht der ili2pg Option --createSingleEnumTab
+createEnumTabs | Entspricht der ili2pg Option --createEnumTabs
+createEnumTxtCol | Entspricht der ili2pg Option --createEnumTxtCol
+createEnumColAsItfCode | Entspricht der ili2pg Option --createEnumColAsItfCode
+beautifyEnumDispName | Entspricht der ili2pg Option --beautifyEnumDispName
+noSmartMapping | Entspricht der ili2pg Option --noSmartMapping
+smart1Inheritance | Entspricht der ili2pg Option --smart1Inheritance
+smart2Inheritance | Entspricht der ili2pg Option --smart2Inheritance
+coalesceCatalogueRef | Entspricht der ili2pg Option --coalesceCatalogueRef
+coalesceMultiSurface | Entspricht der ili2pg Option --coalesceMultiSurface
+coalesceMultiLine | Entspricht der ili2pg Option --coalesceMultiLine
+expandMultilingual | Entspricht der ili2pg Option --expandMultilingual
+createFk | Entspricht der ili2pg Option --createFk
+createFkIdx | Entspricht der ili2pg Option --createFkIdx
+createUnique | Entspricht der ili2pg Option --createUnique
+createNumChecks | Entspricht der ili2pg Option --createNumChecks
+createStdCols | Entspricht der ili2pg Option --createStdCols
+t_id_Name | Entspricht der ili2pg Option --t_id_Name
+idSeqMin | Entspricht der ili2pg Option --idSeqMin
+idSeqMax | Entspricht der ili2pg Option --idSeqMax
+createTypeDiscriminator | Entspricht der ili2pg Option --createTypeDiscriminator
+createGeomIdx | Entspricht der ili2pg Option --createGeomIdx
+disableNameOptimization | Entspricht der ili2pg Option --disableNameOptimization
+nameByTopic | Entspricht der ili2pg Option --nameByTopic
+maxNameLength | Entspricht der ili2pg Option --maxNameLength
+sqlEnableNull | Entspricht der ili2pg Option --sqlEnableNull
+keepAreaRef | Entspricht der ili2pg Option --keepAreaRef
+importTid | Entspricht der ili2pg Option --importTid
+createBasketCol | Entspricht der ili2pg Option --createBasketCol
+createDatasetCol | Entspricht der ili2pg Option --createDatasetCol
+ver4_translation | Entspricht der ili2pg Option --ver4_translation
+translation | Entspricht der ili2pg Option --translation
+createMetaInfo | Entspricht der ili2pg Option --createMetaInfo
+
+Für die Beschreibung der einzenen ili2pg Optionen: https://github.com/claeis/ili2db/blob/master/docs/ili2db.rst#aufruf-syntax
+
 ### Ili2pgReplace
+
+Ersetzt die Daten in der PostgreSQL-Datenbank anhand eines Datensatz-Identifikators (dataset) mit den 
+Daten aus einer INTERLIS-Transferdatei. Diese Funktion bedingt, dass das Datenbankschema mit der 
+Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema).
 
 Beispiel:
 ```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task replaceData(type: Ili2pgReplace){
+    database = [db_uri, db_user, db_pass]
+    dataFile = "lv03_254900.itf"
+    dataset = "254900"
+    logFile = "ili2pg.log"
+}
 ```
+
+Die Parameter sind analog wie bei Ili2pgImport.
 
 ### Ili2pgUpdate
 
+Aktualisiert die Daten in der PostgreSQL-Datenbank anhand einer INTERLIS-Transferdatei, d.h. 
+neue Objekte werden eingefügt, bestehende Objekte werden aktualisiert und in der Transferdatei nicht mehr 
+vorhandene Objekte werden gelöscht. 
+
+Diese Funktion bedingt, dass das Datenbankschema mit der Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema), 
+und dass die Klassen und Topics eine stabile OID haben.
+
 Beispiel:
 ```
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+task updateData(type: Ili2pgUpdate){
+    database = [db_uri, db_user, db_pass]
+    dataFile = "lv03_254900.itf"
+    dataset = "254900"
+    logFile = "ili2pg.log"
+}
 ```
 
+Die Parameter sind analog wie bei Ili2pgImport.
+
 ### IliValidator
+
+Prüft eine INTERLIS-Datei (.itf oder .xtf) gegenüber einem INTERLIS-Modell (.ili). Basiert auf dem ilivalidator.
 
 Beispiel:
 ```
@@ -283,7 +543,27 @@ task validate(type: IliValidator){
 }
 ```
 
+Parameter | Beschreibung
+----------|-------------------
+dataFiles | Liste der XTF- oder ITF-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
+models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Wird anhand der dataFiles ermittelt.
+modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der CSV-Datei.
+configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
+forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
+disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
+multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
+allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
+skipPolygonBuilding | Schaltet die Bildung der Polygone aus (nur ITF). Default: false
+logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
+xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
+pluginFolder | erzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
+proxy | Proxy Server für den Zugriff auf Modell Repositories
+proxyPort | Proxy Port für den Zugriff auf Modell Repositories
+failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
+validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
+
 ### ShpExport
+Daten aus einer bestehenden Datenbanktabelle werden in eine Shp-Datei exportiert.
 
 Beispiel:
 ```
@@ -299,7 +579,20 @@ task shpexport(type: ShpExport){
 }
 ```
 
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank aus der exportiert werden soll
+dataFile  | Name der SHP Datei, die erstellt werden soll
+tableName | Name der DB-Tabelle, die exportiert werden soll
+schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
+firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
+encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+
+Die Tabelle darf eine Geometrie-Spalte enthalten.
+
 ### ShpImport
+
+Daten aus einer Shp-Datei in eine bestehende Datenbanktabelle importieren.
 
 Beispiel:
 ```
@@ -315,7 +608,24 @@ task shpimport(type: ShpImport){
 }
 ```
 
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank in die importiert werden soll
+dataFile  | Name der SHP Datei, die gelesen werden soll
+tableName | Name der DB-Tabelle, in die importiert werden soll
+schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
+encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+
+Die Tabelle kann weitere Spalten enthalten, die in der SHP-Datei nicht vorkommen. Sie müssen
+aber NULLable sein, oder einen Default-Wert definiert haben.
+
+Die Tabelle muss eine Geometrie-Spalte enthalten. Der Name der Geometrie-Spalte kann beliebig gewählt werden.
+
+Die Gross-/Kleinschreibung der SHP-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+
 ### ShpValidator
+
+Prüft eine SHP-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem ilivalidator.
 
 Beispiel:
 ```
@@ -325,21 +635,69 @@ task validate(type: ShpValidator){
 }
 ```
 
+Parameter | Beschreibung
+----------|-------------------
+dataFiles | Liste der SHP-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
+models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
+modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der SHP-Datei.
+configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
+forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
+disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
+multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
+allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
+skipPolygonBuilding | Schaltet die Bildung der Polygone aus (nur ITF). Default: false
+logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
+xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
+pluginFolder | erzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
+proxy | Proxy Server für den Zugriff auf Modell Repositories
+proxyPort | Proxy Port für den Zugriff auf Modell Repositories
+failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
+validationOk | OUTPUT: Ergebnis der Validierung. Nur falls failOnError=false
+encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+
+Im gegebenen Modell wird eine Klasse gesucht, 
+die genau die Attributenamen wie in der Shp-Datei enthält (wobei die Gross-/Kleinschreibung ignoriert wird); 
+die Attributtypen werden ignoriert. Wird keine solche Klasse gefunden, gilt das als Validierungsfehler.
+
 ### SQLExecutor
 
+Der SQLExecutor-Task dient prinzipiell dazu, Datenumbauten auszuführen. 
+
+Er wird im Allgemeinen dann benutzt, wenn
+
+1. der Datenumbau komplex ist und deshalb nicht im db2db-Task erledigt werden kann
+2. oder wenn die Quell-DB keine PostgreSQL-DB ist (weil bei komplexen Queries für den
+Datenumbau möglicherweise fremdsystemspezifische SQL-Syntax verwendet werden müsste)
+3. oder wenn Quell- und Zielschema in derselben Datenbank liegen
+
+In den Fällen 1 und 2 werden Stagingtabellen bzw. ein Stagingschema benötigt, in welche der
+db2db-Task die Daten zuerst 1:1 hineinschreibt. Der SQLExecutor-Task liest danach die Daten von
+dort, baut sie um und schreibt sie dann ins Zielschema. (Falls es möglich ist, soll nur 1 Staging-
+Schema pro DB vorgesehen werden, damit die Anzahl Schemas auf der DB nicht ausufert.)
+Die Queries für den SQLExecutor-Task können alle in einem einzelnen .sql-File sein oder (z.B. aus
+Gründen der Strukturierung oder Organisation) auf mehrere .sql-Files verteilt sein.
+Die Reihenfolge der .sql-Files ist relevant. Dies bedeutet, dass die SQL-Befehle des zuerst
+angegebenen .sql-Files zuerst ausgeführt werden müssen, danach dies SQL-Befehle des an
+zweiter Stelle angegebenen .sql-Files, usw.
+Der SQLExecutor-Task muss neben Updates ganzer Tabellen (d.h. Löschen des gesamten Inhalts
+einer Tabelle und gesamter neuer Stand in die Tabelle schreiben) auch Updates von Teilen von
+Tabellen zulassen. D.h. es muss z.B. möglich sein, innerhalb einer Tabelle nur die Objekte einer
+bestimmten Gemeinde zu aktualisieren. Hierzu muss der Task parametrisierbar sein (Issue#43).
+
 ```
-import ch.so.agi.gretl.steps.*
+def db_uri = 'jdbc:postgresql://localhost/gretldemo'
+def db_user = "dmluser"
+def db_pass = "dmluser"
 
 task executeSomeSql(type: SqlExecutor){
-    database = ['jdbc:postgresql://192.168.50.4:5432/xanadu','login1','password1']
-    sqlFiles = ['/can/be/an/absolute/path/some.sql']
+    database = [db_uri, db_user, db_pass]
+    sqlFiles = ['demo.sql']
 }
 ```
 
-This task can be used to execute _any_ sql statement in one database.
+Parameter | Beschreibung
+----------|-------------------
+database | Datenbank in die importiert werden soll
+sqlFiles  | Name der SQL-Datei aus der SQL-Statements gelesen und ausgeführt werden
 
-`database`: A list with a valid jdbc database url, the login name and the password.
-
-`sqlFiles`: A list with files names containing _any_ sql statements.
-
-Supported Databases: PostgreSQL and SQLite
+Unterstützte Datenbanken: PostgreSQL and SQLite
