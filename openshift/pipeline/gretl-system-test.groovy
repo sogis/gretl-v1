@@ -7,6 +7,11 @@
  * - openShiftProject: OpenShift project to be used. (text parameter)
  * - ocToolName: Jenkins custom tool name of oc client. (text parameter)
  * - openShiftDeployTokenName: amount of tags to keep. (text parameter)
+ *
+ * - jenkinsUser
+ * - jenkinsToken
+ * The API token is available in your personal configuration page. Click your name on the top right corner on every page, then click "Configure" to see your API token. (The URL $root/me/configure is a good shortcut.) You can also change your API token from here.
+ *
  */
 pipeline {
     agent any
@@ -36,7 +41,7 @@ pipeline {
                 sh 'ls -la build-tmp'
             }
         }
-        stage('test') {
+        stage('sys-test') {
             steps {
                 script{
                     timeout(20) {

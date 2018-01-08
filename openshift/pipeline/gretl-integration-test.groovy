@@ -3,7 +3,6 @@
  * The database will be prepared and the port is forwarded to give access to it.
  * Needed parameter:
  * - buildProject: Jenkins project that builds the GRETL jar. (text parameter)
- * - gitRepository: Url of the Git repository with the source code. (text parameter)
  * - openShiftCluster: OpenShift Cluster to be used. (text parameter)
  * - openShiftProject: OpenShift project to be used. (text parameter)
  * - ocToolName: Jenkins custom tool name of oc client. (text parameter)
@@ -21,7 +20,6 @@ pipeline {
             steps {
                 script {
                     check.mandatoryParameter('buildProject')
-                    check.mandatoryParameter('gitRepository')
                     check.mandatoryParameter('openShiftCluster')
                     check.mandatoryParameter('openShiftProject')
                     check.mandatoryParameter('ocToolName')
@@ -31,13 +29,6 @@ pipeline {
         }
         stage('prepare') {
             steps {
-                // source checkout
-                if (params.gitBranch != null) {
-                    git url: params.gitRepository, branch: params.gitBranch
-                } else {
-                    git url: params.gitRepository
-                }
-
                 // prepare GRETL jar
                 sh 'rm -rf build'
                 dir('build/libs') {
@@ -56,7 +47,7 @@ pipeline {
                 sh 'ls -la build-tmp'
             }
         }
-        stage('test') {
+        stage('int-test') {
             steps {
                 script{
                     timeout(20) {

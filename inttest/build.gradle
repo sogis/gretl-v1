@@ -55,6 +55,14 @@ task testSystem(type: Test) {
 
     testClassesDirs = sourceSets.testSystem.output.classesDirs
     classpath = sourceSets.testSystem.runtimeClasspath
+
+
+    // when Gradle forks a new Java process, it does not automatically pass the
+    // environment variable values along to the new environment. One has to
+    // explicitly pass these variables
+    systemProperty 'gretltest_jenkins_uri', System.getProperty('gretltest_jenkins_uri')
+    systemProperty 'gretltest_jenkins_user', System.getProperty('gretltest_jenkins_user')
+    systemProperty 'gretltest_jenkins_pwd', System.getProperty('gretltest_jenkins_pwd')
 }
 
 // Transfer the required configuration variables to the unit test code.
