@@ -8,7 +8,7 @@
  * - ocToolName: Jenkins custom tool name of oc client. (text parameter)
  * - openShiftDeployTokenName: amount of tags to keep. (text parameter)
  * Optional parameter:
- * - gitBranch: Branch of the Git repository. (text parameter)
+ * - buildTime: Test build time in minutes. Control over port forward duration. (text parameter)
  */
 pipeline {
     agent any
@@ -72,20 +72,26 @@ pipeline {
                                     echo openshift.exec(shortName,'bash', '/tmp/init-test-db.sh').out
 
                                     parallel(
-                                            a: {
-                                                timeout(1) {
+                                        port_forward: {
+                                            int buildTime = 1
+                                            if (params.buildTime != null) {
+                                                buildTime = params.buildTime as int
+                                            }
+                                            try {
+                                                timeout(buildTime) {
                                                     echo "forward database port"
                                                     openshift.raw( 'port-forward', shortName, '5432:5432' )
                                                 }
-                                            },
-                                            b: {
-                                                echo "run integration tests ..."
-                                                dir('build-tmp') {
-                                                    sh './gradlew -version'
-
-                                                    sh './gradlew clean build testIntegration --refresh-dependencies'
-                                                }
+                                            } catch (err) {} // catch timeout
+                                            println "port forward done (time: ${buildTime})"
+                                        },
+                                        test: {
+                                            echo "run integration tests ..."
+                                            dir('build-tmp') {
+                                                sh './gradlew -version'
+                                                sh './gradlew clean build testIntegration --refresh-dependencies'
                                             }
+                                        }
                                     )
                                 }
                             }
