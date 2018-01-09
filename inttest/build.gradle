@@ -45,6 +45,7 @@ task testIntegration(type: Test) {
     group = 'Verification'
     description = 'Runs integration tests'
 
+    ignoreFailures = true
     testClassesDirs = sourceSets.testIntegration.output.classesDirs
     classpath = sourceSets.testIntegration.runtimeClasspath
 }
@@ -53,6 +54,7 @@ task testSystem(type: Test) {
     group = 'Verification'
     description = 'Runs system tests including Jenkins'
 
+    ignoreFailures = true
     testClassesDirs = sourceSets.testSystem.output.classesDirs
     classpath = sourceSets.testSystem.runtimeClasspath
 
