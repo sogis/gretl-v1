@@ -131,6 +131,26 @@ oc process postgresql-ephemeral -n openshift \
   -p DATABASE_SERVICE_NAME='postgresql' \
   | oc create -f -
 ```
+Does not have GIS extension.
+
+#### Crunchy DB with GIS extension
+Needs to be configured for int-test use.
+
+Template taken from [CrunchyData](https://github.com/CrunchyData/crunchy-containers).
+```
+oc process -f openshift/templates/postgres-gis.json \
+  -p CCP_IMAGE_PREFIX=crunchydata \
+  -p CCP_IMAGE_TAG=centos7-10.1-1.7.0 \
+  -p POSTGRESQL_DATABASE='gretl' \
+  -p DATABASE_SERVICE_NAME='postgresql' \
+  -p PRIMARY_USER='postgresql' \
+  | oc apply -f -
+```
+
+Cleanup:
+```
+oc delete deployments,pods,service -l name=postgresql
+```
 
 
 OpenShift system test project
