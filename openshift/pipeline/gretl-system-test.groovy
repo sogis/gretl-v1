@@ -12,6 +12,8 @@
  * - jenkinsToken
  * The API token is available in your personal configuration page. Click your name on the top right corner on every page, then click "Configure" to see your API token. (The URL $root/me/configure is a good shortcut.) You can also change your API token from here.
  *
+ * Optional parameter:
+ * - buildTime: Test build time in minutes. Control over port forward duration. (text parameter)
  */
 pipeline {
     agent any
@@ -26,6 +28,8 @@ pipeline {
                     check.mandatoryParameter('openShiftProject')
                     check.mandatoryParameter('ocToolName')
                     check.mandatoryParameter('openShiftDeployTokenName')
+                    check.mandatoryParameter('jenkinsUser')
+                    check.mandatoryParameter('jenkinsToken')
                 }
             }
         }
@@ -41,7 +45,7 @@ pipeline {
                 sh 'ls -la build-tmp'
             }
         }
-        stage('sys-test') {
+        stage('system-test') {
             steps {
                 script{
                     timeout(20) {
@@ -52,30 +56,37 @@ pipeline {
                                 openshift.withProject(params.openShiftProject) {
                                     echo "Running in project: ${openshift.project()}"
 
-                                    def bc = openshift.selector('is/gretl').object()
-
-                                    println "is -> " + bc
-                                    println "is from -> " + bc.spec.tags['from'].name
+                                    def gretlIS = openshift.selector('is/gretl').object()
+                                    println "GRETL Runtime version: -> " + gretlIS.spec.tags['from'].name
 
 
-
+                                    // find jenkins pod with name: jenkins
+                                    def podSelector = openshift.selector('pods', [name: 'jenkins'])
+                                    def dbPod = podSelector.name()
+                                    String shortName = dbPod.substring(dbPod.indexOf("/") + 1);
+                                    println "Jenkins pod: " + shortName
 
                                     parallel(
-                                            a: {
-                                                timeout(1) {
-                                                    echo "This is branch a"
-                                                    def result = openshift.raw( 'port-forward', shortname, '5432:5432' ).out
-                                                    println result
+                                        port_forward: {
+                                            try {
+                                                def buildTime = 3
+                                                if (params.buildTime != null) {
+                                                    buildTime = params.buildTime as int
                                                 }
-                                            },
-                                            b: {
-                                                echo "This is branch b"
-                                                dir('build-tmp') {
-                                                    sh './gradlew -version'
-
-                                                    sh './gradlew clean build testSystem --refresh-dependencies'
+                                                timeout(buildTime) {
+                                                    echo "Forward Jenkins API port"
+                                                    openshift.raw( 'port-forward', shortName, '8081:8080' )
                                                 }
+                                            } catch (err) {} // catch timeout
+                                            println "port forward done (time: ${buildTime})"
+                                        },
+                                        test: {
+                                            echo "run system tests ..."
+                                            dir('build-tmp') {
+                                                sh './gradlew -version'
+                                                sh "./gradlew clean build testSystem -Dgretltest_jenkins_uri=http://localhost:8081 -Dgretltest_jenkins_user=${params.jenkinsUser} -Dgretltest_jenkins_pwd=${params.jenkinsToken} --refresh-dependencies"
                                             }
+                                        }
                                     )
                                 }
                             }

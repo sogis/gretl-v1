@@ -2,7 +2,10 @@ package ch.so.agi.gretl.jenkins;
 
 import com.google.common.base.Optional;
 import com.offbytwo.jenkins.JenkinsServer;
-import com.offbytwo.jenkins.model.*;
+import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildResult;
+import com.offbytwo.jenkins.model.FolderJob;
+import com.offbytwo.jenkins.model.Job;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -10,7 +13,6 @@ import org.junit.runners.MethodSorters;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -58,7 +60,6 @@ public class JenkinsTest {
 
     /**
      * Delete all jobs that are not in administration folder.
-     * @throws IOException
      */
     @Test
     public void test01cleanup() throws IOException {
@@ -99,14 +100,21 @@ public class JenkinsTest {
         // when
         seeder.build();
 
-        // wait for job to complete
-        TimeUnit.SECONDS.sleep(5);
-        if (jenkins.getJobs().size() == 1) {
-            TimeUnit.SECONDS.sleep(10);
-        }
-
         // then
-        assertThat(jenkins.getJobs().size(), is(AMOUNT_OF_CONFIGURED_GRETL_JOBS + 1));
+        TimeUnit.SECONDS.sleep(5);
+
+        Build build = seeder.details().getLastBuild();
+        assertThat("Build not found.", build, not(nullValue()));
+
+        // wait max. 30 sec. for the build to complete
+        int i = 0;
+        do {
+            TimeUnit.SECONDS.sleep(10);
+        } while (build.details().isBuilding() && i++ < 2);
+
+        assertThat("build not finished!", build.details().isBuilding(), is(false));
+        assertThat(build.details().getResult(), is(BuildResult.SUCCESS));
+        assertThat("required jobs not generated", jenkins.getJobs().size(), is(AMOUNT_OF_CONFIGURED_GRETL_JOBS + 1));
     }
 
     @Test
@@ -124,24 +132,21 @@ public class JenkinsTest {
         Job job = jenkins.getJobs().get("iliValidator");
 
         // when
-        QueueReference queueReference = job.build();
+        job.build();
 
         // then
-        assertThat("QueueReference not found.", queueReference, not(nullValue()));
-        QueueItem queueItem = jenkins.getQueueItem(queueReference);
-        assertThat("QueueItem not found.", queueItem, not(nullValue()));
-
         TimeUnit.SECONDS.sleep(5);
 
         Build build = job.details().getLastBuild();
         assertThat("Build not found.", build, not(nullValue()));
 
-        System.out.println("build: " + build.details().getId());
-
+        // wait max. 60 sec. for the build to complete
+        int i = 0;
         do {
             TimeUnit.SECONDS.sleep(10);
-        } while (build.details().isBuilding());
+        } while (build.details().isBuilding() && i++ < 5);
 
+        assertThat("build not finished!", build.details().isBuilding(), is(false));
         assertThat(build.details().getResult(), is(BuildResult.SUCCESS));
     }
 }

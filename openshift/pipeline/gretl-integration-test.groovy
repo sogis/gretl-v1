@@ -61,7 +61,7 @@ pipeline {
                                     // find database pod with name: postgresql
                                     def podSelector = openshift.selector('pods', [name: 'postgresql'])
                                     def dbPod = podSelector.name()
-                                    String shortName = dbPod.substring(dbPod.indexOf("/") + 1);
+                                    String shortName = dbPod.indexOf("/") > 0 ? dbPod.substring(dbPod.indexOf("/") + 1): dbPod;
                                     println "pod: " + shortName
 
                                     // prepare database
