@@ -27,17 +27,17 @@ public class GradleLoggerTest {
 
 
     public GradleLoggerTest() {
-    	// make sure we use the gradle logger, as this is the gradle logger test
-    	LogEnvironment.setLogFactory(new GradleLogFactory());
+        // make sure we use the gradle logger, as this is the gradle logger test
+        LogEnvironment.setLogFactory(new GradleLogFactory());
         log = LogEnvironment.getLogger(this.getClass());
         OutputEventListenerBackedLoggerContext context = (OutputEventListenerBackedLoggerContext) LoggerFactory.getILoggerFactory();
         context.setLevel(LogLevel.DEBUG);
         context.setOutputEventListener(collector);
     }
     private void resetSystemOutAndErr() {
-		collector.clear();
-		
-	}
+        collector.clear();
+        
+    }
 
     @Test
     public void logInfoTest() throws Exception {
@@ -48,7 +48,7 @@ public class GradleLoggerTest {
 
             LogEvent event=(LogEvent) collector.getEvent(0);
             Assert.assertEquals(LogLevel.INFO,event.getLogLevel());
-          	Assert.assertEquals(event.getMessage(),"$Info-Logger-Test$");
+              Assert.assertEquals(event.getMessage(),"$Info-Logger-Test$");
 
         } finally {
             resetSystemOutAndErr();
@@ -64,7 +64,7 @@ public class GradleLoggerTest {
 
             LogEvent event=(LogEvent) collector.getEvent(0);
             Assert.assertEquals(LogLevel.ERROR,event.getLogLevel());
-          	Assert.assertEquals(event.getMessage(),"$Error-Logger-Test$");
+              Assert.assertEquals(event.getMessage(),"$Error-Logger-Test$");
 
         } finally {
             resetSystemOutAndErr();
@@ -73,7 +73,7 @@ public class GradleLoggerTest {
     }
 
 
-	@Test
+    @Test
     public void logDebugTest() throws Exception {
 
         try{
@@ -81,7 +81,7 @@ public class GradleLoggerTest {
 
             LogEvent event=(LogEvent) collector.getEvent(0);
             Assert.assertEquals(LogLevel.DEBUG,event.getLogLevel());
-          	Assert.assertEquals(event.getMessage(),"$Debug-Logger-Test$");
+              Assert.assertEquals(event.getMessage(),"$Debug-Logger-Test$");
 
         } finally {
             resetSystemOutAndErr();

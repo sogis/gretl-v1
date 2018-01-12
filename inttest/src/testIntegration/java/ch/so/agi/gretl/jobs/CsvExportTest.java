@@ -39,14 +39,14 @@ public class CsvExportTest {
 
             //check results
             System.out.println("cwd "+new File(".").getAbsolutePath());
-    		java.io.LineNumberReader reader=new java.io.LineNumberReader(new java.io.InputStreamReader(new java.io.FileInputStream(new File("jobs/CsvExport/data.csv"))));
-    		String line=reader.readLine();
-           	assertEquals("\"t_id\",\"Aint\",\"adec\",\"atext\",\"aenum\",\"adate\",\"atimestamp\",\"aboolean\"", line);
-    		line=reader.readLine();
-           	assertEquals("\"1\",\"2\",\"3.4\",\"abc\",\"\",\"2013-10-21\",\"2015-02-16T08:35:45.000\",\"true\"", line);
-    		line=reader.readLine();
-           	assertEquals("\"2\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"", line);
-    		reader.close();
+            java.io.LineNumberReader reader=new java.io.LineNumberReader(new java.io.InputStreamReader(new java.io.FileInputStream(new File("jobs/CsvExport/data.csv"))));
+            String line=reader.readLine();
+               assertEquals("\"t_id\",\"Aint\",\"adec\",\"atext\",\"aenum\",\"adate\",\"atimestamp\",\"aboolean\"", line);
+            line=reader.readLine();
+               assertEquals("\"1\",\"2\",\"3.4\",\"abc\",\"\",\"2013-10-21\",\"2015-02-16T08:35:45.000\",\"true\"", line);
+            line=reader.readLine();
+               assertEquals("\"2\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"", line);
+            reader.close();
             
         }
         finally {

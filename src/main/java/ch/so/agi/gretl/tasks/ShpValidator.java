@@ -30,7 +30,7 @@ public class ShpValidator extends AbstractValidatorTask {
     private GretlLogger log;
     @Input
     @Optional
-	public String encoding=null;
+    public String encoding=null;
 
     @TaskAction
     public void validate() {
@@ -41,20 +41,20 @@ public class ShpValidator extends AbstractValidatorTask {
         }
         List<String> files=new ArrayList<String>();
         for(Object fileObj:dataFiles) {
-        	String fileName=this.getProject().file(fileObj).getPath();
-        	files.add(fileName);
+            String fileName=this.getProject().file(fileObj).getPath();
+            files.add(fileName);
         }
         
         Settings settings=new Settings();
         initSettings(settings);
-    	if(encoding!=null) {
-    		settings.setValue(ShapeReader.ENCODING, encoding);
-    	}
+        if(encoding!=null) {
+            settings.setValue(ShapeReader.ENCODING, encoding);
+        }
         
-    	validationOk=new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
-    	if(!validationOk && failOnError) {
-    		throw new TaskExecutionException(this,new Exception("validation failed"));
-    	}
+        validationOk=new ShpValidatorImpl().validate(files.toArray(new String[files.size()]), settings);
+        if(!validationOk && failOnError) {
+            throw new TaskExecutionException(this,new Exception("validation failed"));
+        }
     }
 
 }

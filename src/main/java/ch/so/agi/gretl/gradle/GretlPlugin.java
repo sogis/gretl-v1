@@ -9,11 +9,11 @@ import ch.so.agi.gretl.logging.LogEnvironment;
 
 public class GretlPlugin implements Plugin<Project> {
 
-	@Override
-	public void apply(Project project) {
+    @Override
+    public void apply(Project project) {
         LogEnvironment.initGradleIntegrated();
-		Ehi2GretlAdapter.init();
-		
-	}
+        Ehi2GretlAdapter.init();
+        
+    }
 
 }

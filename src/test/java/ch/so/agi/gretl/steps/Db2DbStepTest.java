@@ -94,10 +94,10 @@ public class Db2DbStepTest {
                 sqlWriter.write(System.getProperty("line.separator"));
                 //sqlWriter.write("SELECT * FROM colors;");
             }finally {
-            	if(sqlWriter!=null) {
+                if(sqlWriter!=null) {
                     sqlWriter.close();
                     sqlWriter=null;
-            	}
+                }
             }
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
@@ -128,10 +128,10 @@ public class Db2DbStepTest {
                 sqlWriter.write(System.getProperty("line.separator"));
                 sqlWriter.write("SELECT * FROM colors;");
             }finally {
-            	if(sqlWriter!=null) {
+                if(sqlWriter!=null) {
                     sqlWriter.close();
                     sqlWriter=null;
-            	}
+                }
             }
             ArrayList<TransferSet> mylist = new ArrayList<TransferSet>();
             mylist.add(new TransferSet(
@@ -145,7 +145,7 @@ public class Db2DbStepTest {
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
             fail();
         }catch(IOException ex) {
-        	
+            
         } finally {
             con.connect().close();
         }

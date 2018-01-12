@@ -48,7 +48,7 @@ public class Db2Db extends DefaultTask {
 
         Settings settings=new Settings();
         if(batchSize!=null) {
-        	settings.setValue(Db2DbStep.SETTING_BATCH_SIZE, batchSize.toString());
+            settings.setValue(Db2DbStep.SETTING_BATCH_SIZE, batchSize.toString());
         }
         try {
             Db2DbStep step = new Db2DbStep(taskName);

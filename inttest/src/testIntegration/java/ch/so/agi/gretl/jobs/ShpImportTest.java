@@ -40,7 +40,7 @@ public class ShpImportTest {
             Statement s2 = con.createStatement();
             ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata WHERE t_id=1"); 
             if(!rs.next()) {
-            	fail();
+                fail();
             }
             assertEquals(2,rs.getInt(1));
             assertEquals(new BigDecimal("3.4"),rs.getBigDecimal(2));
@@ -50,7 +50,7 @@ public class ShpImportTest {
             assertEquals(2638000.0,rs.getFloat(6),0.000001);
             assertEquals(1175250.0,rs.getFloat(7),0.000001);
             if(rs.next()) {
-            	fail();
+                fail();
             }
             rs.close();
             s1.close();

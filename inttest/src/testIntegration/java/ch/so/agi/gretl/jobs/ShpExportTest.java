@@ -49,33 +49,33 @@ public class ShpExportTest {
 
             //check results
             {
-	            System.out.println("cwd "+new File(".").getAbsolutePath());
-				//Open the file for reading
-	        	FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File("jobs/ShpExport/data.shp"));
-	        	SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
-	    		SimpleFeatureIterator featureCollectionIter=featuresSource.getFeatures().features();
-				// feature object
-	    		{
-					SimpleFeature shapeObj=(SimpleFeature) featureCollectionIter.next();
-					Object attr1=shapeObj.getAttribute("Aint");
-					assertEquals(2,attr1);
-					Object attr2=shapeObj.getAttribute("atext");
-					assertEquals("abc",attr2);
-					Object attr3=shapeObj.getAttribute("adec");
-					assertEquals(3.4,attr3);
-					Object attr4=shapeObj.getAttribute(ShapeReader.GEOTOOLS_THE_GEOM);
-					assertEquals(new Coordinate(2638000.0,1175250.0),((Point)attr4).getCoordinate());
-					Object attr5=shapeObj.getAttribute("adate");
-					assertEquals(new java.util.Date(2013-1900,10-1,21),attr5);
-					Object attr6=shapeObj.getAttribute("aboolean");
-					assertEquals(String.class.getName(),attr6.getClass().getName());
-					assertEquals("true",attr6);
-					Object attr7=shapeObj.getAttribute("atimestamp");
-					assertEquals(String.class.getName(),attr7.getClass().getName());
-					assertEquals("2015-02-16T08:35:45.000",attr7);
-	    		}
-		        featureCollectionIter.close();
-		        dataStore.dispose();
+                System.out.println("cwd "+new File(".").getAbsolutePath());
+                //Open the file for reading
+                FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File("jobs/ShpExport/data.shp"));
+                SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
+                SimpleFeatureIterator featureCollectionIter=featuresSource.getFeatures().features();
+                // feature object
+                {
+                    SimpleFeature shapeObj=(SimpleFeature) featureCollectionIter.next();
+                    Object attr1=shapeObj.getAttribute("Aint");
+                    assertEquals(2,attr1);
+                    Object attr2=shapeObj.getAttribute("atext");
+                    assertEquals("abc",attr2);
+                    Object attr3=shapeObj.getAttribute("adec");
+                    assertEquals(3.4,attr3);
+                    Object attr4=shapeObj.getAttribute(ShapeReader.GEOTOOLS_THE_GEOM);
+                    assertEquals(new Coordinate(2638000.0,1175250.0),((Point)attr4).getCoordinate());
+                    Object attr5=shapeObj.getAttribute("adate");
+                    assertEquals(new java.util.Date(2013-1900,10-1,21),attr5);
+                    Object attr6=shapeObj.getAttribute("aboolean");
+                    assertEquals(String.class.getName(),attr6.getClass().getName());
+                    assertEquals("true",attr6);
+                    Object attr7=shapeObj.getAttribute("atimestamp");
+                    assertEquals(String.class.getName(),attr7.getClass().getName());
+                    assertEquals("2015-02-16T08:35:45.000",attr7);
+                }
+                featureCollectionIter.close();
+                dataStore.dispose();
             }
         }
         finally {

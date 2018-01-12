@@ -12,22 +12,22 @@ import org.gradle.api.tasks.TaskAction;
 
 
 public class Ili2pgUpdate extends Ili2pgAbstractTask {
-	@InputFile 
-	public Object dataFile=null;
+    @InputFile 
+    public Object dataFile=null;
     @TaskAction
     public void updateData()
     {
         Config settings=createConfig();
-    	int function=Config.FC_UPDATE;
+        int function=Config.FC_UPDATE;
         if (dataFile==null) {
             return;
         }
         String xtfFilename=this.getProject().file(dataFile).getPath();
-		if(Ili2db.isItfFilename(xtfFilename)){
-			settings.setItfTransferfile(true);
-		}
-		settings.setXtffile(xtfFilename);
-    	run(function, settings);
+        if(Ili2db.isItfFilename(xtfFilename)){
+            settings.setItfTransferfile(true);
+        }
+        settings.setXtffile(xtfFilename);
+        run(function, settings);
     }
 }
 

@@ -40,7 +40,7 @@ public class CsvImportTest {
             Statement s2 = con.createStatement();
             ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, atimestamp, aboolean, aextra FROM "+schemaName+".importdata WHERE t_id=1"); 
             if(!rs.next()) {
-            	fail();
+                fail();
             }
             assertEquals(2,rs.getInt(1));
             assertEquals(new BigDecimal("3.1"),rs.getBigDecimal(2));
@@ -50,7 +50,7 @@ public class CsvImportTest {
             assertEquals(new java.sql.Timestamp(2016-1900,8-1,22,13,15,22,450000000),rs.getTimestamp(6));
             assertEquals(true,rs.getBoolean(7));
             if(rs.next()) {
-            	fail();
+                fail();
             }
             rs.close();
             s1.close();

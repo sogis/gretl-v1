@@ -13,12 +13,12 @@ import ch.interlis.ioxwkf.shp.ShapeReader;
 
 public class ShpValidatorImpl extends Validator {
 
-	@Override
-	protected IoxReader createReader(String filename, TransferDescription td, LogEventFactory errFactory,Settings settings)
-			throws IoxException {
-		ShapeReader reader=new ShapeReader(new File(filename),settings);
-		reader.setModel(td);
-		return reader;
-	}
+    @Override
+    protected IoxReader createReader(String filename, TransferDescription td, LogEventFactory errFactory,Settings settings)
+            throws IoxException {
+        ShapeReader reader=new ShapeReader(new File(filename),settings);
+        reader.setModel(td);
+        return reader;
+    }
 
 }

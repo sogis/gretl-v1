@@ -19,9 +19,9 @@ public class SqlReader {
     public String readSqlStmt(File sqlfile)
             throws IOException {
 
-    	if(reader!=null) {
-    		throw new IllegalStateException("readSqlStmt() must only be called for the first statement");
-    	}
+        if(reader!=null) {
+            throw new IllegalStateException("readSqlStmt() must only be called for the first statement");
+        }
         createPushbackReader(sqlfile);
         StringBuffer stmt=new StringBuffer();
         int c=reader.read();
@@ -29,27 +29,27 @@ public class SqlReader {
         stmt = createStatement(c,reader,stmt);
         String ret=stripEndOfStmtSemicolon(stmt.toString());
         if(ret==null) {
-        	close();
+            close();
         }
         return ret;
     }
 
     private String stripEndOfStmtSemicolon(String stmt) {
-		if(stmt!=null) {
-			stmt=stmt.trim();
-			if(stmt.endsWith(";")) {
-				stmt=stmt.substring(0, stmt.length()-1);
-				stmt=stmt.trim();
-			}
-			if(stmt.length()==0) {
-				stmt=null;
-			}
-				
-		}
-		return stmt;
-	}
+        if(stmt!=null) {
+            stmt=stmt.trim();
+            if(stmt.endsWith(";")) {
+                stmt=stmt.substring(0, stmt.length()-1);
+                stmt=stmt.trim();
+            }
+            if(stmt.length()==0) {
+                stmt=null;
+            }
+                
+        }
+        return stmt;
+    }
 
-	private void createPushbackReader(File sqlfile) throws FileNotFoundException {
+    private void createPushbackReader(File sqlfile) throws FileNotFoundException {
         FileInputStream sqlFileInputStream = new FileInputStream(sqlfile);
         InputStreamReader sqlFileReader = new InputStreamReader(sqlFileInputStream, StandardCharsets.UTF_8);
 
@@ -58,16 +58,16 @@ public class SqlReader {
 
 
     public String nextSqlStmt() throws IOException{
-    	if(reader==null) {
-    		return null;
-    	}
+        if(reader==null) {
+            return null;
+        }
         StringBuffer stmt=new StringBuffer();
         int c=reader.read();
 
         stmt = createStatement(c,reader,stmt);
         String ret=stripEndOfStmtSemicolon(stmt.toString());
         if(ret==null) {
-        	close();
+            close();
         }
         return ret;
     }
@@ -75,10 +75,10 @@ public class SqlReader {
 
     public void close()
             throws IOException {
-    	if(reader!=null) {
-    		reader.close();
-    		reader=null;
-    	}
+        if(reader!=null) {
+            reader.close();
+            reader=null;
+        }
     }
 
 

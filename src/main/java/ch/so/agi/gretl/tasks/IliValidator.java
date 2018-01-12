@@ -36,16 +36,16 @@ public class IliValidator extends AbstractValidatorTask {
         }
         List<String> files=new ArrayList<String>();
         for(Object fileObj:dataFiles) {
-        	String fileName=this.getProject().file(fileObj).getPath();
-        	files.add(fileName);
+            String fileName=this.getProject().file(fileObj).getPath();
+            files.add(fileName);
         }
         
         Settings settings=new Settings();
         initSettings(settings);
-    	validationOk=new Validator().validate(files.toArray(new String[files.size()]), settings);
-    	if(!validationOk && failOnError) {
-    		throw new TaskExecutionException(this,new Exception("validation failed"));
-    	}
+        validationOk=new Validator().validate(files.toArray(new String[files.size()]), settings);
+        if(!validationOk && failOnError) {
+            throw new TaskExecutionException(this,new Exception("validation failed"));
+        }
     }
 
 }
