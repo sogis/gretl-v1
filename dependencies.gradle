@@ -1,9 +1,9 @@
 ext {
     //dependency versions
-    ioxIliVersion = '1.20.+' // use SNAPSHOT
-    ilivalidatorVersion = '1.6.+' // use SNAPSHOT
-    ili2pgVersion = '3.11.+' // use SNAPSHOT
-    ioxWkfVersion = '0.+' // use SNAPSHOT
+    ioxIliVersion = '1.20.1'
+    ilivalidatorVersion = '1.6.0'
+    ili2pgVersion = '3.11.1'
+    ioxWkfVersion = '1.0.0'
 
     postgresqlVersion = '42.1.4'
     junitVersion = '4.12'
