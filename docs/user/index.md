@@ -104,6 +104,18 @@ BUILD SUCCESSFUL in 21s
 
 ``BUILD SUCCESSFUL`` zeigt an, dass der Job (die Validierung der Datei ``BeispielA.xtf``) erfolgreich ausgeführt wurde.
 
+Um die selbe Job Konfiguration für verschiedene Datensätze verwenden zu können, muss es parametrisierbar sein. Das kann 
+verschieden gemacht werden. Eine Art ist z.B. mit de
+
+Die Jobs/Tasks können so generisch konfiguriert werden, dass dieselbe Konfiguration z.B. für 
+Daten aus verschiedenen Gemeinden benutzt
+werden kann. Parameter für die Job Konfiguration können z.B. mittels gradle Properties 
+([Gradle properties and system properties](https://docs.gradle.org/current/userguide//build_environment.html#sec:gradle_properties_and_system_properties)) 
+dem Job mitgegeben werden, also z.B. 
+
+    cd gretldemo
+    gradle -Pdataset=Olten
+
 ## System Anforderungen
 Um die aktuelle Version von gretl auszuführen, muss 
 
