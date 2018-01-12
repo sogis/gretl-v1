@@ -62,6 +62,19 @@ ID: [OpenShift project name]_deploy_token
 
 Description: oc tool login token for project [OpenShift project name]
 
+#### Service account creation
+Add service account to the OpenShift project.
+
+* Login to the server with the oc tool and go to your project.
+* *oc project* to check that you are in the right project.
+* Add service account by this script: **scripts/create-service-account.sh**
+* Read the token:
+* *oc describe sa jenkins*
+* Copy name of first Token.
+* *oc describe secret JENKINS-TOKEN-NAME*
+* this will display the token
+* Create a secret text credential on jenkins
+
 OpenShift build project
 -----------------------
 Prepare an OpenShift build project and use this pipeline: **openshift/pipeline/gretl-runtime-build.groovy**
