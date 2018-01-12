@@ -49,7 +49,7 @@ pipeline {
                 sh 'ls -la build-tmp'
             }
         }
-        stage('deploy') {
+        stage('OpenShift build') {
             steps {
                 script{
                     timeout(20) {
@@ -71,7 +71,7 @@ pipeline {
                                     builds.untilEach(1) {
                                         echo "Created builds so far: ${it.names()}"
 
-                                        return it.object().status.phase == "Complete"
+                                        return it.object().status.phase == "Complete" || it.object().status.phase == "Failed"
                                     }
 
                                     echo "created and pushed image: ${imageRef}"

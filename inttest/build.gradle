@@ -33,15 +33,19 @@ sourceSets {
 dependencies{
     compile junitDependency
     runtime postgresqlDependency
-    testSystemCompile junitDependency
+
     testIntegrationCompile junitDependency
     testIntegrationCompile ioxWkfDependency
+
+    testSystemCompile junitDependency
+    testSystemCompile 'com.offbytwo.jenkins:jenkins-client:0.3.7'
 }
 
 task testIntegration(type: Test) {
     group = 'Verification'
     description = 'Runs integration tests'
 
+    ignoreFailures = true
     testClassesDirs = sourceSets.testIntegration.output.classesDirs
     classpath = sourceSets.testIntegration.runtimeClasspath
 }
@@ -50,8 +54,17 @@ task testSystem(type: Test) {
     group = 'Verification'
     description = 'Runs system tests including Jenkins'
 
+    ignoreFailures = true
     testClassesDirs = sourceSets.testSystem.output.classesDirs
     classpath = sourceSets.testSystem.runtimeClasspath
+
+
+    // when Gradle forks a new Java process, it does not automatically pass the
+    // environment variable values along to the new environment. One has to
+    // explicitly pass these variables
+    systemProperty 'gretltest_jenkins_uri', System.getProperty('gretltest_jenkins_uri')
+    systemProperty 'gretltest_jenkins_user', System.getProperty('gretltest_jenkins_user')
+    systemProperty 'gretltest_jenkins_pwd', System.getProperty('gretltest_jenkins_pwd')
 }
 
 // Transfer the required configuration variables to the unit test code.

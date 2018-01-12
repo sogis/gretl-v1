@@ -1,12 +1,17 @@
 /**
- * Gets the prepared GRETL jar and runs the integration tests. For that a database from OpenShift is needed.
- * The database will be prepared and the port is forwarded to give access to it.
+ * Runs tests against a Jenkins running on OpenShift. For that the GRETL Jenkins inside OpenShift is needed.
+ * The Jenkinis will be prepared and the port is forwarded to give access to it.
  * Needed parameter:
- * - buildProject: Jenkins project that builds the GRETL jar. (text parameter)
+ * - gitRepository: Url of the Git repository with the source code. (text parameter)
  * - openShiftCluster: OpenShift Cluster to be used. (text parameter)
  * - openShiftProject: OpenShift project to be used. (text parameter)
  * - ocToolName: Jenkins custom tool name of oc client. (text parameter)
  * - openShiftDeployTokenName: amount of tags to keep. (text parameter)
+ *
+ * - jenkinsUser
+ * - jenkinsToken
+ * The API token is available in your personal configuration page. Click your name on the top right corner on every page, then click "Configure" to see your API token. (The URL $root/me/configure is a good shortcut.) You can also change your API token from here.
+ *
  * Optional parameter:
  * - buildTime: Test build time in minutes. Control over port forward duration. (text parameter)
  */
@@ -19,35 +24,28 @@ pipeline {
         stage('check parameter') {
             steps {
                 script {
-                    check.mandatoryParameter('buildProject')
                     check.mandatoryParameter('openShiftCluster')
                     check.mandatoryParameter('openShiftProject')
                     check.mandatoryParameter('ocToolName')
                     check.mandatoryParameter('openShiftDeployTokenName')
+                    check.mandatoryParameter('jenkinsUser')
+                    check.mandatoryParameter('jenkinsToken')
                 }
             }
         }
         stage('prepare') {
             steps {
-                // prepare GRETL jar
-                sh 'rm -rf build'
-                dir('build/libs') {
-                    step([$class     : 'CopyArtifact',
-                          projectName: params.buildProject,
-                          flatten    : true
-                    ]);
-                }
-                sh 'ls -la build/libs'
+                git url: 'https://github.com/sogis/gretl.git', branch: 'systemTest'
 
-                // prepare files needed by the build
                 sh 'rm -rf build-tmp'
                 sh 'mkdir build-tmp'
 
                 sh 'cp -R inttest/* build-tmp/'
+
                 sh 'ls -la build-tmp'
             }
         }
-        stage('int-test') {
+        stage('system-test') {
             steps {
                 script{
                     timeout(20) {
@@ -58,38 +56,35 @@ pipeline {
                                 openshift.withProject(params.openShiftProject) {
                                     echo "Running in project: ${openshift.project()}"
 
-                                    // find database pod with name: postgresql
-                                    def podSelector = openshift.selector('pods', [name: 'postgresql'])
+                                    def gretlIS = openshift.selector('is/gretl').object()
+                                    println "GRETL Runtime version: -> " + gretlIS.spec.tags['from'].name
+
+
+                                    // find jenkins pod with name: jenkins
+                                    def podSelector = openshift.selector('pods', [name: 'jenkins'])
                                     def dbPod = podSelector.name()
-                                    String shortName = dbPod.indexOf("/") > 0 ? dbPod.substring(dbPod.indexOf("/") + 1): dbPod;
-                                    println "pod: " + shortName
-
-                                    // prepare database
-                                    openshift.raw("cp","openshift/pipeline/scripts/reset-test-db.sh","${shortName}:/tmp/")
-                                    echo openshift.exec(shortName,'bash', '/tmp/reset-test-db.sh').out
-
-                                    openshift.raw("cp","openshift/pipeline/scripts/init-test-db.sh","${shortName}:/tmp/")
-                                    echo openshift.exec(shortName,'bash', '/tmp/init-test-db.sh').out
+                                    String shortName = dbPod.substring(dbPod.indexOf("/") + 1);
+                                    println "Jenkins pod: " + shortName
 
                                     parallel(
                                         port_forward: {
-                                            int buildTime = 1
-                                            if (params.buildTime != null) {
-                                                buildTime = params.buildTime as int
-                                            }
                                             try {
+                                                def buildTime = 3
+                                                if (params.buildTime != null) {
+                                                    buildTime = params.buildTime as int
+                                                }
                                                 timeout(buildTime) {
-                                                    echo "forward database port"
-                                                    openshift.raw( 'port-forward', shortName, '5432:5432' )
+                                                    echo "Forward Jenkins API port"
+                                                    openshift.raw( 'port-forward', shortName, '8081:8080' )
                                                 }
                                             } catch (err) {} // catch timeout
                                             println "port forward done (time: ${buildTime})"
                                         },
                                         test: {
-                                            echo "run integration tests ..."
+                                            echo "run system tests ..."
                                             dir('build-tmp') {
                                                 sh './gradlew -version'
-                                                sh './gradlew clean build testIntegration --refresh-dependencies'
+                                                sh "./gradlew clean build testSystem -Dgretltest_jenkins_uri=http://localhost:8081 -Dgretltest_jenkins_user=${params.jenkinsUser} -Dgretltest_jenkins_pwd=${params.jenkinsToken} --refresh-dependencies"
                                             }
                                         }
                                     )
