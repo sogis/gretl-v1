@@ -110,7 +110,7 @@ verschieden gemacht werden. Eine Art ist z.B. mit de
 Die Jobs/Tasks können so generisch konfiguriert werden, dass dieselbe Konfiguration z.B. für 
 Daten aus verschiedenen Gemeinden benutzt
 werden kann. Parameter für die Job Konfiguration können z.B. mittels gradle Properties 
-([Gradle properties and system properties](https://docs.gradle.org/current/userguide//build_environment.html#sec:gradle_properties_and_system_properties)) 
+([Gradle properties and system properties](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_properties_and_system_properties)) 
 dem Job mitgegeben werden, also z.B. 
 
     cd gretldemo
