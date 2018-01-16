@@ -1,4 +1,5 @@
-import ch.so.agi.gretl.steps.*
+import ch.so.agi.gretl.tasks.*
+apply plugin: 'ch.so.agi.gretl'
 
 def GRETLTEST_DBURI = 'gretltest_dburi'
 def db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl'
@@ -8,7 +9,7 @@ def db_pass = "dmluser"
 
 defaultTasks 'sourceToDestWithDelete'
 
-task sourceToDestWithDelete(type: Db2DbTask) {
+task sourceToDestWithDelete(type: Db2Db) {
     sourceDb =  [db_uri,db_user,db_pass]
     targetDb = [db_uri,db_user,db_pass]
     transferSets = [

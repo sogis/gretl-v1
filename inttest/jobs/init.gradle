@@ -5,15 +5,15 @@ allprojects {
         repositories {
         	mavenLocal()
             maven {
-                url "http://download.osgeo.org/webdav/geotools/"
-            }
-            mavenCentral()
-            maven {
                 url "http://jars.interlis.ch"
             }
             maven {
                 url "http://jars.umleditor.org"
             }
+            maven {
+                url "http://download.osgeo.org/webdav/geotools/"
+            }
+            mavenCentral()
         }
 
         configurations.all {
@@ -23,8 +23,8 @@ allprojects {
         }
 
         dependencies {
-            classpath fileTree(dir: '../../../build/libs', include: '*.jar')
-
+            // classpath fileTree(dir: '../../../build/libs', include: '*.jar')
+			classpath 'ch.so.agi:gretl:latest.integration'
             classpath ilivalidatorDependency
             classpath ili2pgDependency
             classpath ioxWkfDependency

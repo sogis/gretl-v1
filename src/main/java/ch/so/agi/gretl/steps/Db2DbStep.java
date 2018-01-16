@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Db2DbStep Class is used as a step for transfer of tabulated data from one to anoter database.
@@ -48,9 +49,9 @@ public class Db2DbStep {
      * @throws Exception
      */
     public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets) throws Exception {
-        processAllTransferSets(sourceDb, targetDb, transferSets,new Settings());
+        processAllTransferSets(sourceDb, targetDb, transferSets,new Settings(),new java.util.HashMap<String,String>());
     }
-    public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets,Settings settings) throws Exception {
+    public void processAllTransferSets(Connector sourceDb, Connector targetDb, List<TransferSet> transferSets,Settings settings,Map<String,String> params) throws Exception {
         assertValidTransferSets(transferSets);
 
         String batchSizeStr=settings.getValue(SETTING_BATCH_SIZE);
@@ -86,7 +87,7 @@ public class Db2DbStep {
                     FileStylingDefinition.checkForBOMInFile(transferSet.getInputSqlFile());
                 } catch (NullPointerException e){};
                 
-                int rowCount = processTransferSet(sourceDbConnection, targetDbConnection, transferSet);
+                int rowCount = processTransferSet(sourceDbConnection, targetDbConnection, transferSet,params);
                 rowCountStrings.add(Integer.toString(rowCount));
             }
             sourceDbConnection.commit();
@@ -133,11 +134,11 @@ public class Db2DbStep {
      * @throws NotAllowedSqlExpressionException
      * @returns The number of processed rows
      */
-    private int processTransferSet(Connection srcCon, Connection targetCon, TransferSet transferSet) throws SQLException, IOException, EmptyFileException, NotAllowedSqlExpressionException {
+    private int processTransferSet(Connection srcCon, Connection targetCon, TransferSet transferSet,Map<String,String> params) throws SQLException, IOException, EmptyFileException, NotAllowedSqlExpressionException {
         if (transferSet.deleteAllRows()) {
             deleteDestTableContents(targetCon, transferSet.getOutputQualifiedTableName());
         }
-        String selectStatement = extractSingleStatement(transferSet.getInputSqlFile());
+        String selectStatement = extractSingleStatement(transferSet.getInputSqlFile(),params);
         ResultSet rs = createResultSet(srcCon, selectStatement);
         PreparedStatement insertRowStatement = createInsertRowStatement(
                 srcCon,
@@ -297,10 +298,10 @@ public class Db2DbStep {
      * @throws FileNotFoundException
      * @throws EmptyFileException
      */
-    private String extractSingleStatement(File targetFile) throws IOException {
+    private String extractSingleStatement(File targetFile,Map<String,String> params) throws IOException {
 
         SqlReader reader=new SqlReader();
-        String firstStmt = reader.readSqlStmt(targetFile);
+        String firstStmt = reader.readSqlStmt(targetFile,params);
         if(firstStmt == null) {
             log.info("Empty File. No Statement to execute!");
             throw new EmptyFileException("EmptyFile: "+targetFile.getName());

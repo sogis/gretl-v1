@@ -1,1 +1,1 @@
-select * from db2dbtaskchain.albums_src
+select * from db2dbtaskchain.${srcTable}

@@ -10,6 +10,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
@@ -36,6 +37,9 @@ public class SqlExecutor extends DefaultTask {
     @Input
     public List<String> sqlFiles;
 
+    @Input
+    @Optional
+    public java.util.Map<String,String> sqlParameters=null;
 
     @TaskAction
     public void executeSQLExecutor() {
@@ -51,7 +55,7 @@ public class SqlExecutor extends DefaultTask {
 
         try {
             SqlExecutorStep step = new SqlExecutorStep(taskName);
-            step.execute(database, files);
+            step.execute(database, files,sqlParameters);
             log.info("Task start");
         } catch (Exception e) {
             log.error("Exception in creating / invoking SqlExecutorStep.", e);

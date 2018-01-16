@@ -289,6 +289,11 @@ Datenstand gelesen wird. Alle INSERT-Statements werden in einer Transaktion ausg
 werden, damit bei einem Fehler der bisherige Datenstand bestehen bleibt und also kein
 unvollständiger Import zurückgelassen wird.
 
+Damit das selbe .sql-File für verschiedene Datensätze benutzt werden kann, ist es möglich 
+innerhalb des .sql-Files Paramater zu verwenden und diesen Parametern beim Task einen
+konkreten Wert zuzuweisen. Innerhalb des .sql-Files werden Paramter mit folgender Syntax
+verwendet: ``${paramName}``.
+
 ```
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
 def db_user = "dmluser"
@@ -297,6 +302,7 @@ def db_pass = "dmluser"
 task transferSomeData(type: Db2Db) {
     sourceDb = [db_uri, db_user, db_pass]
     targetDb = ['jdbc:sqlite:gretldemo.sqlite',null,null]
+    sqlParameters = [dataset:'Olten']
     transferSets = [
             new TransferSet('some.sql', 'albums_dest', true)
     ];
@@ -308,6 +314,7 @@ Parameter | Beschreibung
 sourceDb | Datenbank aus der gelesen werden soll
 targetDb | Datenbank in die geschrieben werden soll
 transferSets  | Eine Liste von ``TransferSet``s.
+sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert.
 
 Eine ``TransferSet`` ist 
 
@@ -691,10 +698,14 @@ Gründen der Strukturierung oder Organisation) auf mehrere .sql-Files verteilt s
 Die Reihenfolge der .sql-Files ist relevant. Dies bedeutet, dass die SQL-Befehle des zuerst
 angegebenen .sql-Files zuerst ausgeführt werden müssen, danach dies SQL-Befehle des an
 zweiter Stelle angegebenen .sql-Files, usw.
+
 Der SQLExecutor-Task muss neben Updates ganzer Tabellen (d.h. Löschen des gesamten Inhalts
 einer Tabelle und gesamter neuer Stand in die Tabelle schreiben) auch Updates von Teilen von
 Tabellen zulassen. D.h. es muss z.B. möglich sein, innerhalb einer Tabelle nur die Objekte einer
-bestimmten Gemeinde zu aktualisieren. Hierzu muss der Task parametrisierbar sein (Issue#43).
+bestimmten Gemeinde zu aktualisieren. Darum ist es möglich 
+innerhalb des .sql-Files Paramater zu verwenden und diesen Parametern beim Task einen
+konkreten Wert zuzuweisen. Innerhalb des .sql-Files werden Paramter mit folgender Syntax
+verwendet: ``${paramName}``.
 
 ```
 def db_uri = 'jdbc:postgresql://localhost/gretldemo'
@@ -703,6 +714,7 @@ def db_pass = "dmluser"
 
 task executeSomeSql(type: SqlExecutor){
     database = [db_uri, db_user, db_pass]
+    sqlParameters = [dataset:'Olten']
     sqlFiles = ['demo.sql']
 }
 ```
@@ -711,5 +723,6 @@ Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank in die importiert werden soll
 sqlFiles  | Name der SQL-Datei aus der SQL-Statements gelesen und ausgeführt werden
+sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert.
 
 Unterstützte Datenbanken: PostgreSQL and SQLite

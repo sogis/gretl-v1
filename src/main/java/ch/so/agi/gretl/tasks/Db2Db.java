@@ -38,6 +38,9 @@ public class Db2Db extends DefaultTask {
     @Input
     @Optional
     public Integer batchSize=null;
+    @Input
+    @Optional
+    public java.util.Map<String,String> sqlParameters=null;
 
     @TaskAction
     public void executeTask() throws Exception {
@@ -52,7 +55,7 @@ public class Db2Db extends DefaultTask {
         }
         try {
             Db2DbStep step = new Db2DbStep(taskName);
-            step.processAllTransferSets(sourceDb, targetDb, transferSets,settings);
+            step.processAllTransferSets(sourceDb, targetDb, transferSets,settings,sqlParameters);
         } catch (Exception e) {
             log.error("Exception in creating / invoking Db2DbStep in Db2DbTask", e);
 

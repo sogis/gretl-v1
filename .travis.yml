@@ -25,7 +25,7 @@ before_script:
     - psql -c 'select postgis_full_version();' -d gretl -U postgres
   
 script: 
-  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl build dbTest
+  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl build dbTest publishMavenJavaPublicationToMavenLocal
   - gradle -Dgretltest_dburi=jdbc:postgresql:gretl --project-dir inttest testIntegration
 
 deploy:

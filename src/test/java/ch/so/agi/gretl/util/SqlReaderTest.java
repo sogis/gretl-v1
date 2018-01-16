@@ -9,7 +9,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.PushbackReader;
+import java.io.StringReader;
 
 public class SqlReaderTest {
     private static GretlLogger log;
@@ -35,5 +41,5 @@ public class SqlReaderTest {
         String parsedStatement = new SqlReader().readSqlStmt(sqlFile);
 
         Assert.assertEquals("Line comment must be removed without changing the statement itself", statement, parsedStatement);
-    }
+    }    
 }

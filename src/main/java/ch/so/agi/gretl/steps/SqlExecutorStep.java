@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -46,7 +47,7 @@ public class SqlExecutorStep {
      * @throws Exception    if File is missing, no correct extension, no connection to database, could not read file or
      *                      problems while executing sql-queries
      */
-    public void execute(Connector trans, List<File> sqlfiles)
+    public void execute(Connector trans, List<File> sqlfiles,Map<String,String> params)
             throws Exception {
 
         Connection db = null;
@@ -74,7 +75,7 @@ public class SqlExecutorStep {
 
             checkFilesForUTF8WithoutBOM(sqlfiles);
 
-            readSqlFiles(sqlfiles, db);
+            readSqlFiles(sqlfiles, db,params);
 
             db.commit();
 
@@ -191,12 +192,12 @@ public class SqlExecutorStep {
      * @param db            connection to database
      * @throws Exception    if problems with reading file or with executing queries
      */
-    private void readSqlFiles(List<File> sqlfiles, Connection db)
+    private void readSqlFiles(List<File> sqlfiles, Connection db,Map<String,String> params)
             throws Exception {
 
         for (File sqlfile: sqlfiles){
 
-            executeAllSqlStatements(db, sqlfile);
+            executeAllSqlStatements(db, sqlfile,params);
 
         }
     }
@@ -209,11 +210,11 @@ public class SqlExecutorStep {
      * @param sqlfile          SQL-File
      * @throws Exception       SQL-Exception while executing sqlstatement
      */
-    private void executeAllSqlStatements (Connection conn, File sqlfile)
+    private void executeAllSqlStatements (Connection conn, File sqlfile,Map<String,String> params)
             throws Exception {
 
         SqlReader reader=new SqlReader();
-        String statement = reader.readSqlStmt(sqlfile);
+        String statement = reader.readSqlStmt(sqlfile,params);
 
        if (statement == null){
            throw new GretlException(GretlException.TYPE_NO_STATEMENT,"At least one statement must be in the sql-File");

@@ -15,14 +15,14 @@ ext {
 }
 
 repositories {
-    maven {
-        url "http://download.osgeo.org/webdav/geotools/"
-    }
-    mavenCentral()
     mavenLocal()
     maven {
         url "http://jars.interlis.ch"
     }
+    maven {
+        url "http://download.osgeo.org/webdav/geotools/"
+    }
+    mavenCentral()
 }
 
 apply from: 'dependencies.gradle'
@@ -49,6 +49,11 @@ dependencies {
 
     compile sqliteJdbcDependency
     compile derbyDependency
+	compile('ch.interlis:ili2pg:3.+'){
+        exclude group: 'ch.ehi', module: 'ehisqlgen'
+    }
+    compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.1'
+    
 
     // Additional driver possibilities when the need arises:
     // - oracle jdbc driver
