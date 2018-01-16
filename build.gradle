@@ -43,16 +43,15 @@ dependencies {
     compile postgresqlDependency
 
     compile ilivalidatorDependency
-    compile ili2pgDependency
+    compile(ili2pgDependency){
+        exclude group: 'ch.ehi', module: 'ehisqlgen'
+    }
     compile ioxWkfDependency
     compile ioxIliDependency
 
     compile sqliteJdbcDependency
     compile derbyDependency
-	compile('ch.interlis:ili2pg:3.+'){
-        exclude group: 'ch.ehi', module: 'ehisqlgen'
-    }
-    compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.1'
+    compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.3'
     
 
     // Additional driver possibilities when the need arises:
