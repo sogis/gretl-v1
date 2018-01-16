@@ -47,6 +47,10 @@ public class SqlExecutorStep {
      * @throws Exception    if File is missing, no correct extension, no connection to database, could not read file or
      *                      problems while executing sql-queries
      */
+    public void execute(Connector trans, List<File> sqlfiles)
+            throws Exception {
+        execute(trans, sqlfiles,null);
+    }
     public void execute(Connector trans, List<File> sqlfiles,Map<String,String> params)
             throws Exception {
 
