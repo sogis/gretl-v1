@@ -1,4 +1,4 @@
-apply from: '../../dependencies.gradle'
+// apply from: '../../dependencies.gradle'
 
 allprojects {
     buildscript {
@@ -16,21 +16,21 @@ allprojects {
             mavenCentral()
         }
 
-        configurations.all {
-            resolutionStrategy {
-                force ioxIliDependency
-            }
-        }
+//        configurations.all {
+//            resolutionStrategy {
+//                force ioxIliDependency
+//            }
+//        }
 
         dependencies {
             // classpath fileTree(dir: '../../../build/libs', include: '*.jar')
 			classpath 'ch.so.agi:gretl:latest.integration'
-            classpath ilivalidatorDependency
-            classpath ili2pgDependency
-            classpath ioxWkfDependency
-            classpath ioxIliDependency
+//            classpath ilivalidatorDependency
+//            classpath ili2pgDependency
+//            classpath ioxWkfDependency
+//            classpath ioxIliDependency
 
-            classpath postgresqlDependency
+//            classpath postgresqlDependency
         }
     }
 }
