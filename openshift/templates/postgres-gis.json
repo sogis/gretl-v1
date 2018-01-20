@@ -29,7 +29,13 @@
     },
     {
       "name":"PRIMARY_USER",
-      "description":"Name of the primary user of the database"
+      "description":"Name of the primary user of the database",
+      "default":"primaryuser"
+    },
+    {
+      "name":"PRIMARY_PASSWORD",
+      "description":"Pwd of the primary user of the database",
+      "default":"password"
     }
   ],
   "objects":[
@@ -127,7 +133,7 @@
               },
               {
                 "name":"PG_PRIMARY_PASSWORD",
-                "value":"password"
+                "value":"${PRIMARY_PASSWORD}"
               },
               {
                 "name":"PG_MODE",
