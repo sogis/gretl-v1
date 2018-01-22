@@ -43,7 +43,7 @@ pipeline {
                 sh 'rm -rf build-tmp'
                 sh 'mkdir build-tmp'
 
-                sh 'cp -R inttest/* build-tmp/'
+                sh 'cp -R gretl/inttest/* build-tmp/'
                 sh 'ls -la build-tmp'
             }
         }
