@@ -1,122 +1,32 @@
-group 'ch.so.agi'
-version '1.0.4'+System.getProperty('release','-SNAPSHOT')
-version env('GRETL_VERSION', "$project.version")
+allprojects{
+	group 'ch.so.agi'
+	version '1.0.4'+System.getProperty('release','-SNAPSHOT')
+	version env('GRETL_VERSION', "$project.version")
+	
+	ext {
+		//dependency versions
+		sqliteJdbcVersion = '3.8.11.2'
+		derbyVersion = '10.13.1.1'
+		jenkinsClientVersion = '0.3.7'
+	
+		// dependencies
+		sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
+		derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
+		jenkinsClientDependency = 'com.offbytwo.jenkins:jenkins-client:' + jenkinsClientVersion
+	}
+	
+	repositories {
+		mavenLocal()
+		maven {
+			url "http://jars.interlis.ch"
+		}
+		maven {
+			url "http://download.osgeo.org/webdav/geotools/"
+		}
+		mavenCentral()
+	}
 
-ext {
-    //dependency versions
-    sqliteJdbcVersion = '3.8.11.2'
-    derbyVersion = '10.13.1.1'
-    jenkinsClientVersion = '0.3.7'
-
-    // dependencies
-    sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
-    derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
-    jenkinsClientDependency = 'com.offbytwo.jenkins:jenkins-client:' + jenkinsClientVersion
-}
-
-repositories {
-    mavenLocal()
-    maven {
-        url "http://jars.interlis.ch"
-    }
-    maven {
-        url "http://download.osgeo.org/webdav/geotools/"
-    }
-    mavenCentral()
-}
-
-apply from: 'dependencies.gradle'
-
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-
-configurations.all {
-    resolutionStrategy {
-        force ioxIliDependency
-    }
-}
-
-dependencies {
-    testCompile junitDependency
-
-    compile postgresqlDependency
-
-    compile ilivalidatorDependency
-    compile(ili2pgDependency){
-        exclude group: 'ch.ehi', module: 'ehisqlgen'
-    }
-    compile ioxWkfDependency
-    compile ioxIliDependency
-
-    compile sqliteJdbcDependency
-    compile derbyDependency
-    compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.3'
-    
-
-    // Additional driver possibilities when the need arises:
-    // - oracle jdbc driver
-    // - sqlserver jdbc driver (Microsoft)
-    compile gradleApi()
-}
-
-
-sourceCompatibility = 1.8
-
-/*
-test {
-    exclude 'ch/so/agi/gretl/steps/**.*'
-
-    //testLogging.showStandardStreams = true
-    testLogging.exceptionFormat = 'full'
-}
-*/
-
-test{
-    useJUnit{
-        // Exclude all Tests with dependency to a db server (pg, oracle, ..)
-        excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
-    }
-}
-
-task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
-    useJUnit{
-        // Runs all tests with dependency to a db server
-        includeCategories 'ch.so.agi.gretl.testutil.DbTest'
-    }
-}
-
-// Transfer the required configuration variables to the unit test code.
-// (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
-tasks.withType(Test) {
-    def GRETLTEST_DBURI = 'gretltest_dburi'
-    systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
-}
-
-publishing{
-    publications{
-        mavenJava(MavenPublication){
-            from components.java
-        }
-    }
-    repositories{
-        maven{
-            name 'AIO AGI Artifactory'
-            url env('GRETL_JAR_URL')
-            credentials {
-                username env('GRETL_JAR_USER')
-                password env('GRETL_JAR_PASS')
-            }
-        }
-        maven{
-            name 'Public'
-            url System.getProperty('repos_url')
-            credentials {
-                username System.getProperty('repos_usr')
-                password System.getProperty('repos_pwd')
-            }
-        }
-    }
+	
 }
 
 def env(environmentVariableName){
@@ -130,39 +40,6 @@ def env(environmentVariableName, defaultValue){
     }
     return var;
 }
-/*
-task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
-    exclude 'ch/so/agi/gretl/logging/**.*'
-    exclude 'ch/so/agi/gretl/util/**.*'
-    exclude 'ch/so/agi/gretl/testutil/**.*'
-
-    // when Gradle forks a new Java process, it does not automatically pass the
-    // environment variable values along to the new environment. One has to
-    // explicitly pass these variables
-    systemProperty 'dburl', System.getProperty('dburl')
-    systemProperty 'dbusr', System.getProperty('dbusr','ddluser')
-    systemProperty 'dbpwd', System.getProperty('dbpwd','ddluser')
-
-    //testLogging.showStandardStreams = true
-    testLogging.exceptionFormat = 'full'
-}
-
-configure(dbTest) {
-    group = 'Verification'
-    description = 'Runs tests with dockered database'
-}
-*/
-
-
-
-/*
-tasks.withType(FindBugs) {
-    reports {
-        xml.enabled false
-        html.enabled true
-    }
-}
-*/
 
 /*
 Ablauf für das Erstellen eines neue Release

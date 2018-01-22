@@ -25,17 +25,17 @@ before_script:
     - psql -c 'select postgis_full_version();' -d gretl -U postgres
   
 script: 
-  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl build dbTest publishMavenJavaPublicationToMavenLocal
-  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl --project-dir inttest testIntegration
+  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl build gretl:dbTest gretl:publishMavenJavaPublicationToMavenLocal
+  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl --project-dir gretl/inttest testIntegration
 
 deploy:
   - provider: script
     skip_cleanup: true
-    script: gradle -Drepos_url=${repos_url} -Drepos_pwd=${repos_pwd} -Drepos_usr=${repos_usr} publishMavenJavaPublicationToPublicRepository
+    script: gradle -Drepos_url=${repos_url} -Drepos_pwd=${repos_pwd} -Drepos_usr=${repos_usr} gretl:publishMavenJavaPublicationToPublicRepository
     on:
       branch: master
   - provider: script
     skip_cleanup: true
-    script: gradle -Drepos_url=${repos_url} -Drepos_pwd=${repos_pwd} -Drepos_usr=${repos_usr} -Drelease=final publishMavenJavaPublicationToPublicRepository
+    script: gradle -Drepos_url=${repos_url} -Drepos_pwd=${repos_pwd} -Drepos_usr=${repos_usr} -Drelease=final gretl:publishMavenJavaPublicationToPublicRepository
     on:
       branch: stable
