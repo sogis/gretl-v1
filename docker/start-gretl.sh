@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # use like this:
-# start-gretl.sh --docker_image chrira/jobrunner:19 --job_directory /home/gretl --task_name gradleTaskName -Pparam1=1 -Pparam2=2
+# start-gretl.sh --job_directory /home/gretl --task_name gradleTaskName -Pparam1=1 -Pparam2=2
 
 task_parameter=()
 
@@ -15,12 +15,14 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+declare gretl_cmd="gretl $task_name ${task_parameter[@]}"
+
 echo "======================================================="
 echo "Starts the GRETL runtime to execute the given GRETL job"
-echo "Docker Image: $docker_image"
 echo "task name: $task_name"
 echo "job directory: $job_directory"
 echo "task_parameter: ${task_parameter[@]}"
+echo "gretl_cmd: $gretl_cmd"
 echo "======================================================="
 
 # special run configuration for jenkins-slave based image:
@@ -37,5 +39,5 @@ docker run -i --rm \
     --entrypoint="/bin/sh" \
     -v "$job_directory":/home/gradle/project \
     --user $UID \
-    "$docker_image" "-c" \
-        "/usr/local/bin/run-jnlp-client > /dev/null 2>&1;cd /home/gradle/project;gretl $task_name ${task_parameter[@]}"
+    gretl-runtime "-c" \
+        "/usr/local/bin/run-jnlp-client > /dev/null 2>&1;cd /home/gradle/project;$gretl_cmd"

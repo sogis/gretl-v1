@@ -156,7 +156,6 @@ oc process -f openshift/templates/postgres-gis.json \
   -p CCP_IMAGE_TAG=centos7-10.1-1.7.0 \
   -p POSTGRESQL_DATABASE='gretl' \
   -p DATABASE_SERVICE_NAME='postgresql' \
-  -p PRIMARY_USER='postgresql' \
   | oc apply -f -
 ```
 

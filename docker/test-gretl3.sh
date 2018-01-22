@@ -16,4 +16,4 @@ task_parameter=(
 
 
 # run GRETL job by GRETL runtime
-./start-gretl-local.sh --job_directory $job_directory --task_name $task_name "${task_parameter[@]}"
+./start-gretl.sh --job_directory $job_directory --task_name $task_name "${task_parameter[@]}"
