@@ -44,8 +44,11 @@ dependencies{
 task testIntegration(type: Test) {
     group = 'Verification'
     description = 'Runs integration tests'
-
-    ignoreFailures = true
+    
+    // show standard out and standard error of the test JVM(s) on the console
+    testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
+    
+    ignoreFailures = Boolean.getBoolean("test.ignoreFailures")
     testClassesDirs = sourceSets.testIntegration.output.classesDirs
     classpath = sourceSets.testIntegration.runtimeClasspath
 }
@@ -54,7 +57,7 @@ task testSystem(type: Test) {
     group = 'Verification'
     description = 'Runs system tests including Jenkins'
 
-    ignoreFailures = true
+    ignoreFailures = Boolean.getBoolean("test.ignoreFailures")
     testClassesDirs = sourceSets.testSystem.output.classesDirs
     classpath = sourceSets.testSystem.runtimeClasspath
 
