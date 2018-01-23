@@ -1,7 +1,7 @@
 ext {
     jarDir = "$projectDir/../build/libs"
 }
-apply from: '../dependencies.gradle'
+apply from: '../../dependencies.gradle'
 
 allprojects {
     apply plugin: 'java'
