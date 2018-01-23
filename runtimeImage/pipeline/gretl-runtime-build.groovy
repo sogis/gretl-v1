@@ -31,7 +31,7 @@ pipeline {
                 sh 'rm -rf build-tmp'
                 sh 'mkdir build-tmp'
 
-                sh 'cp -R docker/gretl/* build-tmp'
+                sh 'cp -R runtimeImage/gretl/* build-tmp'
                 sh 'cp -R dependencies.gradle build-tmp'
 
                 dir('build-tmp') {

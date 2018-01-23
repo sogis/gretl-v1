@@ -7,7 +7,7 @@
 
 hostIP=`ip route get 8.8.8.8 | awk '{print $NF; exit}'`
 
-job_directory=$(pwd)/../inttest/jobs/db2dbTaskRelPath
+job_directory=$(pwd)/../gretl/inttest/jobs/db2dbTaskRelPath
 task_name=relativePath
 
 task_parameter=(

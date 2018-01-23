@@ -7,7 +7,7 @@ echo "https://github.com/openshift/jenkins/blob/master/slave-maven/Dockerfile"
 echo "======================================================================="
 
 # TODO no version lock
-cp ../build/libs/gretl-1.0.4-SNAPSHOT.jar gretl
+cp ../gretl/build/libs/gretl-1.0.4-SNAPSHOT.jar gretl
 cp ../dependencies.gradle gretl
 
 # build infos
