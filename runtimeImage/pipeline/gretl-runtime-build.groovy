@@ -71,7 +71,7 @@ pipeline {
                                     builds.untilEach(1) {
                                         echo "Created builds so far: ${it.names()}"
 
-                                        return it.object().status.phase == "Complete" || it.object().status.phase == "Failed"
+                                        return it.object().status.phase == "Complete" || it.object().status.phase == "Cancelled" || it.object().status.phase == "Failed"
                                     }
 
                                     echo "created and pushed image: ${imageRef}"
