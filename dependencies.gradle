@@ -6,6 +6,8 @@ ext {
     ioxWkfVersion = '1.0.0'
 
     postgresqlVersion = '42.1.4'
+    sqliteJdbcVersion = '3.8.11.2'
+    derbyVersion = '10.13.1.1'
     junitVersion = '4.12'
 
     // dependencies
@@ -15,5 +17,7 @@ ext {
     ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
 
     postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
+    sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
+    derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
     junitDependency = [ group: 'junit', name: 'junit', version: junitVersion ]
 }

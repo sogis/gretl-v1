@@ -5,13 +5,9 @@ allprojects{
 	
 	ext {
 		//dependency versions
-		sqliteJdbcVersion = '3.8.11.2'
-		derbyVersion = '10.13.1.1'
 		jenkinsClientVersion = '0.3.7'
 	
 		// dependencies
-		sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
-		derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
 		jenkinsClientDependency = 'com.offbytwo.jenkins:jenkins-client:' + jenkinsClientVersion
 	}
 	

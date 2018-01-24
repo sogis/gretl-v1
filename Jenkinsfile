@@ -24,10 +24,10 @@ pipeline {
             }
             post {
                 always {
-                    junit 'build/test-results/**/*.xml'  // Requires JUnit plugin
+                    junit 'gretl/build/test-results/**/*.xml'  // Requires JUnit plugin
                 }
                 success {
-                    archiveArtifacts 'build/libs/*.?ar'
+                    archiveArtifacts 'gretl/build/libs/*.?ar'
                 }
             }
         }

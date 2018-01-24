@@ -1,6 +1,6 @@
 #!/bin/bash
 
-job_directory=$(pwd)/../inttest/jobs/iliValidatorFail
+job_directory=$(pwd)/../gretl/inttest/jobs/iliValidatorFail
 task_name=validate
 
 

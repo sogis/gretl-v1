@@ -31,7 +31,7 @@ pipeline {
                 sh 'rm -rf build-tmp'
                 sh 'mkdir build-tmp'
 
-                sh 'cp -R docker/gretl/* build-tmp'
+                sh 'cp -R runtimeImage/gretl/* build-tmp'
                 sh 'cp -R dependencies.gradle build-tmp'
 
                 dir('build-tmp') {
@@ -71,7 +71,7 @@ pipeline {
                                     builds.untilEach(1) {
                                         echo "Created builds so far: ${it.names()}"
 
-                                        return it.object().status.phase == "Complete" || it.object().status.phase == "Failed"
+                                        return it.object().status.phase == "Complete" || it.object().status.phase == "Cancelled" || it.object().status.phase == "Failed"
                                     }
 
                                     echo "created and pushed image: ${imageRef}"
