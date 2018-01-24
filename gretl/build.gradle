@@ -54,6 +54,15 @@ task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
     }
 }
 
+task jardist(type: Copy){
+	delete fileTree('jardist')
+	destinationDir = file('jardist')
+	from jar
+	from configurations.runtimeClasspath
+	// version = '1.0.6'
+	
+}
+
 // Transfer the required configuration variables to the unit test code.
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
