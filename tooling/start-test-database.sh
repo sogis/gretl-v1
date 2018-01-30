@@ -22,4 +22,3 @@ docker run -it \
 
 # command to run tests against this database:
 # ./gradlew -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres -Ddbpwd=admin1234 build dbTest
-# jdbc:postgresql://host:port/database
