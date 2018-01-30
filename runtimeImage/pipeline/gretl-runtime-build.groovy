@@ -1,8 +1,7 @@
 /**
- * Gets the prepared GRETL jar and starts an OpenShift Docker build.
+ * Builds and tests the GRETL jar and starts an OpenShift Docker build.
  * The Docker image will be pushed to the repository with the build number as tag.
  * Needed parameter:
- * - buildProject: Jenkins project that builds the GRETL jar (text parameter)
  * - repository: repository incl. user / organisation to push the Docker image to (text parameter)
  * - openShiftCluster: OpenShift Cluster to be used. (text parameter)
  * - openShiftProject: OpenShift project to be used (text parameter)
@@ -12,12 +11,13 @@
 
 pipeline {
     agent any
-
+    tools {
+        'jdk' "OpenJDK 1.8"
+    }
     stages {
         stage('check parameter') {
             steps {
                 script {
-                    check.mandatoryParameter('buildProject')
                     check.mandatoryParameter('repository')
                     check.mandatoryParameter('openShiftCluster')
                     check.mandatoryParameter('openShiftProject')
@@ -26,20 +26,34 @@ pipeline {
                 }
             }
         }
+        stage('tooling') {
+            steps {
+                sh './gradlew -version'
+            }
+        }
+        stage('build') {
+            steps {
+                sh './gradlew clean build --refresh-dependencies'
+            }
+            post {
+                always {
+                    junit 'gretl/build/test-results/**/*.xml'  // Requires JUnit plugin
+                }
+                success {
+                    archiveArtifacts 'gretl/build/libs/*.?ar'
+                }
+            }
+        }
         stage('prepare') {
             steps {
                 sh 'rm -rf build-tmp'
                 sh 'mkdir build-tmp'
 
+                sh 'cp -R gretl/build/libs/* build-tmp'
                 sh 'cp -R runtimeImage/gretl/* build-tmp'
                 sh 'cp -R dependencies.gradle build-tmp'
 
                 dir('build-tmp') {
-                    step([$class     : 'CopyArtifact',
-                          projectName: params.buildProject,
-                          flatten    : true
-                    ]);
-
                     sh "echo 'jenkins build' > build.info"
                     sh "echo date: `date '+%Y-%m-%d %H:%M:%S'` >> build.info"
                     sh "echo BUILD_NUMBER: ${BUILD_NUMBER} >> build.info"
