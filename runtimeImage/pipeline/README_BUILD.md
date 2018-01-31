@@ -205,6 +205,14 @@ oc process -f runtimeImage/pipeline/templates/gretl-test-is-template.json \
   | oc apply -f -
 ```
 
+Create Docker Hub push config
+```
+oc process -f runtimeImage/pipeline/templates/gretl-dockerhub-is-template.yaml \
+  -p GRETL_DOCKER_HUB_IMAGE="chrira/jobrunner:latest" \
+  -p GRETL_RUNTIME_IMAGESTREAM="gretl:latest" \
+  | oc apply -f -
+```
+
 Give project access to imagestream of gretl-build project.
 Like this the Docker Image can be tested before it will be pushed to Docker Hub.
 ```

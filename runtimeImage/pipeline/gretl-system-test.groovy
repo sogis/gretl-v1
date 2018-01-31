@@ -26,7 +26,7 @@ pipeline {
         stage('check parameter') {
             steps {
                 script {
-                  //  check.mandatoryParameter('repository')
+                    check.mandatoryParameter('repository')
                     check.mandatoryParameter('openShiftCluster')
                     check.mandatoryParameter('openShiftProject')
                     check.mandatoryParameter('ocToolName')
@@ -50,7 +50,7 @@ pipeline {
         stage('run system test') {
             steps {
                 script{
-                    timeout(20) {
+                    timeout(10) {
                         def ocDir = tool params.ocToolName
                         withEnv(["PATH+OC=${ocDir}"]) {
                             sh "oc version"
@@ -70,7 +70,7 @@ pipeline {
 
                                     parallel(
                                         port_forward: {
-                                            def buildTime = 3
+                                            def buildTime = 4
                                             if (params.buildTime != null) {
                                                 buildTime = params.buildTime as int
                                             }
@@ -102,24 +102,44 @@ pipeline {
                 }
             }
         }
+        stage('Docker Hub push') {
+            steps {
+                script{
+                    timeout(10) {
+                        def ocDir = tool params.ocToolName
+                        withEnv(["PATH+OC=${ocDir}"]) {
+                            sh "oc version"
+                            openshift.withCluster(params.openShiftCluster, params.openShiftDeployTokenName) {
+                                openshift.withProject(params.openShiftProject) {
+                                    echo "Running in project: ${openshift.project()}"
 
-/*
+                                    // update docker image tag with build number
+                                    def imageRef = "docker.io/${params.repository}:${BUILD_NUMBER}"
+                                    def bc = openshift.selector('bc/gretlout').object()
+                                    bc.spec.output.to['name'] = imageRef
+                                    openshift.apply(bc)
 
 
-        // update docker image tag with build number
-        def imageRef = "docker.io/${params.repository}:${BUILD_NUMBER}"
-        def bc = openshift.selector('bc/gretl').object()
-        bc.spec.output.to['name'] = imageRef
-        openshift.apply(bc)
+                                    def builds = openshift.startBuild("gretlout")
+                                    def result
+                                    builds.untilEach(1) {
+                                        echo "Created builds so far: ${it.names()}"
+                                        result = it.object().status.phase
+                                        return result == "Complete" || result == "Cancelled" || result == "Failed"
+                                    }
 
-
-
-        if (result == "Complete") {
-            echo "created and pushed image: ${imageRef}"
-        } else {
-            error('OpenShift build: ' + result)
+                                    if (result == "Complete") {
+                                        echo "pushed image: ${imageRef}"
+                                    }
+                                    else {
+                                        error('Docker Hub push: ' + result)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-*/
-
     }
 }
