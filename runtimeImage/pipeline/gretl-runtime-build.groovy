@@ -36,41 +36,51 @@ pipeline {
 
                 // run db tests
                 script {
-                    // find database pod with name: postgresql
-                    def podSelector = openshift.selector('pods', [name: 'postgres-gis'])
-                    def dbPod = podSelector.name()
-                    String shortName = dbPod.indexOf("/") > 0 ? dbPod.substring(dbPod.indexOf("/") + 1) : dbPod;
-                    println "db pod: " + shortName
+                    timeout(10) {
+                        def ocDir = tool params.ocToolName
+                        withEnv(["PATH+OC=${ocDir}"]) {
+                            sh "oc version"
+                            openshift.withCluster(params.openShiftCluster, params.openShiftDeployTokenName) {
+                                openshift.withProject(params.openShiftProject) {
+                                    echo "Running in project: ${openshift.project()}"
 
-                    // prepare database
-                    openshift.raw("cp", "runtimeImage/pipeline/scripts/reset-test-db.sh", "${shortName}:/tmp/")
-                    echo openshift.exec(shortName, 'bash', '/tmp/reset-test-db.sh').out
+                                    // find database pod with name: postgresql
+                                    def podSelector = openshift.selector('pods', [name: 'postgres-gis'])
+                                    def dbPod = podSelector.name()
+                                    String shortName = dbPod.indexOf("/") > 0 ? dbPod.substring(dbPod.indexOf("/") + 1) : dbPod;
+                                    println "db pod: " + shortName
 
-                    openshift.raw("cp", "runtimeImage/pipeline/scripts/init-test-db.sh", "${shortName}:/tmp/")
-                    echo openshift.exec(shortName, 'bash', '/tmp/init-test-db.sh').out
+                                    // prepare database
+                                    openshift.raw("cp", "runtimeImage/pipeline/scripts/reset-test-db.sh", "${shortName}:/tmp/")
+                                    echo openshift.exec(shortName, 'bash', '/tmp/reset-test-db.sh').out
 
-                    parallel(
-                        port_forward: {
-                            int buildTime = 1
-                            if (params.buildTime != null) {
-                                buildTime = params.buildTime as int
-                            }
-                            try {
-                                timeout(buildTime) {
-                                    echo "forward database port"
-                                    openshift.raw('port-forward', shortName, '5432:5432')
+                                    openshift.raw("cp", "runtimeImage/pipeline/scripts/init-test-db.sh", "${shortName}:/tmp/")
+                                    echo openshift.exec(shortName, 'bash', '/tmp/init-test-db.sh').out
+
+                                    parallel(
+                                        port_forward: {
+                                            int buildTime = 1
+                                            if (params.buildTime != null) {
+                                                buildTime = params.buildTime as int
+                                            }
+                                            try {
+                                                timeout(buildTime) {
+                                                    echo "forward database port"
+                                                    openshift.raw('port-forward', shortName, '5432:5432')
+                                                }
+                                            } catch (err) {
+                                            } // catch timeout
+                                            println "port forward done (time: ${buildTime})"
+                                        },
+                                        test: {
+                                            echo "run db tests ..."
+                                            sh './gradlew -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres -Ddbpwd=password build dbTest'
+                                        }
+                                    )
                                 }
-                            } catch (err) {
-                            } // catch timeout
-                            println "port forward done (time: ${buildTime})"
-                        },
-                        test: {
-                            echo "run db tests ..."
-                            dir('build-tmp') {
-                                sh './gradlew -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres -Ddbpwd=password build dbTest'
                             }
                         }
-                    )
+                    }
                 }
             }
             post {
@@ -120,13 +130,18 @@ pipeline {
 
 
                                     def builds = openshift.startBuild("gretl","--from-dir=./build-tmp/")
+                                    def result
                                     builds.untilEach(1) {
                                         echo "Created builds so far: ${it.names()}"
-
-                                        return it.object().status.phase == "Complete" || it.object().status.phase == "Cancelled" || it.object().status.phase == "Failed"
+                                        result = it.object().status.phase
+                                        return result == "Complete" || result == "Cancelled" || result == "Failed"
                                     }
 
-                                    echo "created and pushed image: ${imageRef}"
+                                    if (result == "Complete") {
+                                        echo "created and pushed image: ${imageRef}"
+                                    } else {
+                                        error('OpenShift build: ' + result)
+                                    }
                                 }
                             }
                         }
