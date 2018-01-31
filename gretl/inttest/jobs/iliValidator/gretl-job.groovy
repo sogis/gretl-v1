@@ -15,7 +15,7 @@ timeout(time: 10, unit: 'MINUTES') {
         git 'https://github.com/sogis/gretl.git'
 
         // directory of this job, relative to the Git repository root
-        dir('inttest/jobs/iliValidator') {
+        dir('gretl/inttest/jobs/iliValidator') {
             // show current location and content
             sh 'pwd && ls -l'
 
