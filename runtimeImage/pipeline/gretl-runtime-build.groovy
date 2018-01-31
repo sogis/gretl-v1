@@ -122,13 +122,6 @@ pipeline {
                                 openshift.withProject(params.openShiftProject) {
                                     echo "Running in project: ${openshift.project()}"
 
-                                    // update docker image tag with build number
-                                    def imageRef = "docker.io/${params.repository}:${BUILD_NUMBER}"
-                                    def bc = openshift.selector('bc/gretl').object()
-                                    bc.spec.output.to['name'] = imageRef
-                                    openshift.apply(bc)
-
-
                                     def builds = openshift.startBuild("gretl","--from-dir=./build-tmp/")
                                     def result
                                     builds.untilEach(1) {
@@ -137,9 +130,7 @@ pipeline {
                                         return result == "Complete" || result == "Cancelled" || result == "Failed"
                                     }
 
-                                    if (result == "Complete") {
-                                        echo "created and pushed image: ${imageRef}"
-                                    } else {
+                                    if (result != "Complete") {
                                         error('OpenShift build: ' + result)
                                     }
                                 }
