@@ -41,10 +41,10 @@ pipeline {
 
                 // prepare files needed by the build
                 sh 'rm -rf build-tmp'
-                sh 'mkdir build-tmp'
+                sh 'mkdir -p build-tmp/inttest'
 
-                sh 'cp -R gretl/inttest/* build-tmp/'
-                sh 'ls -la build-tmp'
+                sh 'cp -R gretl/inttest/* build-tmp/inttest/'
+                sh 'ls -la build-tmp/inttest'
             }
         }
         stage('int-test') {
@@ -59,17 +59,17 @@ pipeline {
                                     echo "Running in project: ${openshift.project()}"
 
                                     // find database pod with name: postgresql
-                                    def podSelector = openshift.selector('pods', [name: 'postgresql'])
+                                    def podSelector = openshift.selector('pods', [name: 'postgres-gis'])
                                     def dbPod = podSelector.name()
                                     String shortName = dbPod.indexOf("/") > 0 ? dbPod.substring(dbPod.indexOf("/") + 1): dbPod;
                                     println "pod: " + shortName
 
                                     // prepare database
-                                    openshift.raw("cp","openshift/pipeline/scripts/reset-test-db.sh","${shortName}:/tmp/")
-                                    echo openshift.exec(shortName,'bash', '/tmp/reset-test-db.sh').out
+                                    openshift.raw("cp", "runtimeImage/pipeline/scripts/reset-test-db.sh", "${shortName}:/tmp/")
+                                    echo openshift.exec(shortName, 'bash', '/tmp/reset-test-db.sh').out
 
-                                    openshift.raw("cp","openshift/pipeline/scripts/init-test-db.sh","${shortName}:/tmp/")
-                                    echo openshift.exec(shortName,'bash', '/tmp/init-test-db.sh').out
+                                    openshift.raw("cp", "runtimeImage/pipeline/scripts/init-test-db.sh", "${shortName}:/tmp/")
+                                    echo openshift.exec(shortName, 'bash', '/tmp/init-test-db.sh').out
 
                                     parallel(
                                         port_forward: {
@@ -87,7 +87,7 @@ pipeline {
                                         },
                                         test: {
                                             echo "run integration tests ..."
-                                            dir('build-tmp') {
+                                            dir('build-tmp/inttest') {
                                                 sh './gradlew -version'
                                                 sh './gradlew clean build testIntegration --refresh-dependencies'
                                             }
@@ -101,7 +101,7 @@ pipeline {
             }
             post {
                 always {
-                    junit 'build-tmp/build/test-results/**/*.xml'  // Requires JUnit plugin
+                    junit 'build-tmp/inttest/build/test-results/**/*.xml'  // Requires JUnit plugin
                 }
             }
         }
