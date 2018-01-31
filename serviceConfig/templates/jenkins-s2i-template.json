@@ -316,32 +316,6 @@
          "type": "ClusterIP",
          "sessionAffinity": "None"
        }
-    },
-
-    {
-      "kind": "ImageStream",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "gretl",
-        "labels": {
-          "role": "jenkins-slave"
-        }
-      },
-      "spec": {
-        "lookupPolicy": {
-          "local": false
-        },
-        "tags": [
-          {
-            "name": "latest",
-            "annotations": null,
-            "from": {
-              "kind": "DockerImage",
-              "name": "${GRETL_RUNTIME_IMAGE}"
-            }
-          }
-        ]
-      }
     }
   ],
   "parameters": [
@@ -404,12 +378,6 @@
       "displayName": "GRETL Job pipeline file",
       "description": "GRETL Job configuration filename.",
       "value": "gretl-job.groovy"
-    },
-    {
-      "name": "GRETL_RUNTIME_IMAGE",
-      "displayName": "Docker image of GRETL runtime",
-      "description": "Docker image and version of GRETL runtime to be pulled from Dockerhub.",
-      "value": "chrira/jobrunner:latest"
     }
   ]
 }

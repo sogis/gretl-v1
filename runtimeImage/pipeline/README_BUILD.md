@@ -77,7 +77,7 @@ Add service account to the OpenShift project.
 
 OpenShift build project
 -----------------------
-Prepare an OpenShift build project and use this pipeline: **openshift/pipeline/gretl-runtime-build.groovy**
+Prepare an OpenShift build project and use this pipeline: **runtimeImage/pipeline/gretl-runtime-build.groovy**
 
 ### GRETL runtime Docker image
 Project used to build GRETL runtime Docker image and push it to dockerhub.
@@ -179,23 +179,49 @@ oc delete deployments,pods,service -l name=postgresql
 
 OpenShift system test project
 -----------------------------
-Prepare an OpenShift test project.
+Prepare an OpenShift test project. **runtimeImage/pipeline/gretl-system-test.groovy**
 
 ### OpenShift project setup
 Create project
 ```
 oc new-project gretl-system-test
 ```
-Setup runtime
+Setup runtime with Jenkins
 ```
-oc process -f openshift/templates/jenkins-s2i-template.json \
+oc process -f serviceConfig/templates/jenkins-s2i-template.json \
   -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/chrira/openshift-jenkins.git" \
   -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
   -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretl.git" \
-  -p GRETL_JOB_FILE_PATH="inttest/jobs/**" \
+  -p GRETL_JOB_FILE_PATH="gretl/inttest/jobs/**" \
   -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
   | oc apply -f -
 ```
+
+Add gretl imagestream to pull newest GRETL runtime image
+```
+oc process -f runtimeImage/pipeline/templates/gretl-test-is-template.json \
+  -p GRETL_RUNTIME_IMAGE="gretl:latest" \
+  -p GRETL_BUILD_PROJECT="gretl-build" \
+  | oc apply -f -
+```
+
+Give project access to imagestream of gretl-build project.
+Like this the Docker Image can be tested before it will be pushed to Docker Hub.
+```
+oc policy add-role-to-user \
+    system:image-puller system:serviceaccount:gretl-system-test:default \
+    --namespace=gretl-build
+```
+
+### OpenShift project manual configuration
+Run the **gretl-job-generator** of the administration folder once.
+
+* Approve the script if needed. ```ERROR: script not yet approved for use```
+* Jenkins --> Manage Jenkins --> In-process Script Approval
+
+Configure image pull to get always the newest image:
+* Jenkins --> Manage Jenkins --> Configure System
+* *Cloud section* --> *Kubernetes Pod Template* with name **gretl** --> Always pull image (check)
 
 
 OpenShift Jenkins project
@@ -205,5 +231,14 @@ OpenShift Jenkins project
 oc process -f jenkins-s2i-template.json \
   -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/chrira/openshift-jenkins.git" \
   -p GRETL_JOB_REPO_URL="git://github.com/chrira/gretljobs.git" \
+  | oc apply -f -
+```
+```
+oc process -f serviceConfig/templates/jenkins-s2i-template.json \
+  -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/chrira/openshift-jenkins.git" \
+  -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
+  -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretl.git" \
+  -p GRETL_JOB_FILE_PATH="gretl/inttest/jobs/**" \
+  -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
   | oc apply -f -
 ```
