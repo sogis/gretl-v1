@@ -26,14 +26,52 @@ pipeline {
                 }
             }
         }
-        stage('tooling') {
+        stage('jar build') {
             steps {
+                // output versions
                 sh './gradlew -version'
-            }
-        }
-        stage('build') {
-            steps {
+
+                // build and test jar
                 sh './gradlew clean build --refresh-dependencies'
+
+                // run db tests
+                script {
+                    // find database pod with name: postgresql
+                    def podSelector = openshift.selector('pods', [name: 'postgres-gis'])
+                    def dbPod = podSelector.name()
+                    String shortName = dbPod.indexOf("/") > 0 ? dbPod.substring(dbPod.indexOf("/") + 1) : dbPod;
+                    println "db pod: " + shortName
+
+                    // prepare database
+                    openshift.raw("cp", "runtimeImage/pipeline/scripts/reset-test-db.sh", "${shortName}:/tmp/")
+                    echo openshift.exec(shortName, 'bash', '/tmp/reset-test-db.sh').out
+
+                    openshift.raw("cp", "runtimeImage/pipeline/scripts/init-test-db.sh", "${shortName}:/tmp/")
+                    echo openshift.exec(shortName, 'bash', '/tmp/init-test-db.sh').out
+
+                    parallel(
+                        port_forward: {
+                            int buildTime = 1
+                            if (params.buildTime != null) {
+                                buildTime = params.buildTime as int
+                            }
+                            try {
+                                timeout(buildTime) {
+                                    echo "forward database port"
+                                    openshift.raw('port-forward', shortName, '5432:5432')
+                                }
+                            } catch (err) {
+                            } // catch timeout
+                            println "port forward done (time: ${buildTime})"
+                        },
+                        test: {
+                            echo "run db tests ..."
+                            dir('build-tmp') {
+                                sh './gradlew -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres -Ddbpwd=password build dbTest'
+                            }
+                        }
+                    )
+                }
             }
             post {
                 always {
