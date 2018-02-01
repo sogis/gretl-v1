@@ -1,9 +1,9 @@
 package ch.so.agi.gretl.tasks;
 
 
+import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.steps.Connector;
 import ch.so.agi.gretl.steps.SqlExecutorStep;
 import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;

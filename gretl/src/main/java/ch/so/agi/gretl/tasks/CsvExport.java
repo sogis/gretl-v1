@@ -17,9 +17,9 @@ import ch.interlis.iom_j.csv.CsvReader;
 import ch.interlis.ioxwkf.dbtools.Csv2db;
 import ch.interlis.ioxwkf.dbtools.Db2Csv;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
+import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.steps.Connector;
 import ch.so.agi.gretl.util.TaskUtil;
 
 

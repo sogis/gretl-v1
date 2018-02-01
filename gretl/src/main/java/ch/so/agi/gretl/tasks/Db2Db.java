@@ -1,11 +1,11 @@
 package ch.so.agi.gretl.tasks;
 
 import ch.ehi.basics.settings.Settings;
+import ch.so.agi.gretl.api.Connector;
+import ch.so.agi.gretl.api.TransferSet;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.steps.Connector;
 import ch.so.agi.gretl.steps.Db2DbStep;
-import ch.so.agi.gretl.steps.TransferSet;
 import ch.so.agi.gretl.util.TaskUtil;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;

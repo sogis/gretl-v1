@@ -1,5 +1,6 @@
-package ch.so.agi.gretl.steps;
+package ch.so.agi.gretl.api;
 
+import ch.so.agi.gretl.steps.GeometryTransform;
 import ch.so.agi.gretl.util.GretlException;
 
 import java.io.File;

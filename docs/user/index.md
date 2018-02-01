@@ -40,6 +40,7 @@ Erstellen sie in einem neuen Verzeichnis ``gretldemo`` eine neue Datei ``build.g
 
 ```
 import ch.so.agi.gretl.tasks.*
+import ch.so.agi.gretl.api.*
 
 apply plugin: 'ch.so.agi.gretl'
 

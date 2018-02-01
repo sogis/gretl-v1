@@ -1,5 +1,6 @@
 package ch.so.agi.gretl.steps;
 
+import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 import ch.so.agi.gretl.testutil.DbTest;

@@ -1,5 +1,5 @@
 import ch.so.agi.gretl.tasks.*
-import ch.so.agi.gretl.steps.*
+import ch.so.agi.gretl.api.*
 apply plugin: 'ch.so.agi.gretl'
 
 def GRETLTEST_DBURI = 'gretltest_dburi'

@@ -1,4 +1,4 @@
-package ch.so.agi.gretl.steps;
+package ch.so.agi.gretl.api;
 
 
 import ch.so.agi.gretl.util.DbConnector;

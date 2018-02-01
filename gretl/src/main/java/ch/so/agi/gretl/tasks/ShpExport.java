@@ -16,9 +16,9 @@ import ch.interlis.ioxwkf.dbtools.Db2Shp;
 import ch.interlis.ioxwkf.dbtools.IoxWkfConfig;
 import ch.interlis.ioxwkf.dbtools.Shp2db;
 import ch.interlis.ioxwkf.shp.ShapeReader;
+import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.steps.Connector;
 import ch.so.agi.gretl.util.TaskUtil;
 
 
