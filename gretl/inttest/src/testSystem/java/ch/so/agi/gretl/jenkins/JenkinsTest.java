@@ -135,16 +135,16 @@ public class JenkinsTest {
         job.build();
 
         // then
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(20);
 
         Build build = job.details().getLastBuild();
         assertThat("Build not found.", build, not(nullValue()));
 
-        // wait max. 60 sec. for the build to complete
+        // wait max. 180 sec. for the build to complete
         int i = 0;
         do {
             TimeUnit.SECONDS.sleep(10);
-        } while (build.details().isBuilding() && i++ < 5);
+        } while (build.details().isBuilding() && i++ < 17);
 
         assertThat("build not finished!", build.details().isBuilding(), is(false));
         assertThat(build.details().getResult(), is(BuildResult.SUCCESS));
