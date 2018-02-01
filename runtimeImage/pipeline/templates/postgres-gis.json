@@ -22,20 +22,6 @@
     {
       "name":"POSTGRESQL_DATABASE",
       "description":"database name"
-    },
-    {
-      "name":"DATABASE_SERVICE_NAME",
-      "description":"Name of the database service"
-    },
-    {
-      "name":"PRIMARY_USER",
-      "description":"Name of the primary user of the database",
-      "default":"primaryuser"
-    },
-    {
-      "name":"PRIMARY_PASSWORD",
-      "description":"Pwd of the primary user of the database",
-      "default":"password"
     }
   ],
   "objects":[
@@ -43,9 +29,9 @@
       "kind":"Service",
       "apiVersion":"v1",
       "metadata":{
-        "name":"${DATABASE_SERVICE_NAME}",
+        "name":"postgres-gis",
         "labels":{
-          "name":"postgresql"
+          "name":"postgres-gis"
         }
       },
       "spec":{
@@ -58,7 +44,7 @@
           }
         ],
         "selector":{
-          "name":"postgresql"
+          "name":"postgres-gis"
         }
       },
       "status":{
@@ -71,15 +57,15 @@
       "kind":"Pod",
       "apiVersion":"v1",
       "metadata":{
-        "name":"postgresql",
+        "name":"postgres-gis",
         "labels":{
-          "name":"postgresql"
+          "name":"postgres-gis"
         }
       },
       "spec":{
         "containers":[
           {
-            "name":"postgresql",
+            "name":"postgres-gis",
             "securityContext":{
               "privileged":false
             },
@@ -121,7 +107,7 @@
               },
               {
                 "name":"PG_PRIMARY_USER",
-                "value":"${PRIMARY_USER}"
+                "value":"primaryuser"
               },
               {
                 "name":"PG_PRIMARY_HOST",
@@ -133,7 +119,7 @@
               },
               {
                 "name":"PG_PRIMARY_PASSWORD",
-                "value":"${PRIMARY_PASSWORD}"
+                "value":"password"
               },
               {
                 "name":"PG_MODE",
