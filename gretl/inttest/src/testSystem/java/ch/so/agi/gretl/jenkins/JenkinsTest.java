@@ -30,6 +30,8 @@ public class JenkinsTest {
 
     private static int AMOUNT_OF_CONFIGURED_GRETL_JOBS = 1;
 
+    private static String JOB_GENERATOR_JOB_NAME = "gretl-job-generator";
+
     private JenkinsServer jenkins;
 
     @Before
@@ -66,7 +68,7 @@ public class JenkinsTest {
         // when
         Map<String, Job> jobs = jenkins.getJobs();
         for (String jobName: jobs.keySet()) {
-            if (!"administration".equals(jobName)) {
+            if (!JOB_GENERATOR_JOB_NAME.equals(jobName)) {
                 jenkins.deleteJob(jobName);
             }
         }
@@ -79,23 +81,17 @@ public class JenkinsTest {
     @Test
     public void test02checkThatAdminJobExists() throws IOException {
         // when
-        Job job = jenkins.getJobs().get("administration");
+        Map<String, Job> jobs = jenkins.getJobs();
 
         // then
-        Optional<FolderJob> admF = jenkins.getFolderJob(job);
-        assertThat(admF.isPresent(), is(true));
-        FolderJob admJob = admF.get();
-        assertThat(admJob.getJobs().size(), is(1));
-        assertThat(admJob.getJobs().containsKey("gretl-job-generator"), is(true));
+        assertThat(jobs.size(), is(1));
+        assertThat(jobs.containsKey(JOB_GENERATOR_JOB_NAME), is(true));
     }
 
     @Test
     public void test03shouldGenerateGretlJobs() throws Exception {
         // given
-        Job job = jenkins.getJobs().get("administration");
-        Optional<FolderJob> admF = jenkins.getFolderJob(job);
-        FolderJob admJob = admF.get();
-        Job seeder = admJob.getJobs().get("gretl-job-generator");
+        Job seeder = jenkins.getJobs().get(JOB_GENERATOR_JOB_NAME);
 
         // when
         seeder.build();
