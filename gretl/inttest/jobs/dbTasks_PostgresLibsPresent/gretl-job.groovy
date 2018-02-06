@@ -15,7 +15,7 @@ timeout(time: 10, unit: 'MINUTES') {
         git 'https://github.com/sogis/gretl.git'
 
         // directory of this job, relative to the Git repository root
-        dir('gretl/inttest/jobs/dbTasks_SqliteLibsPresent') {
+        dir('gretl/inttest/jobs/dbTasks_PostgresLibsPresent') {
             // show current location and content
             sh 'pwd && ls -l'
 
