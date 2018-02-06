@@ -20,7 +20,7 @@ timeout(time: 10, unit: 'MINUTES') {
             sh 'pwd && ls -l'
 
             // do the job
-            sh "gretl queryPostgresVersion -Pgretltest_dburi=jdbc:postgresql:${POSTGRES_GIS_SERVICE_HOST}:${POSTGRES_GIS_SERVICE_PORT}/gretl"
+            sh "gretl queryPostgresVersion -Pgretltest_dburi=jdbc:postgresql://${POSTGRES_GIS_SERVICE_HOST}:${POSTGRES_GIS_SERVICE_PORT}/gretl"
         }
     }
 }
