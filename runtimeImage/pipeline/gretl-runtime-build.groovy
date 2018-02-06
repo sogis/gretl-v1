@@ -208,5 +208,33 @@ pipeline {
                 }
             }
         }
+        stage('tag image') {
+            steps {
+                script{
+                    timeout(5) {
+                        def ocDir = tool params.ocToolName
+                        withEnv(["PATH+OC=${ocDir}"]) {
+                            sh "oc version"
+                            openshift.withCluster(params.openShiftCluster, params.openShiftDeployTokenName) {
+                                openshift.withProject(params.openShiftProject) {
+                                    echo "Running in project: ${openshift.project()}"
+                                    
+                                    def isName = "gretl"
+                                    def tagName = "${BUILD_NUMBER}"
+
+                                    // tag version
+                                    def sourceTag = "${isName}:latest"
+                                    def versionTag = "${isName}:${tagName}"
+                                    def result = openshift.raw('tag', sourceTag, versionTag)
+                                    echo "IS ${isName} tagged: ${result.out}"
+
+                                    // TODO delete old tags
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

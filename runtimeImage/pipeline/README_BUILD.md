@@ -67,37 +67,36 @@ Add service account to the OpenShift project.
 
 * Login to the server with the oc tool and go to your project.
 * *oc project* to check that you are in the right project.
-* Add service account by this script: **scripts/create-service-account.sh**
+* Add service account by this script: **serviceConfig/pipeline/scripts/create-service-account.sh**
 * Read the token:
 * *oc describe sa jenkins*
 * Copy name of first Token.
 * *oc describe secret JENKINS-TOKEN-NAME*
 * this will display the token
-* Create a secret text credential on jenkins
+* Create an "OpenShift Token" on jenkins
+
+### give access to OpenShift project
+Gives user with name "User Name" admin rights to he project: PROJECT_NAME
+```
+oc policy add-role-to-user admin "User Name" PROJECT_NAME
+```
 
 OpenShift build project
 -----------------------
 Prepare an OpenShift build project and use this pipeline: **runtimeImage/pipeline/gretl-runtime-build.groovy**
 
-### GRETL runtime Docker image
-Project used to build GRETL runtime Docker image and push it to dockerhub.
+## GRETL runtime Docker image
+Project used to build GRETL runtime Docker image.
 
-Documentation: https://blog.openshift.com/pushing-application-images-to-an-external-registry/
-
-#### OpenShift project setup
-Create project and give access to push to Docker Hub.
-
+### OpenShift project setup
+Create project:
 ```
 new-project gretl-build
-oc secrets new dockerhub ~/.docker/config.json
-oc describe secret dockerhub
-oc edit sa builder
 ```
 
-##### Create build configuration by template
+#### Create build configuration by template
 ```
 oc process -f runtimeImage/pipeline/templates/gretl-build-template.yaml \
-  -p GRETL_RUNTIME_IMAGE="chrira/jobrunner:latest" \
   | oc apply -f -
 ```
 
@@ -106,31 +105,9 @@ Not used, when template was applied.
 ```
 oc new-build --name=gretl --strategy=Docker --binary=true
 ```
-```
-oc edit bc gretl
-```
-Change destination to your Docker Hub repository.
-```
-    to:
-      kind: DockerImage   
-      name: docker.io/chrira/jobrunner:latest
-    pushSecret:
-      name: dockerhub
-```
 
-###### Build from local machine
-Login to OpenShift and use the build project.
-
-```
-cd docker/gretl
-cp ../../dependencies.gradle .
-cp ../../build/libs/gretl-1.0.4-SNAPSHOT.jar .
-oc start-build gretl --from-dir . --follow
-
-```
-
-##### Crunchy DB with GIS extension
-Needs to be configured for int-test use.
+#### Crunchy DB with GIS extension
+Needs to be configured for tests with databases.
 
 Template taken from [CrunchyData](https://github.com/CrunchyData/crunchy-containers).
 ```
@@ -140,7 +117,6 @@ oc process -f runtimeImage/pipeline/templates/postgres-gis.json \
   -p POSTGRESQL_DATABASE='gretl' \
   | oc apply -f -
 ```
-
 
 OpenShift integration test project
 ----------------------------------
@@ -179,17 +155,30 @@ oc delete deployments,pods,service -l name=postgresql
 
 OpenShift system test project
 -----------------------------
+Project used to test GRETL runtime Docker image and push it to dockerhub.
 Prepare an OpenShift test project. **runtimeImage/pipeline/gretl-system-test.groovy**
 
+Documentation: https://blog.openshift.com/pushing-application-images-to-an-external-registry/
+
 ### OpenShift project setup
-Create project
+Create project and give access to push to Docker Hub.
 ```
 oc new-project gretl-system-test
+oc secrets new dockerhub ~/.docker/config.json
+oc describe secret dockerhub
+oc edit sa builder
 ```
+Builder sa should be extended like this:
+```
+secrets:
+- name: dockerhub
+...
+```
+
 Setup runtime with Jenkins
 ```
 oc process -f serviceConfig/templates/jenkins-s2i-template.json \
-  -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/chrira/openshift-jenkins.git" \
+  -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/sogis/openshift-jenkins.git" \
   -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
   -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretl.git" \
   -p GRETL_JOB_FILE_PATH="gretl/inttest/jobs/**" \
@@ -208,7 +197,7 @@ oc process -f runtimeImage/pipeline/templates/gretl-test-is-template.json \
 Create Docker Hub push config
 ```
 oc process -f runtimeImage/pipeline/templates/gretl-dockerhub-is-template.yaml \
-  -p GRETL_DOCKER_HUB_IMAGE="chrira/jobrunner:latest" \
+  -p GRETL_DOCKER_HUB_IMAGE="sogis/gretl-runtime:latest" \
   -p GRETL_RUNTIME_IMAGESTREAM="gretl:latest" \
   | oc apply -f -
 ```
@@ -220,6 +209,8 @@ oc policy add-role-to-user \
     system:image-puller system:serviceaccount:gretl-system-test:default \
     --namespace=gretl-build
 ```
+
+Create service account, see description above.
 
 ### OpenShift project manual configuration
 Run the **gretl-job-generator** of the administration folder once.
@@ -236,17 +227,18 @@ OpenShift Jenkins project
 -------------------------
 
 ```
-oc process -f jenkins-s2i-template.json \
-  -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/chrira/openshift-jenkins.git" \
-  -p GRETL_JOB_REPO_URL="git://github.com/chrira/gretljobs.git" \
-  | oc apply -f -
-```
-```
 oc process -f serviceConfig/templates/jenkins-s2i-template.json \
-  -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/chrira/openshift-jenkins.git" \
+  -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/sogis/openshift-jenkins.git" \
   -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
   -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretl.git" \
   -p GRETL_JOB_FILE_PATH="gretl/inttest/jobs/**" \
   -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
+  | oc apply -f -
+```
+
+Add gretl imagestream to pull newest GRETL runtime image
+```
+oc process -f serviceConfig/templates/gretl-is-template.json \
+  -p GRETL_RUNTIME_IMAGE="sogis/gretl-runtime:26" \
   | oc apply -f -
 ```
