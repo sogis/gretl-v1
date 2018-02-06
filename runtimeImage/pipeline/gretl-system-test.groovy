@@ -45,6 +45,34 @@ pipeline {
                 sh 'cp -R gretl/inttest/* build-tmp/inttest/'
 
                 sh 'ls -la build-tmp/inttest'
+
+                // prepare postgres-db for systemtest
+                script {
+                    timeout(10) {
+                        def ocDir = tool params.ocToolName
+                        withEnv(["PATH+OC=${ocDir}"]) {
+                            sh "oc version"
+                            openshift.withCluster(params.openShiftCluster, params.openShiftDeployTokenName) {
+                                openshift.withProject(params.openShiftProject) {
+                                    echo "Running in project: ${openshift.project()}"
+
+                                    // find database pod with name: postgresql
+                                    def podSelector = openshift.selector('pods', [name: 'postgres-gis'])
+                                    def dbPod = podSelector.name()
+                                    String shortName = dbPod.indexOf("/") > 0 ? dbPod.substring(dbPod.indexOf("/") + 1) : dbPod;
+                                    println "db pod: " + shortName
+
+                                    // prepare database
+                                    openshift.raw("cp", "runtimeImage/pipeline/scripts/reset-test-db.sh", "${shortName}:/tmp/")
+                                    echo openshift.exec(shortName, 'bash', '/tmp/reset-test-db.sh').out
+
+                                    openshift.raw("cp", "runtimeImage/pipeline/scripts/init-test-db.sh", "${shortName}:/tmp/")
+                                    echo openshift.exec(shortName, 'bash', '/tmp/init-test-db.sh').out
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         stage('run system test') {

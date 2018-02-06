@@ -28,7 +28,7 @@ import static org.hamcrest.core.Is.is;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JenkinsTest {
 
-    private static int AMOUNT_OF_CONFIGURED_GRETL_JOBS = 2;
+    private static int AMOUNT_OF_CONFIGURED_GRETL_JOBS = 3;
 
     private static String JOB_GENERATOR_JOB_NAME = "gretl-job-generator";
 
@@ -161,6 +161,39 @@ public class JenkinsTest {
     public void test07shouldBuildSqliteLibsPresentJob() throws Exception {
         // given
         Job job = jenkins.getJobs().get("dbTasks_SqliteLibsPresent");
+
+        // when
+        job.build();
+
+        // then
+        TimeUnit.SECONDS.sleep(20);
+
+        Build build = job.details().getLastBuild();
+        assertThat("Build not found.", build, not(nullValue()));
+
+        // wait max. 180 sec. for the build to complete
+        int i = 0;
+        do {
+            TimeUnit.SECONDS.sleep(10);
+        } while (build.details().isBuilding() && i++ < 17);
+
+        assertThat("build not finished!", build.details().isBuilding(), is(false));
+        assertThat(build.details().getResult(), is(BuildResult.SUCCESS));
+    }
+
+    @Test
+    public void test08shouldHavePostgresLibsPresentJob() throws IOException {
+        // when
+        Job job = jenkins.getJobs().get("dbTasks_PostgresLibsPresent");
+
+        // then
+        assertThat(job, not(nullValue()));
+    }
+
+    @Test
+    public void test09shouldBuildPostgresLibsPresentJob() throws Exception {
+        // given
+        Job job = jenkins.getJobs().get("dbTasks_PostgresLibsPresent");
 
         // when
         job.build();
