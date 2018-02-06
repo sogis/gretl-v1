@@ -28,7 +28,7 @@ import static org.hamcrest.core.Is.is;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JenkinsTest {
 
-    private static int AMOUNT_OF_CONFIGURED_GRETL_JOBS = 1;
+    private static int AMOUNT_OF_CONFIGURED_GRETL_JOBS = 2;
 
     private JenkinsServer jenkins;
 

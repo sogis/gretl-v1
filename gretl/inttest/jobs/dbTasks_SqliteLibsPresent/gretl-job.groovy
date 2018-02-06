@@ -20,7 +20,7 @@ timeout(time: 10, unit: 'MINUTES') {
             sh 'pwd && ls -l'
 
             // do the job
-            sh "gretl validate -Pgretltest_dburi=jdbc:sqlite::memory:"
+            sh "gretl querySqliteMaster -Pgretltest_dburi=jdbc:sqlite::memory:"
         }
     }
 }
