@@ -7,7 +7,7 @@ Images are for running test tasks against local databases.
 
 ### Vendors
 #### PostgreSQL
-PostgreSQL with PostGIS Docker image with a specific (`gretl`) database and users. See [Dockerfile](test-database-pg/Dockerfile) and [init-test-db.sh](test-database-pg/init-test-db.sh).
+PostgreSQL with PostGIS Docker image with specific (`gretl`) database and users. See [Dockerfile](test-database-pg/Dockerfile) and [init-test-db.sh](test-database-pg/init-test-db.sh).
  
 #### Oracle 
 Plain-vanilla Oracle 12c image from hub.docker.com. No specific database and/or users. There are a lots of Oracle images on hub.docker.com. Following images do have an reasonable start up time:

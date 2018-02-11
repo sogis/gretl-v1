@@ -3,7 +3,7 @@
 echo "=========================================================="
 echo "Docker container for test Oracle database."
 echo "Uses the following Docker image:"
-echo "https://hub.docker.com/r/sath89/oracle-12c/"
+echo "https://hub.docker.com/r/pengbai/docker-oracle-12c-r1/"
 echo "=========================================================="
 
 docker run -it \
