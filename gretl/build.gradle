@@ -21,15 +21,30 @@ dependencies {
 
     compile sqliteJdbcDependency
     compile derbyDependency
+	compile oracleDependency
+	
     compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.3'
-    
-
+    	
     // Additional driver possibilities when the need arises:
     // - oracle jdbc driver
     // - sqlserver jdbc driver (Microsoft)
     compile gradleApi()
 }
 
+
+// 'gradle publishToMavenLocal' publishes
+// oracle jdbc to local maven repo.
+publishing {
+	publications {
+		maven(MavenPublication) {
+			artifactId "ojdbc7"
+			version "12.1.0.1"
+			groupId "com.oracle"
+			artifact file('./lib/ojdbc7-12.1.0.1.jar')
+		}
+	}
+}
+  
 
 /*
 test {

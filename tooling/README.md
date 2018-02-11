@@ -2,13 +2,38 @@
 
 Dockerfiles and convenience scripts for local development.
 
-## test database
-PostgreSQL with postgis Docker image to run test tasks against a local database.
+## Test database
+Images are for running test tasks against local databases.
 
-### run
-The script ```start-test-database.sh``` builds and runs the database locally.
+### Vendors
+#### PostgreSQL
+PostgreSQL with PostGIS Docker image with a specific (`gretl`) database and users. See [Dockerfile](test-database-pg/Dockerfile) and [init-test-db.sh](test-database-pg/init-test-db.sh).
+ 
+#### Oracle 
+Plain-vanilla Oracle 12c image from hub.docker.com. No specific database and/or users. There are a lots of Oracle images on hub.docker.com. Following images do have an reasonable start up time:
 
-### test
+* https://hub.docker.com/r/pengbai/docker-oracle-12c-r1/ (which is used here)
+* https://hub.docker.com/r/alexeiled/docker-oracle-xe-11g/ 
+
+The credentials seem to be same for all images:
+
+- hostname: localhost
+- port: 1521
+- sid: xe
+- username: system
+- password: oracle
+
+### Run
+#### PostgreSQL
+The script ```start-test-database-pg.sh``` builds and runs the PostgreSQL database locally.
+
+#### Oracle
+The script `start-test-database-ora.sh`runs the Oracle database locally.
+
+### Test
+
+*TODO!!!! for ora*
+
 Run the *dbTest* task of the root build.gradle file:
 ```
 ./gradlew -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres -Ddbpwd=admin1234 build dbTest
