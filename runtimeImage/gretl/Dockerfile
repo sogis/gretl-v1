@@ -4,6 +4,7 @@ USER root
 
 COPY gretl /usr/local/bin/
 COPY gretl-*.jar /home/gradle/libs/
+COPY ojdbc7-12.1.0.1.jar /home/gradle/libs/
 COPY init.gradle build.gradle dependencies.gradle build.info /home/gradle/
 
 RUN cd /home/gradle && \

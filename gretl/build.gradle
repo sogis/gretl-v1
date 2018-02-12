@@ -21,7 +21,7 @@ dependencies {
 
     compile sqliteJdbcDependency
     compile derbyDependency
-	compile oracleDependency
+    compile oracleDependency
 	
     compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.3'
     	

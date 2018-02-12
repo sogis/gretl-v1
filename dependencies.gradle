@@ -21,7 +21,7 @@ ext {
     postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
     sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]
     derbyDependency = [group: 'org.apache.derby', name: 'derby', version: derbyVersion]
-	oracleDependency = [ group: 'com.oracle', name: 'ojdbc7', version: oracleVersion]
+    oracleDependency = [ group: 'com.oracle', name: 'ojdbc7', version: oracleVersion]
 	
     junitDependency = [ group: 'junit', name: 'junit', version: junitVersion ]
 }
