@@ -32,8 +32,7 @@ The script `start-test-database-ora.sh`runs the Oracle database locally.
 
 ### Test
 
-*TODO!!!! for ora*
-
+#### PostgreSQL
 Run the *dbTest* task of the root build.gradle file:
 ```
 ./gradlew -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres -Ddbpwd=admin1234 build dbTest
@@ -44,3 +43,6 @@ Run the *testIntegration* task of the gretl/inttest build.gradle file:
 cd gretl/inttest
 ./gradlew build testIntegration
 ```
+
+#### Oracle
+At the moment the Oracle database is only used for system tests (see TODO!!!!) and not for (local) integration tests.

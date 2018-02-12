@@ -11,6 +11,9 @@ docker run -it \
     -p 1521:1521 \
     pengbai/docker-oracle-12c-r1
 
-# CHANGE TO ORACLE!!!!
-# command to run tests against this database:
-# ./gradlew -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres -Ddbpwd=admin1234 build dbTest
+# hostname: localhost
+# port: 1521
+# sid: xe
+# username: system
+# password: oracle
+# jdbc-url: jdbc:oracle:thin:@localhost:1521:xe
