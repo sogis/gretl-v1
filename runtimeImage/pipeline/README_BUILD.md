@@ -13,12 +13,6 @@ https://plugins.jenkins.io/openshift-client
 
 https://github.com/jenkinsci/openshift-client-plugin
 
-### Copy Artifact Plugin
-Used to copy gretl jar from master build pipeline project.
-
-https://plugins.jenkins.io/copyartifact
-
-
 Configuration
 -------------
 
@@ -67,7 +61,7 @@ Add service account to the OpenShift project.
 
 * Login to the server with the oc tool and go to your project.
 * *oc project* to check that you are in the right project.
-* Add service account by this script: **serviceConfig/pipeline/scripts/create-service-account.sh**
+* Add service account by this script: **runtimeImage/pipeline/scripts/create-service-account.sh**
 * Read the token:
 * *oc describe sa jenkins*
 * Copy name of first Token.
@@ -91,7 +85,7 @@ Project used to build GRETL runtime Docker image.
 ### OpenShift project setup
 Create project:
 ```
-new-project gretl-build
+oc new-project gretl-build
 ```
 
 #### Create build configuration by template
@@ -101,13 +95,13 @@ oc process -f runtimeImage/pipeline/templates/gretl-build-template.yaml \
 ```
 
 ##### Manual build configuration
-Not used, when template was applied.
+Not used, when template has been applied.
 ```
 oc new-build --name=gretl --strategy=Docker --binary=true
 ```
 
 #### Crunchy DB with GIS extension
-Needs to be configured for tests with databases.
+Needs to be configured for tests using a database.
 
 Template taken from [CrunchyData](https://github.com/CrunchyData/crunchy-containers).
 ```
@@ -118,49 +112,12 @@ oc process -f runtimeImage/pipeline/templates/postgres-gis.json \
   | oc apply -f -
 ```
 
-OpenShift integration test project
-----------------------------------
-Prepare an OpenShift test project and use this pipeline: **openshift/pipeline/gretl-integration-test.groovy**
-
-### OpenShift project setup
-Login to OpenShift and use the integration-test project.
-
-Create the needed database:
-```
-oc process postgresql-ephemeral -n openshift \
-  -p POSTGRESQL_DATABASE='gretl' \
-  -p DATABASE_SERVICE_NAME='postgresql' \
-  | oc create -f -
-```
-Does not have GIS extension.
-
-#### Crunchy DB with GIS extension
-Needs to be configured for int-test use.
-
-Template taken from [CrunchyData](https://github.com/CrunchyData/crunchy-containers).
-```
-oc process -f openshift/templates/postgres-gis.json \
-  -p CCP_IMAGE_PREFIX=crunchydata \
-  -p CCP_IMAGE_TAG=centos7-10.1-1.7.0 \
-  -p POSTGRESQL_DATABASE='gretl' \
-  -p DATABASE_SERVICE_NAME='postgresql' \
-  | oc apply -f -
-```
-
-Cleanup:
-```
-oc delete deployments,pods,service -l name=postgresql
-```
-
-
 OpenShift system test project
 -----------------------------
 Project used to test GRETL runtime Docker image and push it to dockerhub.
-Prepare an OpenShift test project. **runtimeImage/pipeline/gretl-system-test.groovy**
+Prepare an OpenShift test project and use this pipeline: **runtimeImage/pipeline/gretl-system-test.groovy**
 
-Documentation: https://blog.openshift.com/pushing-application-images-to-an-external-registry/
-
-### OpenShift project setup
+## OpenShift project setup
 Create project and give access to push to Docker Hub.
 ```
 oc new-project gretl-system-test
@@ -175,6 +132,22 @@ secrets:
 ...
 ```
 
+Documentation: https://blog.openshift.com/pushing-application-images-to-an-external-registry/
+
+### Crunchy DB with GIS extension
+Create first the GRETL job test database.
+
+Template taken from [CrunchyData](https://github.com/CrunchyData/crunchy-containers).
+```
+oc process -f openshift/templates/postgres-gis.json \
+  -p CCP_IMAGE_PREFIX=crunchydata \
+  -p CCP_IMAGE_TAG=centos7-10.1-1.7.0 \
+  -p POSTGRESQL_DATABASE='gretl' \
+  -p DATABASE_SERVICE_NAME='postgresql' \
+  | oc apply -f -
+```
+
+### GRETL Jenkins
 Setup runtime with Jenkins
 ```
 oc process -f serviceConfig/templates/jenkins-s2i-template.json \
@@ -194,14 +167,6 @@ oc process -f runtimeImage/pipeline/templates/gretl-test-is-template.json \
   | oc apply -f -
 ```
 
-Create Docker Hub push config
-```
-oc process -f runtimeImage/pipeline/templates/gretl-dockerhub-is-template.yaml \
-  -p GRETL_DOCKER_HUB_IMAGE="sogis/gretl-runtime:latest" \
-  -p GRETL_RUNTIME_IMAGESTREAM="gretl:latest" \
-  | oc apply -f -
-```
-
 Give project access to imagestream of gretl-build project.
 Like this the Docker Image can be tested before it will be pushed to Docker Hub.
 ```
@@ -210,7 +175,22 @@ oc policy add-role-to-user \
     --namespace=gretl-build
 ```
 
+#### Jenkins service account
+A Jenkins service account is needed to give the build Jenkins access to this OpenShift project.
+
 Create service account, see description above.
+
+
+### Docker Hub push
+Create Docker Hub push config.
+This will push the tested image to Docker Hub with the build number as version.
+```
+oc process -f runtimeImage/pipeline/templates/gretl-dockerhub-is-template.yaml \
+  -p GRETL_DOCKER_HUB_IMAGE="sogis/gretl-runtime:latest" \
+  -p GRETL_RUNTIME_IMAGESTREAM="gretl:latest" \
+  | oc apply -f -
+```
+
 
 ### OpenShift project manual configuration
 Run the **gretl-job-generator** of the administration folder once.
