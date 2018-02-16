@@ -158,6 +158,12 @@ oc process -f serviceConfig/templates/jenkins-s2i-template.json \
   -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
   | oc apply -f -
 ```
+Parameter:
+* JENKINS_CONFIGURATION_REPO_URL: Repo containing the Jenkins configuration.
+* JENKINS_IMAGE_STREAM_TAG: Docker base image for the Jenkins. 
+* GRETL_JOB_REPO_URL: Repo containing the GRETL jobs.
+* GRETL_JOB_FILE_PATH: Base path to the GRETL job definitions (Ant style)
+* GRETL_JOB_FILE_NAME: Name of the GRETL job configuration file.
 
 Add gretl imagestream to pull newest GRETL runtime image
 ```
@@ -166,6 +172,9 @@ oc process -f runtimeImage/pipeline/templates/gretl-test-is-template.json \
   -p GRETL_BUILD_PROJECT="gretl-build" \
   | oc apply -f -
 ```
+Parameter:
+* GRETL_RUNTIME_IMAGE: OpenShift imagestream reference of the GRETL runtime.
+* GRETL_BUILD_PROJECT: OpenShift project holding the GRETL runtime (imagestream)
 
 Give project access to imagestream of gretl-build project.
 Like this the Docker Image can be tested before it will be pushed to Docker Hub.
@@ -190,7 +199,9 @@ oc process -f runtimeImage/pipeline/templates/gretl-dockerhub-is-template.yaml \
   -p GRETL_RUNTIME_IMAGESTREAM="gretl:latest" \
   | oc apply -f -
 ```
-
+Parameter:
+* GRETL_DOCKER_HUB_IMAGE: Docker Hub repo to push the GRETL runtime.
+* GRETL_RUNTIME_IMAGESTREAM: Imagestream holding the GRETL runtime Docker image to be published.
 
 ### OpenShift project manual configuration
 Run the **gretl-job-generator** of the administration folder once.
@@ -201,24 +212,3 @@ Run the **gretl-job-generator** of the administration folder once.
 Configure image pull to get always the newest image:
 * Jenkins --> Manage Jenkins --> Configure System
 * *Cloud section* --> *Kubernetes Pod Template* with name **gretl** --> Always pull image (check)
-
-
-OpenShift Jenkins project
--------------------------
-
-```
-oc process -f serviceConfig/templates/jenkins-s2i-template.json \
-  -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/sogis/openshift-jenkins.git" \
-  -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
-  -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretl.git" \
-  -p GRETL_JOB_FILE_PATH="gretl/inttest/jobs/**" \
-  -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
-  | oc apply -f -
-```
-
-Add gretl imagestream to pull newest GRETL runtime image
-```
-oc process -f serviceConfig/templates/gretl-is-template.json \
-  -p GRETL_RUNTIME_IMAGE="sogis/gretl-runtime:26" \
-  | oc apply -f -
-```
