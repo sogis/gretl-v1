@@ -144,7 +144,7 @@ pipeline {
                                                 echo "run integration tests ..."
                                                 dir('test-tmp/inttest') {
                                                     sh './gradlew -version'
-                                                    sh './gradlew clean build testIntegration --refresh-dependencies'
+                                                    sh './gradlew clean build publishToMavenLocal testIntegration --refresh-dependencies'
                                                 }
                                             }
                                     )
