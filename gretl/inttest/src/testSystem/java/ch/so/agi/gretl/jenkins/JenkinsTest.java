@@ -213,4 +213,39 @@ public class JenkinsTest {
         assertThat("build not finished!", build.details().isBuilding(), is(false));
         assertThat(build.details().getResult(), is(BuildResult.SUCCESS));
     }
+    
+    @Ignore("until pod is ready")
+    @Test
+    public void test10shouldHaveOracleLibsPresentJob() throws IOException {
+        // when
+        Job job = jenkins.getJobs().get("dbTasks_OracleLibsPresent");
+
+        // then
+        assertThat(job, not(nullValue()));
+    }
+    
+    @Ignore("until pod is ready")
+    @Test
+    public void test09shouldBuildOracleLibsPresentJob() throws Exception {
+        // given
+        Job job = jenkins.getJobs().get("dbTasks_OracleLibsPresent");
+
+        // when
+        job.build();
+
+        // then
+        TimeUnit.SECONDS.sleep(20);
+
+        Build build = job.details().getLastBuild();
+        assertThat("Build not found.", build, not(nullValue()));
+
+        // wait max. 180 sec. for the build to complete
+        int i = 0;
+        do {
+            TimeUnit.SECONDS.sleep(10);
+        } while (build.details().isBuilding() && i++ < 17);
+
+        assertThat("build not finished!", build.details().isBuilding(), is(false));
+        assertThat(build.details().getResult(), is(BuildResult.SUCCESS));
+    }
 }

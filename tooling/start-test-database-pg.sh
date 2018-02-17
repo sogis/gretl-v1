@@ -9,16 +9,16 @@ echo "=========================================================="
 docker build \
     --no-cache \
     --force-rm \
-    -t test-database \
-    -f test-database/Dockerfile \
-    test-database
+    -t test-database-pg \
+    -f test-database-pg/Dockerfile \
+    test-database-pg
 
 docker run -it \
     --name test-postgis \
     -e POSTGRES_PASSWORD=admin1234 \
     -p 5432:5432 \
     --rm \
-    test-database
+    test-database-pg
 
 # command to run tests against this database:
 # ./gradlew -Ddburl=jdbc:postgresql:gretl -Ddbusr=postgres -Ddbpwd=admin1234 build dbTest

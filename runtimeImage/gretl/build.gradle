@@ -13,9 +13,15 @@ repositories {
 
 apply plugin: 'java'
 
+
+// It's not necessary to declare e.g. oracle jdbc as dependency
+// since for the docker image gretl runtime everything in the
+// /home/gradle/libs is a dependency. Hence it's enough to
+// copy local jars in this directory (which is done in the 
+// Dockerfile.
 dependencies {
     compile postgresqlDependency
-
+	
     compile ilivalidatorDependency
     compile(ili2pgDependency){
         exclude group: 'ch.ehi', module: 'ehisqlgen'

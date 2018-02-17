@@ -124,6 +124,7 @@ modules.xml
 
 # Package Files #
 *.jar
+!/gretl/lib/*.jar
 !/lib/**.jar
 *.war
 *.ear
