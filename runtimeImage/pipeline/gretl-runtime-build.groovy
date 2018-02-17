@@ -29,7 +29,7 @@ pipeline {
                 sh './gradlew -version'
 
                 // build and test jar
-                sh './gradlew clean build --refresh-dependencies'
+                sh './gradlew clean build publishToMavenLocal --refresh-dependencies'
 
                 // run db tests
                 script {
@@ -144,7 +144,7 @@ pipeline {
                                                 echo "run integration tests ..."
                                                 dir('test-tmp/inttest') {
                                                     sh './gradlew -version'
-                                                    sh './gradlew clean build publishToMavenLocal testIntegration --refresh-dependencies'
+                                                    sh './gradlew clean build testIntegration --refresh-dependencies'
                                                 }
                                             }
                                     )
