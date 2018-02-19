@@ -18,13 +18,6 @@ Qualitätsziele
 --------------
 * Standartisierter und automatisierter Build Prozess.
 
-Stakeholder
------------
-
-| Rolle | Kontakt | Erwartungshaltung |
-| --- | --- | --- |
-| *&lt;Rolle-1&gt;* | *&lt;Kontakt-1&gt;* | *&lt;Erwartung-1&gt;* |
-| *&lt;Rolle-2&gt;* | *&lt;Kontakt-2&gt;* | *&lt;Erwartung-2&gt;* |
 
 Randbedingungen
 ===============
@@ -57,12 +50,24 @@ Fachlicher Kontext
 Technischer Kontext
 -------------------
 
-**&lt;Diagramm oder Tabelle&gt;**
+### Build Pipeline
+Zum Erstellen, Testen und veröffentlichen der GRETL-Runtime als Docker Image werden Jenkins Pipelines verwendet.
 
-**&lt;optional: Erläuterung der externen technischen
-Schnittstellen&gt;**
+#### Build und Test
+Dieses Skript definiert die Build Logik: **runtimeImage/pipeline/gretl-runtime-build.groovy**
 
-**&lt;Mapping fachliche auf technische Schnittstellen&gt;**
+Stages der Pipeline:
+![GRETL-Runtime_stages](images/GRETL-Runtime_stages.png)
+
+Übersicht:
+![BuildPipeline](images/BuildPipeline.png)
+
+
+### &lt;Gradle&gt;
+TODO
+
+### &lt;Jenkins&gt;
+TODO
 
 Lösungsstrategie
 ================
@@ -234,7 +239,7 @@ Gradle als Job Runtime
 ### Fragestellung
 Wieso wird Gradle als Runtime eingesetzt?
 
-### Entscheigung
+### Entscheidung
 TODO
 
 GRETL als Gradle Plugin
@@ -243,7 +248,7 @@ GRETL als Gradle Plugin
 ### Fragestellung
 Wieso wird die ETL Logik als Gradle Plugin geschrieben?
 
-### Entscheigung
+### Entscheidung
 TODO
 
 Jenkins als Benutzeroberfläche
@@ -252,7 +257,7 @@ Jenkins als Benutzeroberfläche
 ### Fragestellung
 Warum ist Jenkins das UI?
 
-### Entscheigung
+### Entscheidung
 TODO
 
 
@@ -266,7 +271,7 @@ Wieso wird für jede Job Ausführung ein eigener Container gestartet?
 1. Einzelner Server läuft und steht für Jobs zur Verfügung.
 2. Jeder Job hat einen laufenden Container.
 
-### Entscheigung
+### Entscheidung
 Es wird das Prinzip vom Build-Container eingesetzt.
 Da das Scheduling von Jenkins übernommen wird, braucht es keine lang-laufenden Container.
 Zum Ausnützen der Stärken von Container Plattformen werden kurz-lebige Container eingesetzt.
@@ -282,7 +287,7 @@ Wieso ist die GRETL Runtime als Jenkins Slave realisiert?
 ### Alternativen
 1. Einzelner Server läuft immer und arbeitet Jobs bei Aufruf ab.
 
-### Entscheigung
+### Entscheidung
 TODO
 
 

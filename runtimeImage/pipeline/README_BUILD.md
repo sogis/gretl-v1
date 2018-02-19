@@ -1,11 +1,13 @@
-GRETL Jenkins Pipeline Setup
+GRETL-Runtime Pipeline Setup
 ============================
-Requirements and guide for build of the GRETL runtime.
+Requirements and guide for build of the GRETL-Runtime.
 
-Plugins
--------
+Build-Jenkins setup
+-------------------
 
-### OpenShift Client Jenkins Plugin
+### Plugins
+
+#### OpenShift Client Jenkins Plugin
 OpenShift platform connector, used to build and deploy on OpenShift.
 Needs the oc tool available on the Jenkins build node (server). Can be installed with the [OpenShift Client Tool configuration](#openShift-client-tool).
 
@@ -13,10 +15,9 @@ https://plugins.jenkins.io/openshift-client
 
 https://github.com/jenkinsci/openshift-client-plugin
 
-Configuration
--------------
+### Configuration
 
-### OpenShift Client Tool
+#### OpenShift Client Tool
 OpenShift client binary to interact with OpenShift platform.
 
 https://github.com/jenkinsci/openshift-client-plugin#setting-up-jenkins-nodes
@@ -33,7 +34,7 @@ Download URL for binary archive: https://github.com/openshift/origin/releases/do
 
 Subdirectory of extracted archive: openshift-origin-client-tools-v3.7.0-7ed6862-linux-64bit
 
-### OpenShift Cluster
+#### OpenShift Cluster
 
 Manage Jenkins -> Configure System -> and find the OpenShift Plugin section.
 
@@ -43,7 +44,7 @@ API Server URL: [OpenShift container platform url with port, if needed]
 
 Disable TLS Verify: true
 
-### OpenShift Login Token
+#### OpenShift Login Token
 Configure Jenkins secret for OpenShift login.
 Service account has to be created first in the OpenShift project.
 You can use a domain for all OpenShift related credentials: "OpenShift"
@@ -56,7 +57,7 @@ ID: [OpenShift project name]_deploy_token
 
 Description: oc tool login token for project [OpenShift project name]
 
-#### Service account creation
+##### Service account creation
 Add service account to the OpenShift project.
 
 * Login to the server with the oc tool and go to your project.
@@ -69,38 +70,39 @@ Add service account to the OpenShift project.
 * this will display the token
 * Create an "OpenShift Token" on jenkins
 
-### give access to OpenShift project
+#### give access to OpenShift project
 Gives user with name "User Name" admin rights to he project: PROJECT_NAME
 ```
 oc policy add-role-to-user admin "User Name" PROJECT_NAME
 ```
 
-OpenShift build project
+OpenShift project setup
 -----------------------
-Prepare an OpenShift build project and use this pipeline: **runtimeImage/pipeline/gretl-runtime-build.groovy**
 
-## GRETL runtime Docker image
+### GRETL-Runtime build project
 Project used to build GRETL runtime Docker image.
 
-### OpenShift project setup
+Prepare an OpenShift build project and use this pipeline: **runtimeImage/pipeline/gretl-runtime-build.groovy**
+
+#### OpenShift project setup
 Create project:
 ```
 oc new-project gretl-build
 ```
 
-#### Create build configuration by template
+##### Create build configuration by template
 ```
 oc process -f runtimeImage/pipeline/templates/gretl-build-template.yaml \
   | oc apply -f -
 ```
 
-##### Manual build configuration
+###### Manual build configuration
 Not used, when template has been applied.
 ```
 oc new-build --name=gretl --strategy=Docker --binary=true
 ```
 
-#### Crunchy DB with GIS extension
+##### Crunchy DB with GIS extension
 Needs to be configured for tests using a database.
 
 Template taken from [CrunchyData](https://github.com/CrunchyData/crunchy-containers).
@@ -112,12 +114,12 @@ oc process -f runtimeImage/pipeline/templates/postgres-gis.json \
   | oc apply -f -
 ```
 
-OpenShift system test project
------------------------------
+### OpenShift system test project
 Project used to test GRETL runtime Docker image and push it to dockerhub.
+
 Prepare an OpenShift test project and use this pipeline: **runtimeImage/pipeline/gretl-system-test.groovy**
 
-## OpenShift project setup
+#### OpenShift project setup
 Create project and give access to push to Docker Hub.
 ```
 oc new-project gretl-system-test
@@ -134,7 +136,7 @@ secrets:
 
 Documentation: https://blog.openshift.com/pushing-application-images-to-an-external-registry/
 
-### Crunchy DB with GIS extension
+##### Crunchy DB with GIS extension
 Create first the GRETL job test database.
 
 Template taken from [CrunchyData](https://github.com/CrunchyData/crunchy-containers).
@@ -147,7 +149,7 @@ oc process -f openshift/templates/postgres-gis.json \
   | oc apply -f -
 ```
 
-### GRETL Jenkins
+##### GRETL Jenkins
 Setup runtime with Jenkins
 ```
 oc process -f serviceConfig/templates/jenkins-s2i-template.json \
@@ -184,13 +186,13 @@ oc policy add-role-to-user \
     --namespace=gretl-build
 ```
 
-#### Jenkins service account
+###### Jenkins service account
 A Jenkins service account is needed to give the build Jenkins access to this OpenShift project.
 
 Create service account, see description above.
 
 
-### Docker Hub push
+##### Docker Hub push
 Create Docker Hub push config.
 This will push the tested image to Docker Hub with the build number as version.
 ```
@@ -203,7 +205,7 @@ Parameter:
 * GRETL_DOCKER_HUB_IMAGE: Docker Hub repo to push the GRETL runtime.
 * GRETL_RUNTIME_IMAGESTREAM: Imagestream holding the GRETL runtime Docker image to be published.
 
-### OpenShift project manual configuration
+##### OpenShift project manual configuration
 Run the **gretl-job-generator** of the administration folder once.
 
 * Approve the script if needed. ```ERROR: script not yet approved for use```
