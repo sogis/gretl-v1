@@ -8,7 +8,7 @@ echo "======================================================================="
 
 # TODO no version lock
 cp ../gretl/build/libs/gretl-1.0.4-SNAPSHOT.jar gretl
-cp ../gretl/lib/ojdbc7-12.1.0.1.jar gretl
+cp ../gretl/lib/ojdbc7-*.jar gretl
 cp ../dependencies.gradle gretl
 
 # build infos
