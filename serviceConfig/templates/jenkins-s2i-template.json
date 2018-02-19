@@ -359,13 +359,13 @@
       "name": "JENKINS_CONFIGURATION_REPO_URL",
       "displayName": "Jenkins configuration Git repo",
       "description": "Url of the Git repo holding the Jenkins configuration.",
-      "value": "https://github.com/chrira/openshift-jenkins.git"
+      "value": "https://github.com/sogis/openshift-jenkins.git"
     },
     {
       "name": "GRETL_JOB_REPO_URL",
       "displayName": "Git repo containing GRETL jobs",
       "description": "Url of the Git repo holding the GRETL Job configurations.",
-      "value": "git://github.com/chrira/gretljobs.git"
+      "value": "git://github.com/sogis/gretljobs.git"
     },
     {
       "name": "GRETL_JOB_FILE_PATH",
