@@ -14,6 +14,52 @@ import java.sql.Statement;
 
 
 public class Db2DbTaskTest {
+	/*
+	 * Tests if fetchSize parameter is working.
+	 * Gradle throws an error if a parameter is being
+	 * used that is not defined in the task class.
+	 */
+	@Test
+	public void fetchSizeParameterTest() throws Exception {
+		String schemaName = "db2dbTaskFetchSize".toLowerCase();
+		Connection con = null;
+		try {
+			con = TestUtilSql.connectPG();
+            TestUtilSql.createOrReplaceSchema(con, schemaName);
+
+            Statement stmt = con.createStatement();
+            stmt.execute("CREATE TABLE "+schemaName+".source_data(t_id serial, aint integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, atimestamp timestamp, aboolean boolean,geom_so geometry(POINT,2056))");
+            stmt.execute("INSERT INTO "+schemaName+".source_data(t_id, aint, adec, atext, adate, atimestamp, aboolean, geom_so) VALUES (1,2,3.4,'abc','2013-10-21','2015-02-16T08:35:45.000','true',ST_GeomFromText('POINT(2638000.0 1175250.0)',2056))");
+            stmt.execute("INSERT INTO "+schemaName+".source_data(t_id, aint, adec, atext, adate, atimestamp, aboolean, geom_so) VALUES (2,33,44.4,'asdf','2017-12-21','2015-03-16T11:35:45.000','true',ST_GeomFromText('POINT(2648000.0 1185250.0)',2056))");
+            
+            stmt.execute("CREATE TABLE "+schemaName+".target_data(t_id serial, aint integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, atimestamp timestamp, aboolean boolean,geom_so geometry(POINT,2056))");
+
+            stmt.close();
+            TestUtilSql.grantDataModsInSchemaToUser(con, schemaName, TestUtilSql.PG_CON_DMLUSER);
+
+            con.commit();
+            TestUtilSql.closeCon(con);
+
+		    GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSql.VARNAME_PG_CON_URI, TestUtilSql.PG_CON_URI)};
+		    TestUtil.runJob("jobs/db2dbTaskFetchSize", gvs);
+            
+            con = TestUtilSql.connectPG();
+            String countDestSql = String.format("select count(*) from %s.target_data", schemaName);
+            int countDest = TestUtilSql.execCountQuery(con, countDestSql);
+
+            Assert.assertEquals(
+                    "Rowcount in table source_data must be equal to rowcount in table target_data",
+                    2,
+                    countDest);
+		}
+		finally {
+            TestUtilSql.closeCon(con);
+        }
+	}
+	
+	
+	
+	
     /*
 Test's that a chain of statements executes properly and results in the correct
 number of inserts (corresponding to the last statement)
