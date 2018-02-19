@@ -100,6 +100,9 @@ pipeline {
                 // prepare files needed by the build
                 sh 'cp -R gretl/inttest/* test-tmp/inttest/'
                 sh 'ls -la test-tmp/inttest'
+
+                // prepare Oracle jdbc driver
+                sh 'mvn install:install-file -Dfile=gretl/lib/ojdbc7-12.1.0.1.jar -DgroupId=com.oracle -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=jar'
             }
         }
         stage('run int. test') {
@@ -166,6 +169,7 @@ pipeline {
                 sh 'mkdir build-tmp'
 
                 sh 'cp -R gretl/build/libs/* build-tmp'
+                sh 'cp -R gretl/lib/ojdbc7-*.jar build-tmp'
                 sh 'cp -R runtimeImage/gretl/* build-tmp'
                 sh 'cp -R dependencies.gradle build-tmp'
 
@@ -183,6 +187,10 @@ pipeline {
             steps {
                 script{
                     timeout(20) {
+                        if (currentBuild.result == 'UNSTABLE') {
+                            error('Stop unstable build here')
+                        }
+
                         def ocDir = tool params.ocToolName
                         withEnv(["PATH+OC=${ocDir}"]) {
                             sh "oc version"
