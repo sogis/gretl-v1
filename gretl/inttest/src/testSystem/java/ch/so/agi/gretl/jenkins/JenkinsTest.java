@@ -8,6 +8,7 @@ import com.offbytwo.jenkins.model.FolderJob;
 import com.offbytwo.jenkins.model.Job;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -28,7 +29,7 @@ import static org.hamcrest.core.Is.is;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JenkinsTest {
 
-    private static int AMOUNT_OF_CONFIGURED_GRETL_JOBS = 3;
+    private static int AMOUNT_OF_CONFIGURED_GRETL_JOBS = 4;
 
     private static String JOB_GENERATOR_JOB_NAME = "gretl-job-generator";
 
@@ -223,7 +224,7 @@ public class JenkinsTest {
         // then
         assertThat(job, not(nullValue()));
     }
-    
+
     @Ignore("until pod is ready")
     @Test
     public void test09shouldBuildOracleLibsPresentJob() throws Exception {
