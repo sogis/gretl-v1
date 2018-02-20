@@ -46,6 +46,21 @@ Fachlicher Kontext
 * **GRETL Jenkins**: Verwaltungsoberfläche / UI für GRETL Jobs.
 * **GRETL Runtime**: Runtime für GRETL Jobs.
 
+### GRETL-Job Generierung (Seeder-Job)
+Beim GRETL-Jenkins ist ein [Seeder-Job](https://github.com/sogis/openshift-jenkins/blob/master/configuration/jobs/administration/jobs/gretl-job-generator/config.xml)
+vor konfiguriert, welcher die GRETL-Jobs generiert. Der Job verwendet die [Job DSL](https://wiki.jenkins.io/display/JENKINS/Job+DSL+Plugin).
+
+![Jenkins_Seeder_Job](images/Jenkins_Seeder_Job.png)
+
+Der GRETL-Jenkins bekommt die Konfiguration vom Seeder-Job über Umgebungsvariablen:
+* **GRETL_JOB_REPO_URL**: git://github.com/sogis/gretljobs.git
+* **GRETL_JOB_FILE_PATH**: **
+* **GRETL_JOB_FILE_NAME**: gretl-job.groovy
+
+Dies ist die produktive Konfiguration auf das gretljobs Repo.
+Über alle Ordner hinweg werden Dateien mit dem Namen *gretl-job.groovy* gesucht.
+Für jede gefundene Datei/Skript wird ein Job mit der Definition aus dem Skript ([Jenkins Pipeline](https://jenkins.io/doc/book/pipeline/)) erstellt.
+Der Name vom Job ist der Name vom Ordner, wo das Skript gefunden wurde.
 
 Technischer Kontext
 -------------------
@@ -115,167 +130,6 @@ TODO
 
 ### &lt;Jenkins&gt;
 TODO
-
-Lösungsstrategie
-================
-
-Bausteinsicht
-=============
-
-Whitebox Gesamtsystem
----------------------
-
-***&lt;Übersichtsdiagramm&gt;***
-
-Begründung
-
-:   *&lt;Erläuternder Text&gt;*
-
-Enthaltene Bausteine
-
-:   *&lt;Beschreibung der enhaltenen Bausteine (Blackboxen)&gt;*
-
-Wichtige Schnittstellen
-
-:   *&lt;Beschreibung wichtiger Schnittstellen&gt;*
-
-### &lt;Name Blackbox 1&gt;
-
-*&lt;Zweck/Verantwortung&gt;*
-
-*&lt;Schnittstelle(n)&gt;*
-
-*&lt;(Optional) Qualitäts-/Leistungsmerkmale&gt;*
-
-*&lt;(Optional) Ablageort/Datei(en)&gt;*
-
-*&lt;(Optional) Erfüllte Anforderungen&gt;*
-
-*&lt;(optional) Offene Punkte/Probleme/Risiken&gt;*
-
-### &lt;Name Blackbox 2&gt;
-
-*&lt;Blackbox-Template&gt;*
-
-### &lt;Name Blackbox n&gt;
-
-*&lt;Blackbox-Template&gt;*
-
-### &lt;Name Schnittstelle 1&gt;
-
-…
-
-### &lt;Name Schnittstelle m&gt;
-
-Ebene 2
--------
-
-### Whitebox *&lt;Baustein 1&gt;*
-
-*&lt;Whitebox-Template&gt;*
-
-### Whitebox *&lt;Baustein 2&gt;*
-
-*&lt;Whitebox-Template&gt;*
-
-…
-
-### Whitebox *&lt;Baustein m&gt;*
-
-*&lt;Whitebox-Template&gt;*
-
-Ebene 3
--------
-
-### Whitebox &lt;\_Baustein x.1\_&gt;
-
-*&lt;Whitebox-Template&gt;*
-
-### Whitebox &lt;\_Baustein x.2\_&gt;
-
-*&lt;Whitebox-Template&gt;*
-
-### Whitebox &lt;\_Baustein y.1\_&gt;
-
-*&lt;Whitebox-Template&gt;*
-
-Laufzeitsicht
-=============
-
-*&lt;Bezeichnung Laufzeitszenario 1&gt;*
-----------------------------------------
-
--   &lt;hier Laufzeitdiagramm oder Ablaufbeschreibung einfügen&gt;
-
--   &lt;hier Besonderheiten bei dem Zusammenspiel der Bausteine in
-    diesem Szenario erläutern&gt;
-
-*&lt;Bezeichnung Laufzeitszenario 2&gt;*
-----------------------------------------
-
-…
-
-*&lt;Bezeichnung Laufzeitszenario n&gt;*
-----------------------------------------
-
-…
-
-Verteilungssicht
-================
-
-Infrastruktur Ebene 1
----------------------
-
-***&lt;Übersichtsdiagramm&gt;***
-
-Begründung
-
-:   *&lt;Erläuternder Text&gt;*
-
-Qualitäts- und/oder Leistungsmerkmale
-
-:   *&lt;Erläuternder Text&gt;*
-
-Zuordnung von Bausteinen zu Infrastruktur
-
-:   *&lt;Beschreibung der Zuordnung&gt;*
-
-Infrastruktur Ebene 2
----------------------
-
-### *&lt;Infrastrukturelement 1&gt;*
-
-*&lt;Diagramm + Erläuterungen&gt;*
-
-### *&lt;Infrastrukturelement 2&gt;*
-
-*&lt;Diagramm + Erläuterungen&gt;*
-
-…
-
-### *&lt;Infrastrukturelement n&gt;*
-
-*&lt;Diagramm + Erläuterungen&gt;*
-
-Querschnittliche Konzepte
-=========================
-
-*&lt;Konzept 1&gt;*
--------------------
-
-*&lt;Erklärung&gt;*
-
-*&lt;Konzept 2&gt;*
--------------------
-
-*&lt;Erklärung&gt;*
-
-…
-
-*&lt;Konzept n&gt;*
--------------------
-
-*&lt;Erklärung&gt;*
 
 Entwurfsentscheidungen
 ======================
