@@ -141,11 +141,10 @@ Create first the GRETL job test database.
 
 Template taken from [CrunchyData](https://github.com/CrunchyData/crunchy-containers).
 ```
-oc process -f openshift/templates/postgres-gis.json \
+oc process -f runtimeImage/pipeline/templates/postgres-gis.json \
   -p CCP_IMAGE_PREFIX=crunchydata \
   -p CCP_IMAGE_TAG=centos7-10.1-1.7.0 \
   -p POSTGRESQL_DATABASE='gretl' \
-  -p DATABASE_SERVICE_NAME='postgresql' \
   | oc apply -f -
 ```
 

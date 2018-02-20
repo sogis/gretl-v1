@@ -62,6 +62,26 @@ Stages der Pipeline:
 Übersicht:
 ![BuildPipeline](images/BuildPipeline.png)
 
+#### Build
+Es wird ein Gradle Build ausgeführt, dabei werden standardmässig Unit-Tests ausgeführt.
+
+In einem weiteren Schritt werden auch Tests gegen eine Datenbank ausgeführt.
+Diese Datenbank befindet sich in einem OpenShift Projekt. Sie wird über Port-Forwarding erreichbar gemacht.
+
+Es resultiert das getestete GRETL-Jar.
+
+#### Integration Tests
+Das gebuildete GRETL-jar wird über Gradle Build Dateien eingebunden um die Tasks zu Testen.
+Es sind eigentlich GRETL-Jobs mit Test-Inhalt.
+
+Auch hier wird die Test-Datenbank aus dem OpenShift Projekt benutzt.
+
+#### OpenShift Build (Docker)
+Wenn alle Tests grün sind, wird im OpenShift Projekt ein Build gestartet.
+Dies ist ein Docker Build, wobei das GRETL-Jar mit einem base Image verheiratet wird.
+Darin werden auch alle abhängenden Libraries abgelegt.
+
+Das Docker Image wird am Schluss in der OpenShift Registry abgelegt und ist über den ImageStream vom Build Projekt verfügbar. 
 
 ### &lt;Gradle&gt;
 TODO
