@@ -56,13 +56,16 @@ Zum Erstellen, Testen und veröffentlichen der GRETL-Runtime als Docker Image we
 #### Build und Test
 Dieses Skript definiert die Build Logik: **runtimeImage/pipeline/gretl-runtime-build.groovy**
 
+Es wird ein OpenShift Projekt mit einer PostgreSQL Postgis Datenbank benötigt.
+Das Setup ist im [README_BUILD.md](runtimeImage/pipeline/README_BUILD.md) beschrieben.
+
 Stages der Pipeline:
 ![GRETL-Runtime_stages](images/GRETL-Runtime_stages.png)
 
 Übersicht:
 ![BuildPipeline](images/BuildPipeline.png)
 
-#### Build
+##### Build
 Es wird ein Gradle Build ausgeführt, dabei werden standardmässig Unit-Tests ausgeführt.
 
 In einem weiteren Schritt werden auch Tests gegen eine Datenbank ausgeführt.
@@ -70,18 +73,42 @@ Diese Datenbank befindet sich in einem OpenShift Projekt. Sie wird über Port-Fo
 
 Es resultiert das getestete GRETL-Jar.
 
-#### Integration Tests
+##### Integration Tests
 Das gebuildete GRETL-jar wird über Gradle Build Dateien eingebunden um die Tasks zu Testen.
 Es sind eigentlich GRETL-Jobs mit Test-Inhalt.
 
 Auch hier wird die Test-Datenbank aus dem OpenShift Projekt benutzt.
 
-#### OpenShift Build (Docker)
+##### OpenShift Build (Docker)
 Wenn alle Tests grün sind, wird im OpenShift Projekt ein Build gestartet.
 Dies ist ein Docker Build, wobei das GRETL-Jar mit einem base Image verheiratet wird.
 Darin werden auch alle abhängenden Libraries abgelegt.
 
 Das Docker Image wird am Schluss in der OpenShift Registry abgelegt und ist über den ImageStream vom Build Projekt verfügbar. 
+
+
+#### Systemtest und Publikation
+Dieses Skript definiert die Systemtest und Docker Hub Push Logik: **runtimeImage/pipeline/gretl-system-test.groovy**
+
+Es wird ein OpenShift Projekt mit dem GRETL-Jenkins und einer PostgreSQL Postgis Datenbank benötigt.
+Das Setup ist im [README_BUILD.md](runtimeImage/pipeline/README_BUILD.md) beschrieben.
+
+Stages der Pipeline:
+![GRETL-Systemtest_stages](images/GRETL-Systemtest_stages.png)
+
+Übersicht:
+![System_Test_Pipeline](images/System_Test_Pipeline.png)
+
+##### System Tests
+Test Vorbereitung und Ausführung:
+* Die Datenbank wird initialisiert. 
+* Mittels Port-Forwarding wird auf den GRETL-Jenkins Pod zugegriffen.
+* Die System Tests werden über Gradle gestartet.
+* Die Steuerung vom Jenkins passiert über eine API-Library.
+
+Bei den Tests werden zuerst alle Jobs, bis auf den Seeder Job, gelöscht.
+Danach wird der Seeder gestartet, welcher die GRETL-Jobs erstellt.
+Diese Jobs werden danach auf eine erfolgreiche Ausführung überprüft.
 
 ### &lt;Gradle&gt;
 TODO
