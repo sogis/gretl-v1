@@ -29,7 +29,7 @@ import static org.hamcrest.core.Is.is;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JenkinsTest {
 
-    private static int AMOUNT_OF_CONFIGURED_GRETL_JOBS = 3;
+    private static int AMOUNT_OF_CONFIGURED_GRETL_JOBS = 4;
 
     private static String JOB_GENERATOR_JOB_NAME = "gretl-job-generator";
 
