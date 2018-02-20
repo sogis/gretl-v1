@@ -1,30 +1,43 @@
 # gretl
 
-The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql-centric (geo)data etl. gretl = gradle etl.
+The [Gradle](http://www.gradle.org) gretl plugin extends gradle for use as a sql-centric
+(geo)data etl. gretl = gradle etl.
 
-## Features
-
-* Database
-  * Db2Db
-  * SQL executor
+This repository consists of three parts for the GRETL system:
+* GRETL jar (Gradle plugin)
+    * [gretl](gretl) folder
+* GRETL runtime (Docker Image)
+    * [runtimeImage](runtimeImage) folder, [README](runtimeImage/README.md)
+* GRETL system configuration (OpenShift project)
+    * [serviceConfig](serviceConfig) folder, [README](serviceConfig/README.md)
 
 ## Licencse
 
 gretl is licensed under the [MIT License](LICENSE).
 
 ## Architecture
-The description of the architecture can be found here: [docs/architecture/](docs/architecture/architecture.md)
 
+The description of the architecture can be found here: [docs/architecture/](docs/architecture/architecture.md)
 
 ## Status
 
 gretl is in development state.
 
-## System requirements
+## GRETL Gradle plugin
 
-For the current version of gretl, you will need a JRE (Java Runtime Environment) installed on your system, version 1.8 or later and gradle, version 3.4 or later. For convenience use the gradle wrapper.
+### Features
 
-## How to use?
+* Database
+  * Db2Db
+  * SQL executor
+
+### System requirements
+
+For the current version of gretl, you will need a JRE (Java Runtime Environment) installed
+on your system, version 1.8 or later and gradle, version 3.4 or later.
+For convenience use the gradle wrapper.
+
+### How to use?
 
 Add this to your `build.gradle`:
 
@@ -42,7 +55,7 @@ buildscript {
 apply plugin: 'ch.so.agi.gretl'
 ```
 
-### Supported databases
+#### Supported databases
 
 The database related tasks (`db2db` and `sqlexecutor`) should work with any database with an jdbc driver available. At the moment only PostgreSQL and SQLite are supported (because of the dependency definined in the project's `build.gradle`) and tested:
 
@@ -50,7 +63,7 @@ The database related tasks (`db2db` and `sqlexecutor`) should work with any data
  * SQLite: `jdbc:sqlite:/road/to/mandalay.sqlite`
 
 
-### Db2Db
+#### Db2Db
 
 ```
 import ch.so.agi.gretl.steps.*
@@ -69,7 +82,7 @@ Copies data from a source database (`sourceDb`) to target database (`targetDb`).
 
 `transferSets`: A list of `TransferSet`. A transfer set consists of the path to the file containing the sql select statement, the destination table and the option to delete the destination table contents before adding the new data.
 
-### SQL executor
+#### SQL executor
 
 ```
 import ch.so.agi.gretl.steps.*
@@ -85,6 +98,3 @@ This task can be used to execute _any_ sql statement in one database.
 `database`: A list with a valid jdbc database url, the login name and the password.
 
 `sqlFiles`: A list with files names containing _any_ sql statements.
-
-## OpenShift build environment
-See the build read-me: [README_BUILD.md](openshift/README_BUILD.md)

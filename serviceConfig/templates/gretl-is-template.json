@@ -39,7 +39,7 @@
       "name": "GRETL_RUNTIME_IMAGE",
       "displayName": "Docker image of GRETL runtime",
       "description": "Docker image and version of GRETL runtime to be pulled from Dockerhub.",
-      "value": "chrira/jobrunner:latest"
+      "value": "sogis/gretl-runtime:latest"
     }
   ]
 }

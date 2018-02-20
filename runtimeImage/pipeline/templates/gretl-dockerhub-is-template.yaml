@@ -34,7 +34,7 @@ parameters:
   - name: GRETL_DOCKER_HUB_IMAGE
     displayName: Docker Hub image of GRETL runtime
     description: Docker Hub image repo, name and version of builded docker image.
-    value: chrira/jobrunner:latest
+    value: sogis/gretl-runtime:latest
     required: true
   - name: GRETL_RUNTIME_IMAGESTREAM
     displayName: GRETL runtime imagestream

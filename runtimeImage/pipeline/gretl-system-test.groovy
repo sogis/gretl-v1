@@ -8,12 +8,12 @@
  * - openShiftCluster: OpenShift Cluster to be used. (text parameter)
  * - openShiftProject: OpenShift project to be used. (text parameter)
  * - ocToolName: Jenkins custom tool name of oc client. (text parameter)
- * - openShiftDeployTokenName: amount of tags to keep. (text parameter)
- *
- * - jenkinsUser
- * - jenkinsToken
- * The API token is available in your personal configuration page. Click your name on the top right corner on every page, then click "Configure" to see your API token. (The URL $root/me/configure is a good shortcut.) You can also change your API token from here.
- *
+ * - openShiftDeployTokenName: secret token of the service account. (text parameter)
+ * - jenkinsUser: name of Jenkins user to login into the Jenkins API (text parameter)
+ * - jenkinsToken: login token of the Jenkins user to login into the Jenkins API (password parameter)
+ *                 The API token is available in your personal configuration page.
+ *                 Click your name on the top right corner on every page, then click "Configure" to see your API token.
+ *                 (The URL $root/me/configure is a good shortcut.)
  * Optional parameter:
  * - buildTime: Test build time in minutes. Control over port forward duration. (text parameter)
  */

@@ -4,7 +4,7 @@
  * - openShiftCluster: OpenShift Cluster to be used. (text parameter)
  * - openShiftProject: OpenShift project to be used (text parameter)
  * - ocToolName: Jenkins custom tool name of oc client (text parameter)
- * - openShiftDeployTokenName: amount of tags to keep (text parameter)
+ * - openShiftDeployTokenName: secret token of the service account. (text parameter)
  */
 
 pipeline {

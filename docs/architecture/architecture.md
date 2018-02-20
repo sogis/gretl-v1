@@ -18,13 +18,6 @@ Qualitätsziele
 --------------
 * Standartisierter und automatisierter Build Prozess.
 
-Stakeholder
------------
-
-| Rolle | Kontakt | Erwartungshaltung |
-| --- | --- | --- |
-| *&lt;Rolle-1&gt;* | *&lt;Kontakt-1&gt;* | *&lt;Erwartung-1&gt;* |
-| *&lt;Rolle-2&gt;* | *&lt;Kontakt-2&gt;* | *&lt;Erwartung-2&gt;* |
 
 Randbedingungen
 ===============
@@ -53,177 +46,90 @@ Fachlicher Kontext
 * **GRETL Jenkins**: Verwaltungsoberfläche / UI für GRETL Jobs.
 * **GRETL Runtime**: Runtime für GRETL Jobs.
 
+### GRETL-Job Generierung (Seeder-Job)
+Beim GRETL-Jenkins ist ein [Seeder-Job](https://github.com/sogis/openshift-jenkins/blob/master/configuration/jobs/administration/jobs/gretl-job-generator/config.xml)
+vor konfiguriert, welcher die GRETL-Jobs generiert. Der Job verwendet die [Job DSL](https://wiki.jenkins.io/display/JENKINS/Job+DSL+Plugin).
+
+![Jenkins_Seeder_Job](images/Jenkins_Seeder_Job.png)
+
+Der GRETL-Jenkins bekommt die Konfiguration vom Seeder-Job über Umgebungsvariablen:
+* **GRETL_JOB_REPO_URL**: git://github.com/sogis/gretljobs.git
+* **GRETL_JOB_FILE_PATH**: **
+* **GRETL_JOB_FILE_NAME**: gretl-job.groovy
+
+Dies ist die produktive Konfiguration auf das gretljobs Repo.
+Über alle Ordner hinweg werden Dateien mit dem Namen *gretl-job.groovy* gesucht.
+Für jede gefundene Datei/Skript wird ein Job mit der Definition aus dem Skript ([Jenkins Pipeline](https://jenkins.io/doc/book/pipeline/)) erstellt.
+Der Name vom Job ist der Name vom Ordner, wo das Skript gefunden wurde.
 
 Technischer Kontext
 -------------------
 
-**&lt;Diagramm oder Tabelle&gt;**
+### Build Pipeline
+Zum Erstellen, Testen und veröffentlichen der GRETL-Runtime als Docker Image werden Jenkins Pipelines verwendet.
 
-**&lt;optional: Erläuterung der externen technischen
-Schnittstellen&gt;**
+#### Build und Test
+Dieses Skript definiert die Build Logik: **runtimeImage/pipeline/gretl-runtime-build.groovy**
 
-**&lt;Mapping fachliche auf technische Schnittstellen&gt;**
+Es wird ein OpenShift Projekt mit einer PostgreSQL Postgis Datenbank benötigt.
+Das Setup ist im [README_BUILD.md](runtimeImage/pipeline/README_BUILD.md) beschrieben.
 
-Lösungsstrategie
-================
+Stages der Pipeline:
+![GRETL-Runtime_stages](images/GRETL-Runtime_stages.png)
 
-Bausteinsicht
-=============
+Übersicht:
+![BuildPipeline](images/BuildPipeline.png)
 
-Whitebox Gesamtsystem
----------------------
+##### Build
+Es wird ein Gradle Build ausgeführt, dabei werden standardmässig Unit-Tests ausgeführt.
 
-***&lt;Übersichtsdiagramm&gt;***
+In einem weiteren Schritt werden auch Tests gegen eine Datenbank ausgeführt.
+Diese Datenbank befindet sich in einem OpenShift Projekt. Sie wird über Port-Forwarding erreichbar gemacht.
 
-Begründung
+Es resultiert das getestete GRETL-Jar.
 
-:   *&lt;Erläuternder Text&gt;*
+##### Integration Tests
+Das gebuildete GRETL-jar wird über Gradle Build Dateien eingebunden um die Tasks zu Testen.
+Es sind eigentlich GRETL-Jobs mit Test-Inhalt.
 
-Enthaltene Bausteine
+Auch hier wird die Test-Datenbank aus dem OpenShift Projekt benutzt.
 
-:   *&lt;Beschreibung der enhaltenen Bausteine (Blackboxen)&gt;*
+##### OpenShift Build (Docker)
+Wenn alle Tests grün sind, wird im OpenShift Projekt ein Build gestartet.
+Dies ist ein Docker Build, wobei das GRETL-Jar mit einem base Image verheiratet wird.
+Darin werden auch alle abhängenden Libraries abgelegt.
 
-Wichtige Schnittstellen
+Das Docker Image wird am Schluss in der OpenShift Registry abgelegt und ist über den ImageStream vom Build Projekt verfügbar. 
 
-:   *&lt;Beschreibung wichtiger Schnittstellen&gt;*
 
-### &lt;Name Blackbox 1&gt;
+#### Systemtest und Publikation
+Dieses Skript definiert die Systemtest und Docker Hub Push Logik: **runtimeImage/pipeline/gretl-system-test.groovy**
 
-*&lt;Zweck/Verantwortung&gt;*
+Es wird ein OpenShift Projekt mit dem GRETL-Jenkins und einer PostgreSQL Postgis Datenbank benötigt.
+Das Setup ist im [README_BUILD.md](runtimeImage/pipeline/README_BUILD.md) beschrieben.
 
-*&lt;Schnittstelle(n)&gt;*
+Stages der Pipeline:
+![GRETL-Systemtest_stages](images/GRETL-Systemtest_stages.png)
 
-*&lt;(Optional) Qualitäts-/Leistungsmerkmale&gt;*
+Übersicht:
+![System_Test_Pipeline](images/System_Test_Pipeline.png)
 
-*&lt;(Optional) Ablageort/Datei(en)&gt;*
+##### System Tests
+Test Vorbereitung und Ausführung:
+* Die Datenbank wird initialisiert. 
+* Mittels Port-Forwarding wird auf den GRETL-Jenkins Pod zugegriffen.
+* Die System Tests werden über Gradle gestartet.
+* Die Steuerung vom Jenkins passiert über eine API-Library.
 
-*&lt;(Optional) Erfüllte Anforderungen&gt;*
+Bei den Tests werden zuerst alle Jobs, bis auf den Seeder Job, gelöscht.
+Danach wird der Seeder gestartet, welcher die GRETL-Jobs erstellt.
+Diese Jobs werden danach auf eine erfolgreiche Ausführung überprüft.
 
-*&lt;(optional) Offene Punkte/Probleme/Risiken&gt;*
+### &lt;Gradle&gt;
+TODO
 
-### &lt;Name Blackbox 2&gt;
-
-*&lt;Blackbox-Template&gt;*
-
-### &lt;Name Blackbox n&gt;
-
-*&lt;Blackbox-Template&gt;*
-
-### &lt;Name Schnittstelle 1&gt;
-
-…
-
-### &lt;Name Schnittstelle m&gt;
-
-Ebene 2
--------
-
-### Whitebox *&lt;Baustein 1&gt;*
-
-*&lt;Whitebox-Template&gt;*
-
-### Whitebox *&lt;Baustein 2&gt;*
-
-*&lt;Whitebox-Template&gt;*
-
-…
-
-### Whitebox *&lt;Baustein m&gt;*
-
-*&lt;Whitebox-Template&gt;*
-
-Ebene 3
--------
-
-### Whitebox &lt;\_Baustein x.1\_&gt;
-
-*&lt;Whitebox-Template&gt;*
-
-### Whitebox &lt;\_Baustein x.2\_&gt;
-
-*&lt;Whitebox-Template&gt;*
-
-### Whitebox &lt;\_Baustein y.1\_&gt;
-
-*&lt;Whitebox-Template&gt;*
-
-Laufzeitsicht
-=============
-
-*&lt;Bezeichnung Laufzeitszenario 1&gt;*
-----------------------------------------
-
--   &lt;hier Laufzeitdiagramm oder Ablaufbeschreibung einfügen&gt;
-
--   &lt;hier Besonderheiten bei dem Zusammenspiel der Bausteine in
-    diesem Szenario erläutern&gt;
-
-*&lt;Bezeichnung Laufzeitszenario 2&gt;*
-----------------------------------------
-
-…
-
-*&lt;Bezeichnung Laufzeitszenario n&gt;*
-----------------------------------------
-
-…
-
-Verteilungssicht
-================
-
-Infrastruktur Ebene 1
----------------------
-
-***&lt;Übersichtsdiagramm&gt;***
-
-Begründung
-
-:   *&lt;Erläuternder Text&gt;*
-
-Qualitäts- und/oder Leistungsmerkmale
-
-:   *&lt;Erläuternder Text&gt;*
-
-Zuordnung von Bausteinen zu Infrastruktur
-
-:   *&lt;Beschreibung der Zuordnung&gt;*
-
-Infrastruktur Ebene 2
----------------------
-
-### *&lt;Infrastrukturelement 1&gt;*
-
-*&lt;Diagramm + Erläuterungen&gt;*
-
-### *&lt;Infrastrukturelement 2&gt;*
-
-*&lt;Diagramm + Erläuterungen&gt;*
-
-…
-
-### *&lt;Infrastrukturelement n&gt;*
-
-*&lt;Diagramm + Erläuterungen&gt;*
-
-Querschnittliche Konzepte
-=========================
-
-*&lt;Konzept 1&gt;*
--------------------
-
-*&lt;Erklärung&gt;*
-
-*&lt;Konzept 2&gt;*
--------------------
-
-*&lt;Erklärung&gt;*
-
-…
-
-*&lt;Konzept n&gt;*
--------------------
-
-*&lt;Erklärung&gt;*
+### &lt;Jenkins&gt;
+TODO
 
 Entwurfsentscheidungen
 ======================
@@ -234,7 +140,7 @@ Gradle als Job Runtime
 ### Fragestellung
 Wieso wird Gradle als Runtime eingesetzt?
 
-### Entscheigung
+### Entscheidung
 TODO
 
 GRETL als Gradle Plugin
@@ -243,7 +149,7 @@ GRETL als Gradle Plugin
 ### Fragestellung
 Wieso wird die ETL Logik als Gradle Plugin geschrieben?
 
-### Entscheigung
+### Entscheidung
 TODO
 
 Jenkins als Benutzeroberfläche
@@ -252,7 +158,7 @@ Jenkins als Benutzeroberfläche
 ### Fragestellung
 Warum ist Jenkins das UI?
 
-### Entscheigung
+### Entscheidung
 TODO
 
 
@@ -266,7 +172,7 @@ Wieso wird für jede Job Ausführung ein eigener Container gestartet?
 1. Einzelner Server läuft und steht für Jobs zur Verfügung.
 2. Jeder Job hat einen laufenden Container.
 
-### Entscheigung
+### Entscheidung
 Es wird das Prinzip vom Build-Container eingesetzt.
 Da das Scheduling von Jenkins übernommen wird, braucht es keine lang-laufenden Container.
 Zum Ausnützen der Stärken von Container Plattformen werden kurz-lebige Container eingesetzt.
@@ -282,7 +188,7 @@ Wieso ist die GRETL Runtime als Jenkins Slave realisiert?
 ### Alternativen
 1. Einzelner Server läuft immer und arbeitet Jobs bei Aufruf ab.
 
-### Entscheigung
+### Entscheidung
 TODO
 
 
