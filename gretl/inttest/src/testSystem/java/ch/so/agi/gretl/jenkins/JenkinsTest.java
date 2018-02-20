@@ -8,6 +8,7 @@ import com.offbytwo.jenkins.model.FolderJob;
 import com.offbytwo.jenkins.model.Job;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -223,7 +224,7 @@ public class JenkinsTest {
         // then
         assertThat(job, not(nullValue()));
     }
-    
+
     @Ignore("until pod is ready")
     @Test
     public void test09shouldBuildOracleLibsPresentJob() throws Exception {
