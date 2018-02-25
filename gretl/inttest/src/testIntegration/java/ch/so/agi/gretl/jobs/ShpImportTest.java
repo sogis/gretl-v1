@@ -24,7 +24,7 @@ public class ShpImportTest {
             con = TestUtilSql.connectPG();
             TestUtilSql.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
-            s1.execute("CREATE TABLE "+schemaName+".importdata(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, geometrie geometry(POINT,2056), aextra varchar(40))");
+            s1.execute("CREATE TABLE "+schemaName+".importdata_batchsize(t_id serial, \"Aint\" integer, adec decimal(7,1), atext varchar(40), aenum varchar(120),adate date, geometrie geometry(POINT,2056), aextra varchar(40))");
             s1.close();
             TestUtilSql.grantDataModsInSchemaToUser(con, schemaName, TestUtilSql.PG_CON_DMLUSER);
 
@@ -32,13 +32,13 @@ public class ShpImportTest {
             TestUtilSql.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSql.VARNAME_PG_CON_URI, TestUtilSql.PG_CON_URI)};
-            TestUtil.runJob("jobs/ShpImport", gvs);
+            TestUtil.runJob("jobs/ShpImportBatchSize", gvs);
 
             //reconnect to check results
             con = TestUtilSql.connectPG();
 
             Statement s2 = con.createStatement();
-            ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata WHERE t_id=1"); 
+            ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata_batchsize WHERE t_id=1"); 
             if(!rs.next()) {
                 fail();
             }

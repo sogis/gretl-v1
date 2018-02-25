@@ -42,9 +42,13 @@ public class CsvImport extends DefaultTask {
     @Input
     @Optional
     public String schemaName=null;
+    @Input
     @Optional
     public String encoding=null;
-    
+    @Input
+    @Optional
+    public Integer batchSize=null;
+
     @TaskAction
     public void importData()
     {
@@ -73,6 +77,9 @@ public class CsvImport extends DefaultTask {
         }
         if(encoding!=null) {
             settings.setValue(CsvReader.ENCODING, encoding);
+        }
+        if(batchSize!=null) {
+        		settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
         }
         
         File data=this.getProject().file(dataFile);

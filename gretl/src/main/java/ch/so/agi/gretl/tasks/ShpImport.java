@@ -35,7 +35,10 @@ public class ShpImport extends DefaultTask {
     @Input
     @Optional
     public String encoding=null;
-    
+    @Input
+    @Optional
+    public Integer batchSize=null;
+
     @TaskAction
     public void importData()
     {
@@ -58,7 +61,9 @@ public class ShpImport extends DefaultTask {
         if(encoding!=null) {
             settings.setValue(ShapeReader.ENCODING, encoding);
         }
-        
+        if(batchSize!=null) {
+    			settings.setValue(IoxWkfConfig.SETTING_BATCHSIZE, batchSize.toString());
+        }
         File data=this.getProject().file(dataFile);
         java.sql.Connection conn=null;
         try {
