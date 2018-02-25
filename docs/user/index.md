@@ -316,6 +316,8 @@ sourceDb | Datenbank aus der gelesen werden soll
 targetDb | Datenbank in die geschrieben werden soll
 transferSets  | Eine Liste von ``TransferSet``s.
 sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert.
+batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). Für sehr grosse Tabellen muss ein kleinerer Wert gewählt werden.
+fetchSize | Anzahl der Records, die auf einmal vom Datenbank-Cursor von der Quell-Datenbank zurückgeliefert werden (Standard: 5000). Für sehr grosse Tabellen muss ein kleinerer Wert gewählt werden.
 
 Eine ``TransferSet`` ist 
 

@@ -25,9 +25,11 @@ public class Db2DbStep {
 
     public static final String PREFIX = "ch.so.agi.gretl.steps.Db2DbStep";
     public static final String SETTING_BATCH_SIZE = PREFIX+".batchSize";
+    public static final String SETTING_FETCH_SIZE = PREFIX+".fetchSize";
     private static GretlLogger log = LogEnvironment.getLogger(Db2DbStep.class);
     private String taskName;
     private int batchSize=5000;
+    private int fetchSize=5000;
 
 
     public Db2DbStep() {
@@ -67,6 +69,19 @@ public class Db2DbStep {
                 
             }
         }
+        
+        String fetchSizeStr=settings.getValue(SETTING_FETCH_SIZE);
+        if(fetchSizeStr!=null) {
+            try {
+                int newFetchSize=Integer.parseInt(fetchSizeStr);
+                if(newFetchSize>=0) { // fetchSize 0 -> fetch all at once
+                    fetchSize=newFetchSize;
+                }
+            }catch(NumberFormatException e) {
+                
+            }
+        }
+        
         log.lifecycle(String.format("Start Db2DbStep(Name: %s SourceDb: %s TargetDb: %s Transfers: %s)", taskName, sourceDb, targetDb, transferSets));
 
         Connection sourceDbConnection = null;
@@ -208,6 +223,7 @@ public class Db2DbStep {
      */
     private ResultSet createResultSet(Connection srcCon, String sqlSelectStatement) throws SQLException {
         Statement SQLStatement = srcCon.createStatement();
+        SQLStatement.setFetchSize(fetchSize);
         ResultSet rs = SQLStatement.executeQuery(sqlSelectStatement);
 
         return rs;

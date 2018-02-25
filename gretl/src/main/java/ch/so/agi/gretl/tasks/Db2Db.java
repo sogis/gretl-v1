@@ -40,6 +40,9 @@ public class Db2Db extends DefaultTask {
     public Integer batchSize=null;
     @Input
     @Optional
+    public Integer fetchSize=null;
+    @Input
+    @Optional
     public java.util.Map<String,String> sqlParameters=null;
 
     @TaskAction
@@ -52,6 +55,9 @@ public class Db2Db extends DefaultTask {
         Settings settings=new Settings();
         if(batchSize!=null) {
             settings.setValue(Db2DbStep.SETTING_BATCH_SIZE, batchSize.toString());
+        }
+        if(fetchSize!=null) {
+            settings.setValue(Db2DbStep.SETTING_FETCH_SIZE, fetchSize.toString());
         }
         try {
             Db2DbStep step = new Db2DbStep(taskName);
