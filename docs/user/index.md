@@ -201,13 +201,14 @@ task csvimport(type: CsvImport){
 Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank in die importiert werden soll
-dataFile  | Name der CSV Datei, die gelesen werden soll
+dataFile  | Name der CSV-Datei, die gelesen werden soll
 tableName | Name der DB-Tabelle, in die importiert werden soll
 schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 firstLineIsHeader | Definiert, ob die CSV-Datei einer Headerzeile hat, oder nicht. Default: true
 valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes vorhanden ist. Default ``"``
 valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten interpretiert werden soll. Default: ``,``
 encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
 
 Die Tabelle kann weitere Spalten enthalten, die in der CSV-Datei nicht vorkommen. Sie müssen
 aber NULLable sein, oder einen Default-Wert definiert haben.
@@ -633,10 +634,11 @@ task shpimport(type: ShpImport){
 Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank in die importiert werden soll
-dataFile  | Name der SHP Datei, die gelesen werden soll
+dataFile  | Name der SHP-Datei, die gelesen werden soll
 tableName | Name der DB-Tabelle, in die importiert werden soll
 schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
+batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
 
 Die Tabelle kann weitere Spalten enthalten, die in der SHP-Datei nicht vorkommen. Sie müssen
 aber NULLable sein, oder einen Default-Wert definiert haben.
