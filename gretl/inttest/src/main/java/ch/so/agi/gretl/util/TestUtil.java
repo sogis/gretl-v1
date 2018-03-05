@@ -124,18 +124,18 @@ public class TestUtil {
     public static String buildRuntimeCommand(){
         String runtimeCommand = null;
 
+        Path repoRootDir = Paths.get(INTTESTFOLDER_ABS_PATH).getParent().getParent();
+
         if(TESTTYPE_JAR.equalsIgnoreCase(TESTTYPE)) { //needs call to gradle(w) with init.gradle
             String tool="gradlew";
             if(System.getProperty("os.name").contains("Windows")){
                 tool="gradlew.bat";
             }
 
-            String toolWithPath = Paths.get(INTTESTFOLDER_ABS_PATH).resolve(tool).toString();
-
+            String toolWithPath = repoRootDir.resolve(tool).toString();
             runtimeCommand = String.format("%s --init-script ../init.gradle", toolWithPath);
         }
         else if (TESTTYPE_IMAGE.equalsIgnoreCase(TESTTYPE)){
-            Path repoRootDir = Paths.get(INTTESTFOLDER_ABS_PATH).getParent().getParent().getParent();
             runtimeCommand = repoRootDir.resolve("runtimeImage/start-gretl.sh").toString();
         }
 

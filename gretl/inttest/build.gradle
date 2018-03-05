@@ -97,5 +97,5 @@ tasks.withType(Test) {
         findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
     println 'dburi: ' + getSystemProperties().getAt(GRETLTEST_DBURI)
 
-    systemProperty('GRETL_INTTESTFOLDER_ABS_PATH', new File(".").absolutePath)
+    systemProperty('GRETL_INTTESTFOLDER_ABS_PATH', projectDir)
 }
