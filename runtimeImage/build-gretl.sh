@@ -31,17 +31,12 @@ build_timestamp=$(date '+%Y-%m-%d_%H:%M:%S')
 #echo date: `date '+%Y-%m-%d %H:%M:%S'` >> gretl/build.info
 
 docker build \
-    --no-cache --force-rm -t gretl-runtime \
+    --no-cache --force-rm -t sogis/gretl-runtime \
     --label gretl.created=$build_timestamp --label gretl.git_commit=$githash --label gretl.travis_build=$buildnum \
     -f gretl/Dockerfile gretl
 
 rm gretl/__jars4image/*
-rm gretl/build.info
 
 # look into the container:
 # docker run -it --entrypoint=/bin/sh gretl-runtime
-
-#todo
-#image build auf travis
-#überflüssiges build.gradle weg
 

@@ -44,16 +44,7 @@ publishing {
 		}
 	}
 }
-  
 
-/*
-test {
-    exclude 'ch/so/agi/gretl/steps/**.*'
-
-    //testLogging.showStandardStreams = true
-    testLogging.exceptionFormat = 'full'
-}
-*/
 
 test{
     useJUnit{
@@ -75,7 +66,7 @@ task jardist(type: Copy){
 	from jar
 	from configurations.runtimeClasspath
 	// version = '1.0.6'
-	
+
 }
 
 // Transfer the required configuration variables to the unit test code.
@@ -85,62 +76,4 @@ tasks.withType(Test) {
     systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
 }
 
-publishing{
-    publications{
-        mavenJava(MavenPublication){
-            from components.java
-        }
-    }
-    repositories{
-        maven{
-            name 'AIO AGI Artifactory'
-            url env('GRETL_JAR_URL')
-            credentials {
-                username env('GRETL_JAR_USER')
-                password env('GRETL_JAR_PASS')
-            }
-        }
-        maven{
-            name 'Public'
-            url System.getProperty('repos_url')
-            credentials {
-                username System.getProperty('repos_usr')
-                password System.getProperty('repos_pwd')
-            }
-        }
-    }
-}
 
-/*
-task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
-    exclude 'ch/so/agi/gretl/logging/**.*'
-    exclude 'ch/so/agi/gretl/util/**.*'
-    exclude 'ch/so/agi/gretl/testutil/**.*'
-
-    // when Gradle forks a new Java process, it does not automatically pass the
-    // environment variable values along to the new environment. One has to
-    // explicitly pass these variables
-    systemProperty 'dburl', System.getProperty('dburl')
-    systemProperty 'dbusr', System.getProperty('dbusr','ddluser')
-    systemProperty 'dbpwd', System.getProperty('dbpwd','ddluser')
-
-    //testLogging.showStandardStreams = true
-    testLogging.exceptionFormat = 'full'
-}
-
-configure(dbTest) {
-    group = 'Verification'
-    description = 'Runs tests with dockered database'
-}
-*/
-
-
-
-/*
-tasks.withType(FindBugs) {
-    reports {
-        xml.enabled false
-        html.enabled true
-    }
-}
-*/

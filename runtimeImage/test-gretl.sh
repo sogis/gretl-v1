@@ -1,4 +1,4 @@
-#!/bin/bash
+""#!/bin/bash
 
 # requires GRETL jobs to be cloned beside the gretl repository.
 # requires test postgres db to be running on the host with port: 5432

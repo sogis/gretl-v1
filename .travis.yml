@@ -32,10 +32,11 @@ before_script:
   
 script:
   - gradle -Dgretltest_dburi=jdbc:postgresql:gretl build gretl:dbTest gretl:publishToMavenLocal
-  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl --project-dir gretl/inttest testIntegration
+  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl --project-dir gretl/inttest testJar
   - cd runtimeImage/
   - ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
   - cd ..
+  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl --project-dir gretl/inttest testImage
 
 deploy:
   - provider: script

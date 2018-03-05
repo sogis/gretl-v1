@@ -44,7 +44,9 @@ dependencies{
     testSystemCompile 'com.offbytwo.jenkins:jenkins-client:0.3.7'
 }
 
-task testIntegration(type: Test) {
+task testJar(type: Test) {
+    systemProperty('GRETL_TESTTYPE', 'jar')
+
     group = 'Verification'
     description = 'Runs integration tests against the gretl jar'
     
@@ -56,7 +58,19 @@ task testIntegration(type: Test) {
     classpath = sourceSets.testIntegration.runtimeClasspath
 }
 
+task testImage(type: Test){
+    systemProperty('GRETL_TESTTYPE', 'image')
 
+    group = 'Verification'
+    description = 'Runs integration tests against the gretl jar'
+
+    // show standard out and standard error of the test JVM(s) on the console
+    testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
+
+    ignoreFailures = Boolean.getBoolean("test.ignoreFailures")
+    testClassesDirs = sourceSets.testIntegration.output.classesDirs
+    classpath = sourceSets.testIntegration.runtimeClasspath
+}
 
 task testSystem(type: Test) {
     group = 'Verification'
@@ -82,4 +96,6 @@ tasks.withType(Test) {
     systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ?
         findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
     println 'dburi: ' + getSystemProperties().getAt(GRETLTEST_DBURI)
+
+    systemProperty('GRETL_INTTESTFOLDER_ABS_PATH', new File(".").absolutePath)
 }
