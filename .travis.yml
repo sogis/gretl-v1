@@ -1,9 +1,15 @@
+sudo: required
+
 language: java
+
+services:
+  - docker
   
 branches:
   only:
     - master
     - stable
+    - dockertravis
 
 addons:
   postgresql: "9.6"
@@ -24,9 +30,12 @@ before_script:
     - psql -c 'create extension "uuid-ossp";' -d gretl -U postgres
     - psql -c 'select postgis_full_version();' -d gretl -U postgres
   
-script: 
+script:
   - gradle -Dgretltest_dburi=jdbc:postgresql:gretl build gretl:dbTest gretl:publishToMavenLocal
   - gradle -Dgretltest_dburi=jdbc:postgresql:gretl --project-dir gretl/inttest testIntegration
+  - cd runtimeImage/
+  - ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
+  - cd ..git
 
 deploy:
   - provider: script
