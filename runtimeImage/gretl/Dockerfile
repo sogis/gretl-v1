@@ -6,7 +6,7 @@ COPY gretl /usr/local/bin/
 COPY __jars4image /home/gradle/libs/
 
 #COPY init.gradle build.gradle dependencies.gradle build.info /home/gradle/
-COPY init.gradle build.info /home/gradle/
+COPY init.gradle /home/gradle/
 
 RUN chown -R 1001:0 /home/gradle && \
     chmod -R g+rw /home/gradle && \
