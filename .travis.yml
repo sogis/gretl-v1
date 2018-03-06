@@ -37,6 +37,9 @@ script:
   - ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
   - cd ..
   - gradle -Dgretltest_dburi=jdbc:postgresql:gretl --project-dir gretl/inttest testImage
+  - cd runtimeImage/
+  - ./push-gretl.sh $dockerhub_pwd
+  - cd ..
 
 deploy:
   - provider: script
