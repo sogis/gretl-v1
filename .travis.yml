@@ -17,6 +17,9 @@ addons:
     packages:
     - postgresql-9.6-postgis-2.3
 
+before_install:
+  - tooling/start-test-database-ora.sh
+
 install: true
 
 before_script:
