@@ -1,7 +1,7 @@
 # gretl
 
-Das Datenmanagement-Tool GRETL ist ein Werkzeug, das für Datenimports, Datenumbauten
-(Modellumbau) und Datenexports eingesetzt wird. GRETL führt Jobs aus, wobei ein Job aus
+Das Datenmanagement-Tool _GRETL_ ist ein Werkzeug, das für Datenimports, Datenumbauten
+(Modellumbau) und Datenexports eingesetzt wird. _GRETL_ führt Jobs aus, wobei ein Job aus
 mehreren atomaren Tasks besteht. Damit ein Job als vollständig ausgeführt gilt, muss jeder zum
 Job gehörende Task vollständig ausgeführt worden sein. Schlägt ein Task fehl, gilt auch der Job
 als fehlgeschlagen.
@@ -13,7 +13,7 @@ Ein Job kann aus z.B. aus einer linearen Kette von Tasks bestehen:
 
     Task 1 – Task 2 – Task 3 – Task n
 
-Beispiel: Datenimport aus INTERLIS-Datei – Datenumbau – Datenexport nach Shapefile
+Beispiel: Datenimport aus INTERLIS-Datei – Datenumbau – Datenexport nach Shapefile.
 
 Ein Job kann sich nach einem Task aber auch auf zwei oder mehr verschiedene weitere Tasks
 verzweigen:
@@ -23,7 +23,7 @@ verzweigen:
           – Task 4 – Task 5 – Task m
 
 Beispiel: Datenimport aus INTERLIS-Datei – Datenumbau in Zielschema 1 und ein zweiter
-Datenumbau in Zielschema 2
+Datenumbau in Zielschema 2.
 
 Es ist auch möglich, dass zuerst zwei oder mehr Tasks unabhängig voneinander
 ausgeführt werden müssen, bevor ein einzelner weiterer Task ausgeführt wird.
@@ -70,7 +70,7 @@ task validate(type: IliValidator){
 }
 ```
 
-Die Datei ``build.gradle`` ist die Job Konfiguration. Dieser kleine Beispiel-Job besteht nur aus einem einzigen Task: ``validate``.
+Die Datei ``build.gradle`` ist die Job-Konfiguration. Dieser kleine Beispiel-Job besteht nur aus einem einzigen Task: ``validate``.
 
 Erstellen Sie nun noch die Datei ``BeispielA.xtf`` (damit danach der Job erfolgreich ausgeführt werden kann).
 
@@ -86,7 +86,7 @@ Erstellen Sie nun noch die Datei ``BeispielA.xtf`` (damit danach der Job erfolgr
 </TRANSFER>
 ```
 
-Um den job auszuführen, wechslen Sie ins Verzeichnis mit der Job Konfiguration, und geben da das Kommando ``gradle`` ohne 
+Um den Job auszuführen, wechseln Sie ins Verzeichnis mit der Job-Konfiguration, und geben da das Kommando ``gradle`` ohne 
 Argument ein:
 
     cd gretldemo
@@ -105,12 +105,9 @@ BUILD SUCCESSFUL in 21s
 
 ``BUILD SUCCESSFUL`` zeigt an, dass der Job (die Validierung der Datei ``BeispielA.xtf``) erfolgreich ausgeführt wurde.
 
-Um die selbe Job Konfiguration für verschiedene Datensätze verwenden zu können, muss es parametrisierbar sein. Das kann 
-verschieden gemacht werden. Eine Art ist z.B. mit de
-
-Die Jobs/Tasks können so generisch konfiguriert werden, dass dieselbe Konfiguration z.B. für 
+Um dieselbe Job-Konfiguration für verschiedene Datensätze verwenden zu können, muss es parametrisierbar sein. Die Jobs/Tasks können so generisch konfiguriert werden, dass dieselbe Konfiguration z.B. für 
 Daten aus verschiedenen Gemeinden benutzt
-werden kann. Parameter für die Job Konfiguration können z.B. mittels gradle Properties 
+werden kann. Parameter für die Job Konfiguration können z.B. mittels gradle-Properties 
 ([Gradle properties and system properties](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_properties_and_system_properties)) 
 dem Job mitgegeben werden, also z.B. 
 
@@ -127,10 +124,10 @@ Die JAVA-Laufzeitumgebung (JRE) kann auf der Website http://www.java.com/ gratis
 
 Die gradle-Software kann auf der Website http://www.gradle.org/ gratis bezogen werden.
 
-Um gretl laufen zulassen benötigen sie typischerweise eine Internet Verbindung (Ein Installation, die keine Internet Verbindung benötigt ist auch möglich, aber aufwendig).
+Um _GRETL_ laufen zu lassen, benötigen sie typischerweise eine Internetverbindung (Ein Installation, die keine Internetverbindung benötigt ist auch möglich, aber aufwendig).
 
 ## Installation
-gretl selbst muss nicht explizit installiert werden, sondern wird dynamisch durch das Internet bezogen.
+_GRETL_ selbst muss nicht explizit installiert werden, sondern wird dynamisch durch das Internet bezogen.
 
 ## Ausführen
 Um gretl auszuführen, geben Sie auf der Kommandozeile folgendes Kommando ein (wobei ``jobfolder`` der absolute Pfad 
@@ -158,18 +155,18 @@ def db_pass = "dmluser"
 
 task csvexport(type: CsvExport){
     database = [db_uri, db_user, db_pass]
-	schemaName = "csvexport"
-	tableName = "exportdata"
-	firstLineIsHeader=true
-	attributes = [ "t_id","Aint"]
+    schemaName = "csvexport"
+    tableName = "exportdata"
+    firstLineIsHeader=true
+    attributes = [ "t_id","Aint"]
     dataFile = "data.csv"
 }
 ```
 
 Parameter | Beschreibung
 ----------|-------------------
-database | Datenbank aus der exportiert werden soll
-dataFile  | Name der CSV Datei, die erstellt werden soll
+database | Datenbank aus der exportiert werden soll.
+dataFile  | Name der CSV Datei, die erstellt werden soll.
 tableName | Name der DB-Tabelle, die exportiert werden soll
 schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
@@ -178,7 +175,7 @@ valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet wer
 attributes | Spalten der DB-Tabelle, die exportiert werden sollen. Default: alle Spalten
 encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
 
-Geometrie-Saplten können nicht exportiert werden.
+Geometriespalten können nicht exportiert werden.
 
 ### CsvImport
 Daten aus einer CSV-Datei werden in eine bestehende Datenbanktabelle importiert.
@@ -191,9 +188,9 @@ def db_pass = "dmluser"
 
 task csvimport(type: CsvImport){
     database = [db_uri, db_user, db_pass]
-	schemaName = "csvimport"
-	tableName = "importdata"
-	firstLineIsHeader=true
+    schemaName = "csvimport"
+    tableName = "importdata"
+    firstLineIsHeader=true
     dataFile = "data1.csv"
 }
 ```
@@ -213,19 +210,19 @@ batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben 
 Die Tabelle kann weitere Spalten enthalten, die in der CSV-Datei nicht vorkommen. Sie müssen
 aber NULLable sein, oder einen Default-Wert definiert haben.
 
-Geometrie-Saplten können nicht importiert werden.
+Geometriepalten können nicht importiert werden.
 
 Die Gross-/Kleinschreibung der CSV-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
 
 ### CsvValidator
 
-Prüft eine CSV-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem ilivalidator.
+Prüft eine CSV-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
 
 Beispiel:
 ```
 task validate(type: CsvValidator){
-	models = "CsvModel"
-	firstLineIsHeader=true
+    models = "CsvModel"
+    firstLineIsHeader=true
     dataFiles = ["data1.csv"]
 }
 ```
@@ -233,17 +230,17 @@ task validate(type: CsvValidator){
 Parameter | Beschreibung
 ----------|-------------------
 dataFiles | Liste der CSV-Dateien, die validiert werden sollen. Eine leere Liste ist kein Fehler.
-models | INTERLIS-Modell, gegen das die die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
+models | INTERLIS-Modell, gegen das die Dateien geprüft werden sollen (mehrere Modellnamen durch Semikolon trennen). Default: Der Name der CSV-Datei.
 modeldir | Dateipfade, die Modell-Dateien (ili-Dateien) enthalten. Mehrere Pfade können durch Semikolon ‚;‘ getrennt werden. Es sind auch URLs von Modell-Repositories möglich. Default: ``%XTF_DIR;http://models.interlis.ch/``. ``%XTF_DIR`` ist ein Platzhalter für das Verzeichnis mit der CSV-Datei.
 configFile | Konfiguriert die Datenprüfung mit Hilfe einer TOML-Datei (um z.B. die Prüfung von einzelnen Constraints auszuschalten). siehe https://github.com/claeis/ilivalidator/blob/master/docs/ilivalidator.rst#konfiguration
 forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-Datei, d.h. es kann nur die Multiplizität aufgeweicht werden. Default: false
-disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
+disableAreaValidation | Schaltet die AREA-Topologieprüfung aus. Default: false
 multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
 allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
 skipPolygonBuilding | Schaltet die Bildung der Polygone aus (nur ITF). Default: false
 logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
-xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
-pluginFolder | erzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
+xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell [IliVErrors](http://models.interlis.ch/models/tools/IliVErrors.ili).
+pluginFolder | Verzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
 proxy | Proxy Server für den Zugriff auf Modell Repositories
 proxyPort | Proxy Port für den Zugriff auf Modell Repositories
 failOnError |  Steuert, ob der Task bei einem Validierungsfehler fehlschlägt. Default: true
@@ -264,26 +261,26 @@ gilt das als Validierungsfehler.
 
 ### Db2Db
 
-Dies ist prinzipiell ein 1:1 Datenkopie, d.h. es findet kein Datenumbau statt, die Quell- und die Ziel-
+Dies ist prinzipiell ein 1:1-Datenkopie, d.h. es findet kein Datenumbau statt, die Quell- und die Ziel-
 Tabelle hat jeweils identische Attribute. Es werden auf Seite Quelle in der Regel also simple
 SELECT-Queries ausgeführt und die Resultate dieser Queries in Tabellen der Ziel-DB eingefügt.
-Unter bestimmten Bedingungen (insbesondere wenn die Quell-DB eine PostgreSQL-DB ist und es
+Unter bestimmten Bedingungen (insbesondere wenn es
 sich um einen wenig komplexen Datenumbau handelt), kann dieser Task aber auch zum
 Datenumbau benutzt werden.
 
-Die Queries sind auf mehrere .sql-Files verteilt, d.h. der Task muss die Queries mehrerer .sql-Files
-zu einer Transaktion kombinieren können. Jede .sql-Datei gibt genau eine Resultset (RAMTabelle)
-zurück. Das Resultset wird in die konfigurierte Zieltabelle geschrieben. (Die
+Die Queries können auf mehrere .sql-Dateien verteilt werden, d.h. der Task muss die Queries mehrerer .sql-Dateien
+zu einer Transaktion kombinieren können. Jede .sql-Datei gibt genau eine Resultset (RAM-Tabelle)
+zurück. Das Resultset wird in die konfigurierte Zieltabelle geschrieben. Die
 Beziehungen sind: Eine bis mehrere Quelltabellen ergeben ein Resultset; das Resultset entspricht
-bezüglich den Attributen genau der Zieltabelle und wird 1:1 in diese geschrieben.) Der db2db-
+bezüglich den Attributen genau der Zieltabelle und wird 1:1 in diese geschrieben. Der Db2Db-
 Task verarbeitet innerhalb einer Transaktion 1-n Resultsets und wird entsprechend auch mit 1-n
 SQL-Dateien konfiguriert.
 
-Die Reihenfolge der .sql-Files ist relevant. Dies bedeutet, dass die SQL-Befehle des zuerst
-angegebenen .sql-Files zuerst ausgeführt werden müssen, danach dies SQL-Befehle des an
-zweiter Stelle angegebenen .sql-Files, usw.
+Die Reihenfolge der .sql-Dateien ist relevant. Dies bedeutet, dass die SQL-Befehle der zuerst
+angegebenen .sql-Datei zuerst ausgeführt werden müssen, danach die SQL-Befehle der an
+zweiter Stelle angegebenen .sql-Datei, usw.
 
-Es ist auch möglich sein, in den .sql-Files mehr als nur ein SELECT-Query zu formulieren, z.B.
+Es ist auch möglich, in den .sql-Dateien mehr als nur ein SELECT-Query zu formulieren, z.B.
 ein vorgängiges DELETE.
 
 Alle SELECT-Statements werden in einer Transaktion ausgeführt werden, damit ein konsistenter
@@ -291,9 +288,9 @@ Datenstand gelesen wird. Alle INSERT-Statements werden in einer Transaktion ausg
 werden, damit bei einem Fehler der bisherige Datenstand bestehen bleibt und also kein
 unvollständiger Import zurückgelassen wird.
 
-Damit das selbe .sql-File für verschiedene Datensätze benutzt werden kann, ist es möglich 
-innerhalb des .sql-Files Paramater zu verwenden und diesen Parametern beim Task einen
-konkreten Wert zuzuweisen. Innerhalb des .sql-Files werden Paramter mit folgender Syntax
+Damit dieselbe .sql-Datei für verschiedene Datensätze benutzt werden kann, ist es möglich 
+innerhalb der .sql-Datei Parameter zu verwenden und diesen Parametern beim Task einen
+konkreten Wert zuzuweisen. Innerhalb der .sql-Datei werden Paramter mit folgender Syntax
 verwendet: ``${paramName}``.
 
 ```
@@ -306,7 +303,7 @@ task transferSomeData(type: Db2Db) {
     targetDb = ['jdbc:sqlite:gretldemo.sqlite',null,null]
     sqlParameters = [dataset:'Olten']
     transferSets = [
-            new TransferSet('some.sql', 'albums_dest', true)
+        new TransferSet('some.sql', 'albums_dest', true)
     ];
 }
 ```
@@ -326,7 +323,7 @@ Eine ``TransferSet`` ist
 - dem Namen der Ziel-Tabelle in der targetDb, und 
 - der Angabe ob in der Ziel-Tabelle vor dem INSERT zuerst alle Records gelöscht werden sollen.
 
-Unterstützte Datenbanken: PostgreSQL and SQLite
+Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
 
 ### Ili2pgExport
 
@@ -334,7 +331,7 @@ Exportiert Daten aus der PostgreSQL-Datenbank in eine INTERLIS-Transferdatei.
 
 Mit dem Parameter ``models``, ``topics``, ``baskets`` oder ``dataset`` wird definiert, welche Daten exportiert werden.
 
-Ob die Daten im Interlis 1-, Interlis 2- oder GML-Format geschrieben werden, ergibt sich aus der Dateinamenserweiterung der Ausgabedatei. Für eine Interlis 1-Transferdatei muss die Erweiterung .itf verwendet werden. Für eine GML-Transferdatei muss die Erweiterung .gml verwendet werden.
+Ob die Daten im INTERLIS 1-, INTERLIS 2- oder GML-Format geschrieben werden, ergibt sich aus der Dateinamenserweiterung der Ausgabedatei. Für eine INTERLIS 1-Transferdatei muss die Erweiterung .itf verwendet werden. Für eine GML-Transferdatei muss die Erweiterung .gml verwendet werden.
 
 Beispiel:
 ```
@@ -535,7 +532,7 @@ Aktualisiert die Daten in der PostgreSQL-Datenbank anhand einer INTERLIS-Transfe
 neue Objekte werden eingefügt, bestehende Objekte werden aktualisiert und in der Transferdatei nicht mehr 
 vorhandene Objekte werden gelöscht. 
 
-Diese Funktion bedingt, dass das Datenbankschema mit der Option createBasketCol erstellt wurde (via Task Ili2pgImportSchema), 
+Diese Funktion bedingt, dass das Datenbankschema mit der Option `createBasketCol` erstellt wurde (via Task Ili2pgImportSchema), 
 und dass die Klassen und Topics eine stabile OID haben.
 
 Beispiel:
@@ -556,7 +553,7 @@ Die Parameter sind analog wie bei Ili2pgImport.
 
 ### IliValidator
 
-Prüft eine INTERLIS-Datei (.itf oder .xtf) gegenüber einem INTERLIS-Modell (.ili). Basiert auf dem ilivalidator.
+Prüft eine INTERLIS-Datei (.itf oder .xtf) gegenüber einem INTERLIS-Modell (.ili). Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
 
 Beispiel:
 ```
@@ -596,8 +593,8 @@ def db_pass = "dmluser"
 
 task shpexport(type: ShpExport){
     database = [db_uri, db_user, db_pass]
-	schemaName = "shpexport"
-	tableName = "exportdata"
+    schemaName = "shpexport"
+    tableName = "exportdata"
     dataFile = "data.shp"
 }
 ```
@@ -611,7 +608,7 @@ schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
 encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
 
-Die Tabelle darf eine Geometrie-Spalte enthalten.
+Die Tabelle darf eine Geometriespalte enthalten.
 
 ### ShpImport
 
@@ -625,8 +622,8 @@ def db_pass = "dmluser"
 
 task shpimport(type: ShpImport){
     database = [db_uri, db_user, db_pass]
-	schemaName = "shpimport"
-	tableName = "importdata"
+    schemaName = "shpimport"
+    tableName = "importdata"
     dataFile = "data.shp"
 }
 ```
@@ -640,21 +637,21 @@ schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 encoding | Zeichencodierung der SHP-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
 batchSize | Anzahl der Records, die pro Batch in die Ziel-Datenbank geschrieben werden (Standard: 5000). 
 
-Die Tabelle kann weitere Spalten enthalten, die in der SHP-Datei nicht vorkommen. Sie müssen
+Die Tabelle kann weitere Spalten enthalten, die in der Shp-Datei nicht vorkommen. Sie müssen
 aber NULLable sein, oder einen Default-Wert definiert haben.
 
-Die Tabelle muss eine Geometrie-Spalte enthalten. Der Name der Geometrie-Spalte kann beliebig gewählt werden.
+Die Tabelle muss eine Geometriespalte enthalten. Der Name der Geometriespalte kann beliebig gewählt werden.
 
-Die Gross-/Kleinschreibung der SHP-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
+Die Gross-/Kleinschreibung der Shp-Spaltennamen wird für die Zuordnung zu den DB-Spalten ignoriert.
 
 ### ShpValidator
 
-Prüft eine SHP-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem ilivalidator.
+Prüft eine SHP-Datei gegenüber einem INTERLIS-Modell. Basiert auf dem [_ilivalidator_](https://github.com/claeis/ilivalidator).
 
 Beispiel:
 ```
 task validate(type: ShpValidator){
-	models = "ShpModel"
+    models = "ShpModel"
     dataFiles = ["data.shp"]
 }
 ```
@@ -669,7 +666,6 @@ forceTypeValidation | Ignoriert die Konfiguration der Typprüfung aus der TOML-D
 disableAreaValidation | Schaltet die AREA Topologieprüfung aus. Default: false
 multiplicityOff | Schaltet die Prüfung der Multiplizität generell aus. Default: false
 allObjectsAccessible | Mit der Option nimmt der Validator an, dass er Zugriff auf alle Objekte hat. D.h. es wird z.B. auch die Multiplizität von Beziehungen auf externe Objekte geprüft. Default: false
-skipPolygonBuilding | Schaltet die Bildung der Polygone aus (nur ITF). Default: false
 logFile | Schreibt die log-Meldungen der Validierung in eine Text-Datei.
 xtflogFile | Schreibt die log-Meldungen in eine INTERLIS 2-Datei. Die Datei result.xtf entspricht dem Modell IliVErrors.
 pluginFolder | erzeichnis mit JAR-Dateien, die Zusatzfunktionen enthalten. 
@@ -683,33 +679,30 @@ Im gegebenen Modell wird eine Klasse gesucht,
 die genau die Attributenamen wie in der Shp-Datei enthält (wobei die Gross-/Kleinschreibung ignoriert wird); 
 die Attributtypen werden ignoriert. Wird keine solche Klasse gefunden, gilt das als Validierungsfehler.
 
-### SQLExecutor
+### SqlExecutor
 
-Der SQLExecutor-Task dient prinzipiell dazu, Datenumbauten auszuführen. 
+Der SqlExecutor-Task dient dazu, Datenumbauten auszuführen. 
 
 Er wird im Allgemeinen dann benutzt, wenn
 
-1. der Datenumbau komplex ist und deshalb nicht im db2db-Task erledigt werden kann
+1. der Datenumbau komplex ist und deshalb nicht im Db2Db-Task erledigt werden kann
 2. oder wenn die Quell-DB keine PostgreSQL-DB ist (weil bei komplexen Queries für den
 Datenumbau möglicherweise fremdsystemspezifische SQL-Syntax verwendet werden müsste)
 3. oder wenn Quell- und Zielschema in derselben Datenbank liegen
 
 In den Fällen 1 und 2 werden Stagingtabellen bzw. ein Stagingschema benötigt, in welche der
-db2db-Task die Daten zuerst 1:1 hineinschreibt. Der SQLExecutor-Task liest danach die Daten von
-dort, baut sie um und schreibt sie dann ins Zielschema. (Falls es möglich ist, soll nur 1 Staging-
-Schema pro DB vorgesehen werden, damit die Anzahl Schemas auf der DB nicht ausufert.)
-Die Queries für den SQLExecutor-Task können alle in einem einzelnen .sql-File sein oder (z.B. aus
-Gründen der Strukturierung oder Organisation) auf mehrere .sql-Files verteilt sein.
-Die Reihenfolge der .sql-Files ist relevant. Dies bedeutet, dass die SQL-Befehle des zuerst
-angegebenen .sql-Files zuerst ausgeführt werden müssen, danach dies SQL-Befehle des an
-zweiter Stelle angegebenen .sql-Files, usw.
+Db2Db-Task die Daten zuerst 1:1 hineinschreibt. Der SqlExecutor-Task liest danach die Daten von
+dort, baut sie um und schreibt sie dann ins Zielschema. Die Queries für den SqlExecutor-Task können alle in einem einzelnen .sql-File sein oder (z.B. aus Gründen der Strukturierung oder Organisation) auf mehrere .sql-Dateien verteilt sein.
+Die Reihenfolge der .sql-Dateien ist relevant. Dies bedeutet, dass die SQL-Befehle des zuerst
+angegebenen .sql-Datei zuerst ausgeführt werden müssen, danach dies SQL-Befehle des an
+zweiter Stelle angegebenen .sql-Datei, usw.
 
-Der SQLExecutor-Task muss neben Updates ganzer Tabellen (d.h. Löschen des gesamten Inhalts
+Der SqlExecutor-Task muss neben Updates ganzer Tabellen (d.h. Löschen des gesamten Inhalts
 einer Tabelle und gesamter neuer Stand in die Tabelle schreiben) auch Updates von Teilen von
 Tabellen zulassen. D.h. es muss z.B. möglich sein, innerhalb einer Tabelle nur die Objekte einer
 bestimmten Gemeinde zu aktualisieren. Darum ist es möglich 
-innerhalb des .sql-Files Paramater zu verwenden und diesen Parametern beim Task einen
-konkreten Wert zuzuweisen. Innerhalb des .sql-Files werden Paramter mit folgender Syntax
+innerhalb der .sql-Datei Paramater zu verwenden und diesen Parametern beim Task einen
+konkreten Wert zuzuweisen. Innerhalb der .sql-Datei werden Paramter mit folgender Syntax
 verwendet: ``${paramName}``.
 
 ```
@@ -730,4 +723,4 @@ database | Datenbank in die importiert werden soll
 sqlFiles  | Name der SQL-Datei aus der SQL-Statements gelesen und ausgeführt werden
 sqlParameters | Eine Map mit Paaren von Parameter-Name und Parameter-Wert.
 
-Unterstützte Datenbanken: PostgreSQL and SQLite
+Unterstützte Datenbanken: PostgreSQL, SQLite und Oracle. Der Oracle-JDBC-Treiber muss jedoch selber installiert werden (Ausgenommen vom Docker-Image).
