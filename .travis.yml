@@ -17,9 +17,6 @@ addons:
     packages:
     - postgresql-9.6-postgis-2.3
 
-before_install:
-  - tooling/start-test-database-ora.sh
-
 install: true
 
 before_script:
@@ -39,7 +36,7 @@ script:
   - cd runtimeImage/
   - ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
   - cd ..
-  - tooling/start-test-database-ora.sh
+  - tooling/start-test-database-ora.sh background
   - gradle -Pgretltest_dburi=jdbc:postgresql:gretl -Pgretltest_dburi_ora=jdbc:oracle:thin:@localhost:1521:xe --project-dir gretl/inttest testImage
 
 deploy:
