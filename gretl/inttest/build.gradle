@@ -45,6 +45,10 @@ dependencies{
 }
 
 task testJar(type: Test) {
+    useJUnit{
+        excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
+    }
+
     systemProperty('GRETL_TESTTYPE', 'jar')
 
     group = 'Verification'
@@ -92,9 +96,13 @@ task testSystem(type: Test) {
 // Transfer the required configuration variables to the unit test code.
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
+
     def GRETLTEST_DBURI = 'gretltest_dburi'
-    systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ?
-        findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
+    systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
+
+    def GRETLTEST_DBURI_ORA = 'gretltest_dburi_ora'
+    systemProperty(GRETLTEST_DBURI_ORA, findProperty(GRETLTEST_DBURI_ORA))
+
     println 'dburi: ' + getSystemProperties().getAt(GRETLTEST_DBURI)
 
     systemProperty('GRETL_INTTESTFOLDER_ABS_PATH', projectDir)

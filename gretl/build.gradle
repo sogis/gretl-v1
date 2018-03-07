@@ -73,7 +73,7 @@ task jardist(type: Copy){
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
     def GRETLTEST_DBURI = 'gretltest_dburi'
-    systemProperty(GRETLTEST_DBURI ,(findProperty(GRETLTEST_DBURI) != null) ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl')
+    systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
 }
 
 

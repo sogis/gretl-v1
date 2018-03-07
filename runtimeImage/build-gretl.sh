@@ -16,27 +16,23 @@ cp ../gretl/lib/ojdbc7-*.jar gretl/__jars4image
 
 githash=$1
 if [ "x$githash" = "x" ]; then
-    githash='localbuild'''
+    githash='localbuild'
 fi
 
-buildnum=$2
-if [ "x$buildnum" = "x" ]; then
-    buildnum=-99
+buildident=$2
+if [ "x$buildident" = "x" ]; then
+    buildident='localbuild'
 fi
 
 build_timestamp=$(date '+%Y-%m-%d_%H:%M:%S')
 
-# build infos
-#echo "local build" > gretl/build.info
-#echo date: `date '+%Y-%m-%d %H:%M:%S'` >> gretl/build.info
-
 docker build \
-    --no-cache --force-rm -t sogis/gretl-runtime \
-    --label gretl.created=$build_timestamp --label gretl.git_commit=$githash --label gretl.travis_build=$buildnum \
+    --no-cache --force-rm -t sogis/gretl-runtime:$buildident \
+    --label gretl.created=$build_timestamp --label gretl.git_commit=$githash --label gretl.travis_build=$buildident \
     -f gretl/Dockerfile gretl
 
 rm gretl/__jars4image/*
 
 # look into the container:
-# docker run -it --entrypoint=/bin/sh gretl-runtime
+# docker run -it --entrypoint=/bin/sh sogis/gretl-runtime:$buildident
 
