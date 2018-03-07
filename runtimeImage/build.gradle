@@ -1,4 +1,4 @@
-apply from: '/home/gradle/dependencies.gradle'
+apply from: '../dependencies.gradle'
 
 repositories {
     mavenLocal()
@@ -39,8 +39,9 @@ dependencies {
     compile "de.undercouch:gradle-download-task:3.4.1"
 }
 
-task copyToLibs(type: Copy) {
-    into "/home/gradle/libs"
+// Copies all jars required by gretl to the temp folder __jars4image.
+task stageJars(type: Copy) {
+    into "gretl/__jars4image"
     from configurations.compile
     from configurations.runtime
 }

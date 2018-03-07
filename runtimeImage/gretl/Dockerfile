@@ -3,14 +3,11 @@ FROM openshift/jenkins-slave-maven-centos7
 USER root
 
 COPY gretl /usr/local/bin/
-COPY gretl-*.jar ojdbc7-*.jar /home/gradle/libs/
-COPY init.gradle build.gradle dependencies.gradle build.info /home/gradle/
+COPY __jars4image /home/gradle/libs/
 
-RUN cd /home/gradle && \
-    gradle copyToLibs && \
-    rm /home/gradle/build.gradle && \
-    rm /home/gradle/dependencies.gradle && \
-    chown -R 1001:0 /home/gradle && \
+COPY init.gradle /home/gradle/
+
+RUN chown -R 1001:0 /home/gradle && \
     chmod -R g+rw /home/gradle && \
     ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \

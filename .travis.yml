@@ -1,9 +1,15 @@
+sudo: required
+
 language: java
+
+services:
+  - docker
   
 branches:
   only:
     - master
     - stable
+    - dockertravis
 
 addons:
   postgresql: "9.6"
@@ -24,9 +30,14 @@ before_script:
     - psql -c 'create extension "uuid-ossp";' -d gretl -U postgres
     - psql -c 'select postgis_full_version();' -d gretl -U postgres
   
-script: 
-  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl build gretl:dbTest gretl:publishToMavenLocal
-  - gradle -Dgretltest_dburi=jdbc:postgresql:gretl --project-dir gretl/inttest testIntegration
+script:
+  - gradle -Pgretltest_dburi=jdbc:postgresql:gretl build gretl:dbTest gretl:publishToMavenLocal
+  - gradle -Pgretltest_dburi=jdbc:postgresql:gretl --project-dir gretl/inttest testJar
+  - cd runtimeImage/
+  - ./build-gretl.sh $TRAVIS_COMMIT $TRAVIS_BUILD_NUMBER
+  - cd ..
+  - tooling/start-test-database-ora.sh background
+  - gradle -Pgretltest_dburi=jdbc:postgresql:gretl -Pgretltest_dburi_ora=jdbc:oracle:thin:@localhost:1521:xe --project-dir gretl/inttest testImage
 
 deploy:
   - provider: script
@@ -39,3 +50,8 @@ deploy:
     script: gradle -Drepos_url=${repos_url} -Drepos_pwd=${repos_pwd} -Drepos_usr=${repos_usr} -Drelease=final gretl:publishMavenJavaPublicationToPublicRepository
     on:
       branch: stable
+  - provider: script
+    skip_cleanup: true
+    script: runtimeImage/push-gretl.sh $dockerhub_pwd
+    on:
+      branch: dockertravis
