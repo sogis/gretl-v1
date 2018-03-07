@@ -54,4 +54,4 @@ deploy:
     skip_cleanup: true
     script: runtimeImage/push-gretl.sh $dockerhub_pwd
     on:
-      branch: dockertravis
+      branch: master
