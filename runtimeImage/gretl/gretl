@@ -9,4 +9,3 @@ fi
 gradle "${run_parameter[@]}" \
        --init-script /home/gradle/init.gradle \
        --stacktrace \
-       --offline
