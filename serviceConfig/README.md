@@ -34,10 +34,26 @@ The GRETL runtime configuration with definition of which Docker image to pull fr
 Add gretl imagestream to pull newest GRETL runtime image:
 ```
 oc process -f serviceConfig/templates/gretl-is-template.json \
-  -p GRETL_RUNTIME_IMAGE="sogis/gretl-runtime:26" \
+  -p GRETL_RUNTIME_IMAGE="sogis/gretl-runtime:32" \
   | oc apply -f -
 ```
 Parameter:
 * GRETL_RUNTIME_IMAGE: Docker image reference of the GRETL runtime.
 
-This can also be used to update the GRETL runtime image after creation.
+#### Update GRETL runtime image
+There are several ways to change the GRETL runtime image version.
+
+Apply the template from the previous section again with the desired image tag.
+
+
+Apply a patch update with the desired image tag:
+```
+oc patch is gretl -p $'spec:\n  tags:\n  - from:\n      kind: DockerImage\n      name: sogis/gretl-runtime:32\n    name: latest'
+```
+
+Edit the version manually inside the web console of OpenShift
+1. go to the project
+1. select Builds -> Images
+1. click on the Image Stream with name *gretl*
+1. select *Edit YAML* on the Actions button
+1. change the image tag name to the desired version and save it. 
