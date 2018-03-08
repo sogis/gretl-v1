@@ -45,7 +45,7 @@ dependencies{
 }
 
 task testJar(type: Test) {
-    useJUnit{
+    useJUnit {
         excludeCategories 'ch.so.agi.gretl.testutil.DbDriversReachableTest'
     }
 
