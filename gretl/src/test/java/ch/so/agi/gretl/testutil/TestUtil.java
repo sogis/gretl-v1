@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class TestUtil {
-    public static final String PG_CONNECTION_URI = System.getProperty("gretltest_dburi");
+    public static final String PG_CONNECTION_URI = System.getProperty("gretltest_dburi_pg");
     public static final String PG_DDLUSR_USR = "ddluser";
     public static final String PG_DDLUSR_PWD = "ddluser";
     public static final String PG_DMLUSR_USR ="dmluser";

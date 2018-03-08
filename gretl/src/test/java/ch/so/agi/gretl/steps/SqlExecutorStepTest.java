@@ -175,6 +175,7 @@ public class SqlExecutorStepTest {
     @Test
     public void executePostgisVersionTest() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
+        System.err.println(TestUtil.PG_CONNECTION_URI);
         Connector sourceDb = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
 
         File sqlFile = folder.newFile("postgisversion.sql");
@@ -191,10 +192,8 @@ public class SqlExecutorStepTest {
         List<File> sqlListe = new ArrayList<File>();
         sqlListe.add(sqlFile);
         
-
         x.execute(sourceDb,sqlListe);
     }
-
 
     @Test
     public void checkIfConnectionIsClosed() throws Exception{
@@ -206,8 +205,6 @@ public class SqlExecutorStepTest {
         x.execute(sourceDb,sqlListe);
         Assert.assertTrue(sourceDb.connect().isClosed());
     }
-
-
 
     private void clearTestDb(Connector sourceDb) throws Exception {
         Connection con = sourceDb.connect();
@@ -223,7 +220,6 @@ public class SqlExecutorStepTest {
         con.setAutoCommit(true);
         createTableInTestDb(con);
         con.close();
-
     }
 
     private void createTableInTestDb(Connection con) throws Exception {
@@ -301,9 +297,4 @@ public class SqlExecutorStepTest {
         sqlListe.add(sqlFile1);
         return sqlListe;
     }
-
-
-
-
-
 }

@@ -71,7 +71,7 @@ task jardist(type: Copy){
 // Transfer the required configuration variables to the unit test code.
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
-    def GRETLTEST_DBURI = 'gretltest_dburi'
+    def GRETLTEST_DBURI = 'gretltest_dburi_pg'
     systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
 }
 
