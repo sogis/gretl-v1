@@ -97,13 +97,14 @@ task testSystem(type: Test) {
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
 
-    def GRETLTEST_DBURI = 'gretltest_dburi_pg'
-    systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
+    def GRETLTEST_DBURI_PG = 'gretltest_dburi_pg'
+    systemProperty(GRETLTEST_DBURI_PG, findProperty(GRETLTEST_DBURI_PG))
 
     def GRETLTEST_DBURI_ORA = 'gretltest_dburi_ora'
     systemProperty(GRETLTEST_DBURI_ORA, findProperty(GRETLTEST_DBURI_ORA))
 
-    println 'dburi: ' + getSystemProperties().getAt(GRETLTEST_DBURI)
+    println 'dburi_pg: ' + getSystemProperties().getAt(GRETLTEST_DBURI_PG)
+    println 'dburi_ora: ' + getSystemProperties().getAt(GRETLTEST_DBURI_ORA)
 
     systemProperty('GRETL_INTTESTFOLDER_ABS_PATH', projectDir)
 }
