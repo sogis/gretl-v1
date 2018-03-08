@@ -20,7 +20,7 @@ timeout(time: 10, unit: 'MINUTES') {
             sh 'pwd && ls -l'
 
             // do the job
-            sh "gretl queryOracleVersion -Pgretltest_dburi=jdbc:oracle:thin:@${ORACLE_SERVICE_HOST}:${ORACLE_SERVICE_PORT}:xe"
+            sh "gretl queryOracleVersion -Pgretltest_dburi_ora=jdbc:oracle:thin:@${ORACLE_SERVICE_HOST}:${ORACLE_SERVICE_PORT}:xe"
         }
     }
 }

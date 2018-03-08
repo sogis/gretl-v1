@@ -36,7 +36,6 @@ public class DbConnector {
      */
     public static Connection connect(String connectionUrl, String userName, String password) {
         try {
-
             String[] splits = connectionUrl.split(":");
             if (splits.length < 3)
                 throw new IllegalArgumentException("Connection string is malformed: " + connectionUrl);
@@ -80,6 +79,9 @@ public class DbConnector {
             }
             log.error("Could not connect to: " + connectionUrl, e);
             throw new GretlException("Could not connect to: " + connectionUrl, e);
+        } catch (Exception e) {
+            log.error("Connection URL is undefined: " + connectionUrl, e);
+            throw new GretlException("Connection URL is undefined: " + connectionUrl, e);
         }
         return con;
     }
