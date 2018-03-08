@@ -168,7 +168,7 @@ Parameter:
 
 Add gretl imagestream to pull newest GRETL runtime image
 ```
-oc process -f runtimeImage/pipeline/templates/gretl-test-is-template.json \
+oc process -f runtimeImage/pipeline/templates/gretl-test-is-template.yaml \
   -p GRETL_RUNTIME_IMAGE="gretl:latest" \
   -p GRETL_BUILD_PROJECT="gretl-build" \
   | oc apply -f -
