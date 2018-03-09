@@ -28,6 +28,7 @@ dependencies {
     }
     compile ioxWkfDependency
     compile ioxIliDependency
+    compile ehiSqlGenDependency
 
     compile sqliteJdbcDependency
     compile derbyDependency
