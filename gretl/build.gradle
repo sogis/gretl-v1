@@ -7,6 +7,16 @@ sourceCompatibility = 1.8
 
 apply from: '../dependencies.gradle'
 
+//////////////////////////////
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/integrationTest/java')
+        compileClasspath += sourceSets.test.runtimeClasspath
+        runtimeClasspath += sourceSets.test.runtimeClasspath
+    }
+}
+//////////////////////////////
+
 dependencies {
     testCompile junitDependency
 
@@ -25,12 +35,8 @@ dependencies {
 	
     compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.3'
     	
-    // Additional driver possibilities when the need arises:
-    // - oracle jdbc driver
-    // - sqlserver jdbc driver (Microsoft)
     compile gradleApi()
 }
-
 
 // 'gradle publishToMavenLocal' publishes
 // oracle jdbc to local maven repo.
@@ -45,9 +51,9 @@ publishing {
 	}
 }
 
-test{
+test {
     useJUnit{
-        // Exclude all Tests with dependency to a db server (pg, oracle, ..)
+        // Exclude all tests with dependency to a db server (pg, oracle, ..)
         excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
     }
 }
@@ -76,12 +82,12 @@ tasks.withType(Test) {
 }
 
 publishing{
-    publications{
+    publications {
         mavenJava(MavenPublication){
             from components.java
         }
     }
-    repositories{
+    repositories {
         maven{
             name 'Public'
             url System.getProperty('repos_url')
@@ -92,4 +98,14 @@ publishing{
         }
     }
 }
+
+//////////////////////////////
+task integrationTest(type: Test) {
+    description = 'Runs the integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    //mustRunAfter test
+}
+//////////////////////////////
 
