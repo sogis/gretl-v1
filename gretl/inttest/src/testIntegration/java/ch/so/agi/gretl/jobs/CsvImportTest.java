@@ -61,7 +61,7 @@ public class CsvImportTest {
     }
     
     @Test
-    public void importOk_batchSize() throws Exception {
+    public void importOkBatchSize() throws Exception {
         String schemaName = "csvimport".toLowerCase();
         Connection con = null;
         try{

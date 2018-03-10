@@ -3,18 +3,18 @@ package ch.so.agi.gretl.util;
 import java.sql.*;
 
 /**
- * Contains helper methods for the test's of the Db2DbTask and SqlExecutorTask
+ * Contains helper methods for the tests of the Db2DbTask and SqlExecutorTask
  */
-public class TestUtilSql {
-    public static final String VARNAME_PG_CON_URI = "gretltest_dburi_pg";
-    public static final String PG_CON_URI = System.getProperty(VARNAME_PG_CON_URI);//"jdbc:postgresql://localhost:5432/gretl"
+public class TestUtilSqlPg {
+    public static final String VARNAME_CON_URI = "gretltest_dburi_pg";
+    public static final String CON_URI = System.getProperty(VARNAME_CON_URI);//"jdbc:postgresql://localhost:5432/gretl"
 
-    public static final String VARNAME_ORA_CON_URI = "gretltest_dburi_ora";
-    public static final String ORA_CON_URI = System.getProperty(VARNAME_ORA_CON_URI);//"jdbc:postgresql://localhost:5432/gretl"
+//    public static final String VARNAME_ORA_CON_URI = "gretltest_dburi_ora";
+//    public static final String ORA_CON_URI = System.getProperty(VARNAME_ORA_CON_URI);//"jdbc:postgresql://localhost:5432/gretl"
 
-    public static final String PG_CON_DDLUSER = "ddluser";
-    public static final String PG_CON_DDLPASS = "ddluser";
-    public static final String PG_CON_DMLUSER = "dmluser";
+    public static final String CON_DDLUSER = "ddluser";
+    public static final String CON_DDLPASS = "ddluser";
+    public static final String CON_DMLUSER = "dmluser";
 
     private static void dropSchema(String schemaName, Connection con) throws SQLException {
         if(con == null){ return; }
@@ -32,34 +32,33 @@ public class TestUtilSql {
         }
     }
 
-    public static Connection connectPG(){
+    public static Connection connect(){
         Connection con = null;
         try {
             Driver pgDriver = (Driver)Class.forName("org.postgresql.Driver").newInstance();
             DriverManager.registerDriver(pgDriver);
 
             con = DriverManager.getConnection(
-                    PG_CON_URI,
-                    PG_CON_DDLUSER,
-                    PG_CON_DDLPASS);
+                    CON_URI,
+                    CON_DDLUSER,
+                    CON_DDLPASS);
 
             con.setAutoCommit(false);
         }
-        catch(Exception e){
+        catch(Exception e) {
             throw new RuntimeException(e);
         }
 
         return con;
     }
 
-    public static void createOrReplaceSchema(Connection con, String schemaName){
-
+    public static void createOrReplaceSchema(Connection con, String schemaName) {
         try {
             Statement s = con.createStatement();
-            s.addBatch(String.format("drop schema if exists %s cascade", schemaName));
-            s.addBatch("create schema " + schemaName);
-            s.addBatch(String.format("grant usage on schema %s to dmluser", schemaName));
-            s.addBatch(String.format("grant usage on schema %s to readeruser", schemaName));
+            s.addBatch(String.format("DROP SCHEMA IF EXISTS %s CASCADE", schemaName));
+            s.addBatch("CREATE SCHEMA " + schemaName);
+            s.addBatch(String.format("GRANT USAGE ON SCHEMA %s TO dmluser", schemaName));
+            s.addBatch(String.format("GRANT USAGE ON SCHEMA %s TO readeruser", schemaName));
             s.executeBatch();
             con.commit();
         }
@@ -68,7 +67,7 @@ public class TestUtilSql {
         }
     }
 
-    public static int execCountQuery(Connection con, String query){
+    public static int execCountQuery(Connection con, String query) {
         Statement s = null;
         int count = -1;
         try{
@@ -101,9 +100,9 @@ public class TestUtilSql {
      * @param schemaName name of schema in db
      * @param userName user to give rights to
      */
-    public static void grantDataModsInSchemaToUser(Connection con, String schemaName, String userName){
+    public static void grantDataModsInSchemaToUser(Connection con, String schemaName, String userName) {
 
-        String sql = String.format("grant select, insert, update, delete on all tables in schema %s to %s", schemaName, userName);
+        String sql = String.format("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA %s TO %s", schemaName, userName);
         Statement s = null;
         try {
             s = con.createStatement();
@@ -125,7 +124,7 @@ public class TestUtilSql {
         }
     }
 
-    public static void createSqlExecuterTaskChainTables(Connection con, String schemaName){
+    public static void createSqlExecuterTaskChainTables(Connection con, String schemaName) {
 
         String ddlBase = "CREATE TABLE %s.albums_%s(" +
                 "title text, artist text, release_date text," +
@@ -143,14 +142,14 @@ public class TestUtilSql {
             s2.execute(String.format(ddlBase, schemaName,"dest"));
             s2.close();
 
-            TestUtilSql.grantDataModsInSchemaToUser(con, schemaName, PG_CON_DMLUSER);
+            TestUtilSqlPg.grantDataModsInSchemaToUser(con, schemaName, CON_DMLUSER);
         }
         catch(SQLException se){
             throw new RuntimeException(se);
         }
     }
 
-    public static int prepareDb2DbChainTables(Connection con, String schemaName){
+    public static int prepareDb2DbChainTables(Connection con, String schemaName) {
         int srcRowCount = 4;
 
 
@@ -177,7 +176,7 @@ public class TestUtilSql {
 
             insertRowsInAlbumsTable(con, schemaName, "src", 4);
 
-            TestUtilSql.grantDataModsInSchemaToUser(con, schemaName, PG_CON_DMLUSER);
+            TestUtilSqlPg.grantDataModsInSchemaToUser(con, schemaName, CON_DMLUSER);
         }
         catch(SQLException se){
             throw new RuntimeException(se);
@@ -185,7 +184,6 @@ public class TestUtilSql {
 
         return srcRowCount;
     }
-
 
     public static void insertRowsInAlbumsTable(Connection con, String schemaName, String tableSuffix, int numRows) throws SQLException{
         PreparedStatement ps = con.prepareStatement(

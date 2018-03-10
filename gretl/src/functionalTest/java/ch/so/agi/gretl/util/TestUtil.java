@@ -25,7 +25,7 @@ public class TestUtil {
 
         if (INTTESTFOLDER_ABS_PATH == null || INTTESTFOLDER_ABS_PATH.length() == 0){
             throw new RuntimeException("Environment variable GRETL_INTTESTFOLDER_ABS_PATH not present or not set to valid value");
-        }
+        }        
     }
 
     public static void runJob(String jobPath) throws Exception {
@@ -120,20 +120,20 @@ public class TestUtil {
         }.start();
     }
 
-
     public static String buildRuntimeCommand(){
         String runtimeCommand = null;
 
-        Path repoRootDir = Paths.get(INTTESTFOLDER_ABS_PATH).getParent().getParent();
-
+        Path repoRootDir = Paths.get(INTTESTFOLDER_ABS_PATH).getParent();
+        
         if(TESTTYPE_JAR.equalsIgnoreCase(TESTTYPE)) { //needs call to gradle(w) with init.gradle
-            String tool="gradlew";
-            if(System.getProperty("os.name").contains("Windows")){
-                tool="gradlew.bat";
+            String tool = "gradlew";
+            if(System.getProperty("os.name").contains("Windows")) {
+                tool = "gradlew.bat";
             }
 
+            String initPath = Paths.get(INTTESTFOLDER_ABS_PATH).resolve("src").resolve("functionalTest").resolve("jobs").resolve("init.gradle").toString();
             String toolWithPath = repoRootDir.resolve(tool).toString();
-            runtimeCommand = String.format("%s --init-script ../init.gradle", toolWithPath);
+            runtimeCommand = String.format("%s --init-script %s", toolWithPath, initPath);
         }
         else if (TESTTYPE_IMAGE.equalsIgnoreCase(TESTTYPE)){
             runtimeCommand = repoRootDir.resolve("runtimeImage/start-gretl.sh").toString();
@@ -145,8 +145,8 @@ public class TestUtil {
     public static String buildJobDirOption(String relativeJobPath){
         String buildJobDirOption = null;
 
-        String absoluteJobPath = Paths.get(INTTESTFOLDER_ABS_PATH).resolve(relativeJobPath).toString();
-
+        String absoluteJobPath = Paths.get(INTTESTFOLDER_ABS_PATH).resolve("src").resolve("functionalTest").resolve(relativeJobPath).toString();
+        
         if(TESTTYPE_JAR.equalsIgnoreCase(TESTTYPE)) {
             buildJobDirOption = "--project-dir " + absoluteJobPath;
         }
