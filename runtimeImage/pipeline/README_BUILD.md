@@ -151,7 +151,7 @@ oc process -f runtimeImage/pipeline/templates/postgres-gis.json \
 ##### GRETL Jenkins
 Setup runtime with Jenkins
 ```
-oc process -f serviceConfig/templates/jenkins-s2i-template.json \
+oc process -f runtimeImage/pipeline/templates/jenkins-s2i-ephemeral-template.yaml \
   -p JENKINS_CONFIGURATION_REPO_URL="https://github.com/sogis/openshift-jenkins.git" \
   -p JENKINS_IMAGE_STREAM_TAG="jenkins:2" \
   -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretl.git" \
