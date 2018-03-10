@@ -63,7 +63,7 @@ public class SqlExecutorStepTest {
             Assert.assertEquals("no file", e.getType());
         }
     }
-
+    
     @Test
     public void executeWithoutDbThrowsGretlException() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
@@ -76,7 +76,6 @@ public class SqlExecutorStepTest {
             Assert.assertEquals("no database", e.getType());
         }
     }
-
 
     @Test
     public void executeWithWrongFileExtensionsThrowsGretlException() throws Exception {
@@ -93,7 +92,6 @@ public class SqlExecutorStepTest {
             Assert.assertEquals("no .sql-Extension", e.getType());
         }
     }
-
 
     @Test
     public void executeEmptyFileThrowsEmptyFileException() throws Exception {
@@ -129,7 +127,6 @@ public class SqlExecutorStepTest {
         }
     }
 
-
     @Test
     public void executeWrongQueryThrowsSQLException() throws Exception {
         SqlExecutorStep x = new SqlExecutorStep();
@@ -159,7 +156,6 @@ public class SqlExecutorStepTest {
         }
 
     }
-
 
     @Test
     public void executePositiveTest() throws Exception {
