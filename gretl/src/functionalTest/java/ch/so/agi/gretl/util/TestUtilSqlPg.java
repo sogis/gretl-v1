@@ -20,7 +20,7 @@ public class TestUtilSqlPg {
         if(con == null){ return; }
 
         Statement s = con.createStatement();
-        s.execute(String.format("drop schema %s cascade", schemaName));
+        s.execute(String.format("DROP SCHEMA %s CASCADE", schemaName));
     }
 
     public static void closeCon(Connection con){
