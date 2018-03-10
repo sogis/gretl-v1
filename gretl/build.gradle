@@ -2,18 +2,29 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
+apply plugin: 'java-gradle-plugin'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 apply from: '../dependencies.gradle'
 
 //////////////////////////////
 sourceSets {
     functionalTest {
-        java.srcDir file('src/integrationTest/java')
-        compileClasspath += sourceSets.test.compileClasspath
-        runtimeClasspath += sourceSets.test.runtimeClasspath
+        java.srcDir file('src/functionalTest/java')
+        compileClasspath += sourceSets.main.output + configurations.testRuntime
+        runtimeClasspath += output + compileClasspath
     }
+}
+
+gradlePlugin {
+	plugins {
+		gretlPlugin {
+			id = 'ch.so.agi.gretl'
+			implementationClass = 'ch.so.agi.gretl.gradle.GretlPlugin'
+		}
+	}
 }
 //////////////////////////////
 
@@ -33,10 +44,8 @@ dependencies {
     compile sqliteJdbcDependency
     compile derbyDependency
     compile oracleDependency
-	
-    compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.3'
     	
-    compile gradleApi()
+    //compile gradleApi()
 }
 
 // 'gradle publishToMavenLocal' publishes
@@ -77,19 +86,21 @@ task jardist(type: Copy){
 
 // Transfer the required configuration variables to the unit test code.
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
+/*
 tasks.withType(Test) {
     def GRETLTEST_DBURI = 'gretltest_dburi_pg'
     systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
 }
+*/
 
-publishing{
+publishing {
     publications {
-        mavenJava(MavenPublication){
+        mavenJava(MavenPublication) {
             from components.java
         }
     }
     repositories {
-        maven{
+        maven {
             name 'Public'
             url System.getProperty('repos_url')
             credentials {
@@ -102,11 +113,18 @@ publishing{
 
 //////////////////////////////
 task functionalTest(type: Test) {
-    description = 'Runs the integration tests.'
+    description = 'Runs the functional tests.'
     group = 'verification'
 	
 	systemProperty('GRETL_TESTTYPE', 'jar')
 	
+	useJUnit {
+		excludeCategories 'ch.so.agi.gretl.util.DbDriversReachableTest'
+	}
+	
+	// show standard out and standard error of the test JVM(s) on the console
+	testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
+
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
     classpath = sourceSets.functionalTest.runtimeClasspath
 	
@@ -116,7 +134,6 @@ task functionalTest(type: Test) {
 // Transfer the required configuration variables to all test code.
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
-
 	def GRETLTEST_DBURI_PG = 'gretltest_dburi_pg'
 	systemProperty(GRETLTEST_DBURI_PG, findProperty(GRETLTEST_DBURI_PG))
 

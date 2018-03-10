@@ -32,12 +32,10 @@ public class Db2DbStepTest {
 
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
 
-    //Konstruktor//
     public Db2DbStepTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
     }
-
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -51,7 +49,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void FaultFreeExecutionTest() throws Exception {
+    public void faultFreeExecutionTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
@@ -83,6 +81,7 @@ public class Db2DbStepTest {
 
 
     }
+    
     @Test
     public void newlineAtEndOfFileTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
@@ -156,7 +155,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void Db2DbEmptyFileTest() throws Exception {
+    public void db2DbEmptyFileTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
@@ -185,7 +184,7 @@ public class Db2DbStepTest {
     //todo was tested diese methode? Fehler bei leerer sql datei oder Fehler bei falschem sql?
     //--> Bitte aufräumen und methode besser benennen
     @Test
-    public void SQLExceptionTest() throws Exception {
+    public void sqlExceptionTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
@@ -212,7 +211,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void ColumnNumberTest() throws Exception {
+    public void columnNumberTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
         Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
@@ -259,7 +258,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void IncompatibleDataTypeTest() throws Exception {
+    public void incompatibleDataTypeTest() throws Exception {
         //unittest
         DbConnector dbConn = new DbConnector();
         Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
@@ -301,7 +300,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void CopyEmptyTableToOtherTableTest() throws Exception {
+    public void copyEmptyTableToOtherTableTest() throws Exception {
 
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
@@ -324,7 +323,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void DeleteTest() throws Exception {
+    public void deleteTest() throws Exception {
         //Datenbank für Test vorbereiten
         Connection con = null;
         try {
@@ -378,8 +377,7 @@ public class Db2DbStepTest {
     }
 
     @Test
-    public void CloseConnectionsTest() throws Exception {
-
+    public void closeConnectionsTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
@@ -406,7 +404,7 @@ public class Db2DbStepTest {
 
 
     @Test
-    public void CloseConnectionsAfterFailedTest() throws Exception {
+    public void closeConnectionsAfterFailedTest() throws Exception {
 
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
@@ -772,8 +770,8 @@ public class Db2DbStepTest {
         finally {
             dropSchema(schemaName, srcCon);
 
-            if(srcCon != null){ srcCon.close(); }
-            if(targetCon != null){ targetCon.close(); }
+            if (srcCon != null) { srcCon.close(); }
+            if (targetCon != null) { targetCon.close(); }
         }
     }
 

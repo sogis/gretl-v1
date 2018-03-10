@@ -171,30 +171,6 @@ public class SqlExecutorStepTest {
         x.execute(sourceDb,sqlListe);
     }
 
-    @Category(DbTest.class)
-    @Test
-    public void executePostgisVersionTest() throws Exception {
-        SqlExecutorStep x = new SqlExecutorStep();
-        System.err.println(TestUtil.PG_CONNECTION_URI);
-        Connector sourceDb = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
-
-        File sqlFile = folder.newFile("postgisversion.sql");
-        FileWriter sqlWriter=null;
-        try {
-            sqlWriter=new FileWriter(sqlFile);
-            sqlWriter.write("SELECT PostGIS_Full_Version();");
-        }finally {
-            if(sqlWriter!=null) {
-                sqlWriter.close();
-                sqlWriter=null;
-            }
-        }
-        List<File> sqlListe = new ArrayList<File>();
-        sqlListe.add(sqlFile);
-        
-        x.execute(sourceDb,sqlListe);
-    }
-
     @Test
     public void checkIfConnectionIsClosed() throws Exception{
         SqlExecutorStep x = new SqlExecutorStep();

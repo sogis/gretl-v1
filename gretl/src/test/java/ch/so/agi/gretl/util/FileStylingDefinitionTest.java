@@ -15,7 +15,7 @@ public class FileStylingDefinitionTest {
             FileStylingDefinition.checkForUtf8(inputfile);
             Assert.fail();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -24,7 +24,6 @@ public class FileStylingDefinitionTest {
         ClassLoader classLoader = getClass().getClassLoader();
         File inputfile = new File(classLoader.getResource("test_utf8.txt").getFile());
         FileStylingDefinition.checkForUtf8(inputfile);
-
     }
 
     @Test

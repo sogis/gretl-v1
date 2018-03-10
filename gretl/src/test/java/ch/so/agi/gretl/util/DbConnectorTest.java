@@ -14,7 +14,6 @@ public class DbConnectorTest {
     private GretlLogger log;
     private Connection con = null;
 
-
     public DbConnectorTest() {
         LogEnvironment.initStandalone();
         this.log = LogEnvironment.getLogger(this.getClass());
@@ -29,7 +28,7 @@ public class DbConnectorTest {
 
             Assert.assertFalse("connectToDerbyDb-Test could not connect to database", con.isClosed());
 
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new GretlException("Could not connect to database");
         } finally {
             if (con!=null){
@@ -43,13 +42,13 @@ public class DbConnectorTest {
 
         DbConnector x = new DbConnector();
         try {
-            con =x.connect("jdbc:derby:memory:myInMemDB;create=true", null, null);
+            con = x.connect("jdbc:derby:memory:myInMemDB;create=true", null, null);
 
             Assert.assertFalse("connectionAutoCommit has auto commit on", con.getAutoCommit());
 
         } catch (Exception e) {
             throw new GretlException("Auto Commit on");
-        }finally {
+        } finally {
             if (con!=null){
                 con.close();
             }
