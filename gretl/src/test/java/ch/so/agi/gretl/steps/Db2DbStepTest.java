@@ -39,7 +39,6 @@ public class Db2DbStepTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-    private String e;
     private GretlLogger log;
 
     @After
@@ -78,8 +77,6 @@ public class Db2DbStepTest {
         } finally {
             con.connect().close();
         }
-
-
     }
     
     @Test
@@ -113,9 +110,8 @@ public class Db2DbStepTest {
         } finally {
             con.connect().close();
         }
-
-
     }
+    
     @Test
     public void fileWithMultipleStmtTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
@@ -150,8 +146,6 @@ public class Db2DbStepTest {
         } finally {
             con.connect().close();
         }
-
-
     }
 
     @Test

@@ -13,14 +13,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import org.junit.Assert;
-
 public class CsvImportTest {
     @Test
     public void importOk() throws Exception {
         String schemaName = "csvimport".toLowerCase();
         Connection con = null;
-        try{
+        try {
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
@@ -64,7 +62,7 @@ public class CsvImportTest {
     public void importOkBatchSize() throws Exception {
         String schemaName = "csvimport".toLowerCase();
         Connection con = null;
-        try{
+        try {
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
