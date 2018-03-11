@@ -31,8 +31,6 @@ gradlePlugin {
 dependencies {
     testCompile junitDependency
 
-    runtime postgresqlDependency
-
     compile ilivalidatorDependency
     compile(ili2pgDependency){
         exclude group: 'ch.ehi', module: 'ehisqlgen'
@@ -41,11 +39,14 @@ dependencies {
     compile ioxIliDependency
     compile ehiSqlGenDependency
 
+	runtime postgresqlDependency
     compile sqliteJdbcDependency
     compile derbyDependency
     compile oracleDependency
     	
-    //compile gradleApi()
+	compile apacheCommonsIoDependency
+	
+	//compile gradleApi()
 }
 
 // 'gradle publishToMavenLocal' publishes
