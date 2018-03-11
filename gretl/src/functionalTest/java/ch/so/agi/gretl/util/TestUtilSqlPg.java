@@ -5,7 +5,7 @@ import java.sql.*;
 /**
  * Contains helper methods for the tests of the Db2DbTask and SqlExecutorTask
  */
-public class TestUtilSqlPg {
+public class TestUtilSqlPg extends AbstractTestUtilSql {
     public static final String VARNAME_CON_URI = "gretltest_dburi_pg";
     public static final String CON_URI = System.getProperty(VARNAME_CON_URI); //"jdbc:postgresql://localhost:5432/gretl"
     
@@ -19,17 +19,8 @@ public class TestUtilSqlPg {
         Statement s = con.createStatement();
         s.execute(String.format("DROP SCHEMA %s CASCADE", schemaName));
     }
-
-    public static void closeCon(Connection con){
-        try {
-            if(con != null)
-                con.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Connection connect(){
+    
+    public static Connection connect() {
         Connection con = null;
         try {
             Driver pgDriver = (Driver)Class.forName("org.postgresql.Driver").newInstance();
@@ -63,31 +54,6 @@ public class TestUtilSqlPg {
             throw new RuntimeException(e);
         }
     }
-
-    public static int execCountQuery(Connection con, String query) {
-        Statement s = null;
-        int count = -1;
-        try {
-            s = con.createStatement();
-            ResultSet rs = s.executeQuery(query);
-            rs.next();
-            count = rs.getInt(1);
-
-            if(count == -1)
-                throw new RuntimeException(String.format("Query [%s] did not return valid row count",query));
-        } catch (SQLException se){
-            throw new RuntimeException(se);
-        } finally {
-            if (s != null) {
-                try {
-                    s.close();
-                } catch(Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return count;
-    }
     
     /** Grant data modification rights to all tables in given schema.
      * Data modification includes select, insert, update, delete.
@@ -96,7 +62,6 @@ public class TestUtilSqlPg {
      * @param userName user to give rights to
      */
     public static void grantDataModsInSchemaToUser(Connection con, String schemaName, String userName) {
-
         String sql = String.format("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA %s TO %s", schemaName, userName);
         Statement s = null;
         try {

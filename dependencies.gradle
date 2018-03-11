@@ -6,6 +6,8 @@ ext {
     ioxWkfVersion = '1.0.1-SNAPSHOT'
     ehiSqlGenVersion = '1.13.3'
 
+	apacheCommonsIoVersion = '2.6'
+	
     postgresqlVersion = '42.1.4'
     sqliteJdbcVersion = '3.8.11.2'
     derbyVersion = '10.13.1.1'
@@ -19,6 +21,8 @@ ext {
     ili2pgDependency = [ group: 'ch.interlis', name: 'ili2pg', version: ili2pgVersion ]
     ioxWkfDependency = [ group: 'ch.interlis', name: 'iox-wkf', version: ioxWkfVersion ]
 	ehiSqlGenDependency = [ group: 'ch.ehi', name: 'ehisqlgen', version: ehiSqlGenVersion ]
+	
+	apacheCommonsIoDependency = [ group: 'commons-io', name: 'commons-io', version: apacheCommonsIoVersion ]
 
     postgresqlDependency = [ group: 'org.postgresql', name: 'postgresql', version: postgresqlVersion ]
     sqliteJdbcDependency = [group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteJdbcVersion]

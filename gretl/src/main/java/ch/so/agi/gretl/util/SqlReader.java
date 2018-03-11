@@ -4,7 +4,6 @@ import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -21,6 +20,7 @@ public class SqlReader {
             throws IOException {
         return readSqlStmt(sqlfile, null);
     }
+    
     public String readSqlStmt(File sqlfile,Map<String,String> params)
             throws IOException {
 
@@ -43,7 +43,6 @@ public class SqlReader {
         reader = new PushbackReader(sqlFileReader);
     }
 
-
     public String nextSqlStmt() throws IOException{
         if(reader==null) {
             return null;
@@ -54,7 +53,6 @@ public class SqlReader {
         }
         return ret;
     }
-
 
     public void close()
             throws IOException {

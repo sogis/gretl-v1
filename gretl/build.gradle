@@ -61,20 +61,6 @@ publishing {
 	}
 }
 
-test {
-    useJUnit{
-        // Exclude all tests with dependency to a db server (pg, oracle, ..)
-        excludeCategories 'ch.so.agi.gretl.testutil.DbTest'
-    }
-}
-
-task dbTest(type: Test, dependsOn: [compileJava, compileTestJava]) {
-    useJUnit{
-        // Runs all tests with dependency to a db server
-        includeCategories 'ch.so.agi.gretl.testutil.DbTest'
-    }
-}
-
 task jardist(type: Copy){
 	delete fileTree('jardist')
 	destinationDir = file('jardist')

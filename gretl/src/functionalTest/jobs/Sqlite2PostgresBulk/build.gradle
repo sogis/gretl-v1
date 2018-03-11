@@ -1,0 +1,20 @@
+import ch.so.agi.gretl.api.*
+import ch.so.agi.gretl.tasks.*
+
+apply plugin: 'ch.so.agi.gretl'
+
+def GRETLTEST_DBURI = 'gretltest_dburi_pg'
+def db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBURI) : 'jdbc:postgresql://localhost:5432/gretl'
+
+def db_user = "dmluser"
+def db_pass = "dmluser"
+
+defaultTasks 'readFromSqlite'
+
+task readFromSqlite(type: Db2Db) {
+    sourceDb = ["jdbc:sqlite:src/functionalTest/jobs/Sqlite2PostgresBulk/bulkload2postgis.sqlite"]
+    targetDb = [db_uri,db_user,db_pass]
+    transferSets = [
+            new TransferSet('select_from_sqlite.sql', 'bulkload2postgis.target_data', true, [ "mygeom:wkt:2056" ] as String[])
+    ];
+}

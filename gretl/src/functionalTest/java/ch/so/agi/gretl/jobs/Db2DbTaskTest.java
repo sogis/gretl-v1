@@ -8,21 +8,134 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Db2DbTaskTest {
-	/**
-	 * Tests if fetchSize parameter is working.
-	 * Gradle throws an error if a parameter is being
-	 * used that is not defined in the task class.
-	 */
-	@Test
-	public void fetchSizeParameterTest() throws Exception {
-		String schemaName = "db2dbTaskFetchSize".toLowerCase();
-		Connection con = null;
-		try {
-			con = TestUtilSqlPg.connect();
+    /**
+     * Tests if db2db can handle (write) standard wkb geometry type.
+     * Db2Db supports casting binary data to postgis wkb by using
+     * an additional third parameter in transferset.
+     * src: binary data (= ST_AsBinary)
+     * dest: PostGIS geometry
+     * @throws Exception
+     */
+    @Test
+    public void canWriteGeomFromWkbTest() throws Exception {
+        String schemaName = "db2dbWkb".toLowerCase();
+        Connection con = null;
+        String geomSrc = "LINESTRING(2600000 1200000,2600001 1200001)";
+        try {
+            con = TestUtilSqlPg.connect();
+            TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
+
+            Statement stmt = con.createStatement();
+            stmt.execute("CREATE TABLE "+schemaName+".source_data(geom geometry(LINESTRING,2056))");
+            stmt.execute("INSERT INTO "+schemaName+".source_data(geom) VALUES (ST_GeomFromText('"+geomSrc+"', 2056))");
+            stmt.execute("CREATE TABLE "+schemaName+".target_data(geom geometry(LINESTRING,2056))");
+            stmt.close();
+            TestUtilSqlPg.grantDataModsInSchemaToUser(con, schemaName, TestUtilSqlPg.CON_DMLUSER);
+
+            con.commit();
+            TestUtilSqlPg.closeCon(con);
+
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
+            TestUtil.runJob("jobs/Db2DbWkb", gvs);
+            
+            con = TestUtilSqlPg.connect();
+            assertEqualGeomInSourceAndTarget(con, schemaName, "target_data", geomSrc);
+        }
+        finally {
+            TestUtilSqlPg.closeCon(con);
+        }
+    }
+    
+    /**
+     * Tests if db2db can handle (write) wkt geometry to PostGIS as geometry.
+     * This is supported by a third transferset parameter.
+     * src: wkt
+     * dest: PostGIS geometry
+     * @throws Exception
+     */
+    @Test
+    public void canWriteGeomFromWktTest() throws Exception {
+        String schemaName = "db2dbWkt".toLowerCase();
+        Connection con = null;
+        String geomSrc = "LINESTRING(2600000 1200000,2600001 1200001)";
+        try {
+            con = TestUtilSqlPg.connect();
+            TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
+
+            Statement stmt = con.createStatement();
+            stmt.execute("CREATE TABLE "+schemaName+".source_data(geom geometry(LINESTRING,2056))");
+            stmt.execute("INSERT INTO "+schemaName+".source_data(geom) VALUES (ST_GeomFromText('"+geomSrc+"', 2056))");
+            stmt.execute("CREATE TABLE "+schemaName+".target_data(geom geometry(LINESTRING,2056))");
+            stmt.close();
+            TestUtilSqlPg.grantDataModsInSchemaToUser(con, schemaName, TestUtilSqlPg.CON_DMLUSER);
+
+            con.commit();
+            TestUtilSqlPg.closeCon(con);
+
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
+            TestUtil.runJob("jobs/Db2DbWkt", gvs);
+            
+            con = TestUtilSqlPg.connect();
+            assertEqualGeomInSourceAndTarget(con, schemaName, "target_data", geomSrc);
+        }
+        finally {
+            TestUtilSqlPg.closeCon(con);
+        }
+    }
+    
+    /**
+     * Tests if db2db can handle (write) a geosjon geometry to PostGIS as geometry.
+     * This is supported by a third transferset parameter.
+     * src: geojson
+     * dest: PostGIS geometry
+     * @throws Exception
+     */
+    @Test
+    public void canWriteGeomFromGeoJsonTest() throws Exception {
+        String schemaName = "db2dbGeoJson".toLowerCase();
+        Connection con = null;
+        String geomSrc = "LINESTRING(2600000 1200000,2600001 1200001)";
+        try {
+            con = TestUtilSqlPg.connect();
+            TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
+
+            Statement stmt = con.createStatement();
+            stmt.execute("CREATE TABLE "+schemaName+".source_data(geom geometry(LINESTRING,2056))");
+            stmt.execute("INSERT INTO "+schemaName+".source_data(geom) VALUES (ST_GeomFromText('"+geomSrc+"', 2056))");
+            stmt.execute("CREATE TABLE "+schemaName+".target_data(geom geometry(LINESTRING,2056))");
+            stmt.close();
+            TestUtilSqlPg.grantDataModsInSchemaToUser(con, schemaName, TestUtilSqlPg.CON_DMLUSER);
+
+            con.commit();
+            TestUtilSqlPg.closeCon(con);
+
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
+            TestUtil.runJob("jobs/Db2DbGeoJson", gvs);
+            
+            con = TestUtilSqlPg.connect();
+            assertEqualGeomInSourceAndTarget(con, schemaName, "target_data", geomSrc);
+        }
+        finally {
+            TestUtilSqlPg.closeCon(con);
+        }
+    }
+    
+    /**
+     * Tests if fetchSize parameter is working.
+     * Gradle throws an error if a parameter is being
+     * used that is not defined in the task class.
+     */
+    @Test
+    public void fetchSizeParameterTest() throws Exception {
+        String schemaName = "db2dbTaskFetchSize".toLowerCase();
+        Connection con = null;
+        try {
+            con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
 
             Statement stmt = con.createStatement();
@@ -38,8 +151,8 @@ public class Db2DbTaskTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
-		    GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
-		    TestUtil.runJob("jobs/db2dbTaskFetchSize", gvs);
+            GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
+            TestUtil.runJob("jobs/Db2DbTaskFetchSize", gvs);
             
             con = TestUtilSqlPg.connect();
             String countDestSql = String.format("select count(*) from %s.target_data", schemaName);
@@ -49,15 +162,15 @@ public class Db2DbTaskTest {
                     "Rowcount in table source_data must be equal to rowcount in table target_data",
                     2,
                     countDest);
-		}
-		finally {
+        }
+        finally {
             TestUtilSqlPg.closeCon(con);
         }
-	}
-	
+    }
+    
     /**
-	 * Tests that a chain of statements executes properly and results in the correct
-	 * number of inserts (corresponding to the last statement)
+     * Tests that a chain of statements executes properly and results in the correct
+     * number of inserts (corresponding to the last statement)
      * 1. Statement transfers rows from a to b
      * 2. Statement transfers rows from b to a
      */
@@ -73,7 +186,7 @@ public class Db2DbTaskTest {
             TestUtilSqlPg.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
-            TestUtil.runJob("jobs/db2dbTaskChain", gvs);
+            TestUtil.runJob("jobs/Db2DbTaskChain", gvs);
 
             //reconnect to check results
             con = TestUtilSqlPg.connect();
@@ -109,7 +222,7 @@ public class Db2DbTaskTest {
             TestUtilSqlPg.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
-            TestUtil.runJob("jobs/db2dbTaskRelPath", gvs);
+            TestUtil.runJob("jobs/Db2DbTaskRelPath", gvs);
 
             //reconnect to check results
             con = TestUtilSqlPg.connect();
@@ -144,7 +257,7 @@ public class Db2DbTaskTest {
             TestUtilSqlPg.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
-            TestUtil.runJob("jobs/db2dbTaskDelTable", gvs);
+            TestUtil.runJob("jobs/Db2DbTaskDelTable", gvs);
 
             //reconnect to check results
             con = TestUtilSqlPg.connect();
@@ -208,5 +321,14 @@ public class Db2DbTaskTest {
             ps.executeUpdate();
         }
         ps.close();
+    }
+    
+    private static void assertEqualGeomInSourceAndTarget(Connection con, String schemaName, String tableName, String geomSrc) throws SQLException {
+        Statement check = con.createStatement();
+        ResultSet rs = check.executeQuery("SELECT ST_AsText(geom) AS geom_text FROM "+schemaName+"."+tableName);
+        rs.next();
+        String geomRes = rs.getString(1).trim().toUpperCase();
+
+        Assert.assertEquals("The transferred geometry is not equal to the geometry in the source table", geomSrc, geomRes);
     }
 }

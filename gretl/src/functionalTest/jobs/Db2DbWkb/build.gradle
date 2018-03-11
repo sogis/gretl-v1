@@ -1,5 +1,5 @@
-import ch.so.agi.gretl.tasks.*
 import ch.so.agi.gretl.api.*
+import ch.so.agi.gretl.tasks.*
 
 apply plugin: 'ch.so.agi.gretl'
 
@@ -9,13 +9,12 @@ def db_uri = findProperty(GRETLTEST_DBURI) != null ? findProperty(GRETLTEST_DBUR
 def db_user = "dmluser"
 def db_pass = "dmluser"
 
-defaultTasks 'fetchSizeTask'
+defaultTasks 'writeWkb'
 
-task fetchSizeTask(type: Db2Db) {
-    sourceDb =  [db_uri, db_user, db_pass]
-    targetDb = [db_uri, db_user, db_pass]
-    fetchSize = 10
+task writeWkb(type: Db2Db) {
+    sourceDb =  [db_uri,db_user,db_pass]
+    targetDb = [db_uri,db_user,db_pass]
     transferSets = [
-            new TransferSet('fetch_size.sql', 'db2dbtaskfetchsize.target_data', true)
+            new TransferSet('select_wkb.sql', 'db2dbwkb.target_data', true, [ "geom:wkb:2056" ] as String[])
     ];
 }

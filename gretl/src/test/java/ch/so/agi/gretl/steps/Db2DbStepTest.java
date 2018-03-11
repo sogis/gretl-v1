@@ -4,32 +4,25 @@ import ch.so.agi.gretl.api.Connector;
 import ch.so.agi.gretl.api.TransferSet;
 import ch.so.agi.gretl.logging.GretlLogger;
 import ch.so.agi.gretl.logging.LogEnvironment;
-import ch.so.agi.gretl.testutil.DbTest;
 import ch.so.agi.gretl.util.DbConnector;
 import ch.so.agi.gretl.util.EmptyFileException;
 import ch.so.agi.gretl.util.GretlException;
 import ch.so.agi.gretl.testutil.TestUtil;
 import org.junit.*;
-import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.UUID;
 
 import static org.gradle.internal.impldep.org.testng.AssertJUnit.assertEquals;
 import static org.junit.Assert.fail;
 
 public class Db2DbStepTest {
 
+	@Deprecated
     private static final String GEOM_WKT = "LINESTRING(2600000 1200000,2600001 1200001)";
 
     public Db2DbStepTest() {
@@ -175,8 +168,8 @@ public class Db2DbStepTest {
 
     }
 
-    //todo was tested diese methode? Fehler bei leerer sql datei oder Fehler bei falschem sql?
-    //--> Bitte aufräumen und methode besser benennen
+    // TODO: Was testet diese Methode? Fehler bei leerer sql-Datei oder Fehler bei falschem sql?
+    //--> Bitte aufräumen und Methode besser benennen.
     @Test
     public void sqlExceptionTest() throws Exception {
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
@@ -195,7 +188,7 @@ public class Db2DbStepTest {
             Db2DbStep db2db = new Db2DbStep();
 
             db2db.processAllTransferSets(sourceDb, targetDb, mylist);
-            Assert.fail("EmptyFileException müsste geworfen werden");
+            Assert.fail("EmptyFileException must be thrown");
 
         } catch (SQLException e) {
             log.debug("Got SQLException as expected");
@@ -206,8 +199,6 @@ public class Db2DbStepTest {
 
     @Test
     public void columnNumberTest() throws Exception {
-        //unittest
-        DbConnector dbConn = new DbConnector();
         Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         try {
@@ -253,8 +244,6 @@ public class Db2DbStepTest {
 
     @Test
     public void incompatibleDataTypeTest() throws Exception {
-        //unittest
-        DbConnector dbConn = new DbConnector();
         Connection con = DbConnector.connect("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         con.setAutoCommit(true);
         try {
@@ -295,7 +284,6 @@ public class Db2DbStepTest {
 
     @Test
     public void copyEmptyTableToOtherTableTest() throws Exception {
-
         Connector con = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
         createTestDb(con);
         try {
@@ -318,7 +306,6 @@ public class Db2DbStepTest {
 
     @Test
     public void deleteTest() throws Exception {
-        //Datenbank für Test vorbereiten
         Connection con = null;
         try {
             Connector connector = new Connector("jdbc:derby:memory:myInMemDB;create=true", "bjsvwsch", null);
@@ -333,7 +320,6 @@ public class Db2DbStepTest {
             stmt.execute("INSERT INTO colors_copy  VALUES (251,45,23,'rotototo')");
             stmt.execute("INSERT INTO colors_copy  VALUES (67,3,255,'blauwederenzian')");
             con.commit();
-            //Vorbereitungsverbindung schliessen
         } finally {
             con.close();
         }
@@ -353,7 +339,7 @@ public class Db2DbStepTest {
         //db2dbstep ausführen
         db2db.processAllTransferSets(sourceDb, targetDb, mylist);
 
-        //Select auf db um korrektes ausführen zu verifizieren
+        //Select auf db, um korrektes ausführen zu verifizieren
         Connection con2 = null;
         try {
             Connector connector2 = new Connector("jdbc:derby:memory:myInMemDB", "bjsvwsch", null);
@@ -366,8 +352,6 @@ public class Db2DbStepTest {
         } finally {
             con2.close();
         }
-
-
     }
 
     @Test
@@ -429,424 +413,6 @@ public class Db2DbStepTest {
         }
     }
 
-    @Category(DbTest.class)
-    @Test
-    public void canWriteGeomFromWkbTest() throws Exception {
-        String schemaName = "GeomFromWkbTest";
-
-        Connection con = null;
-
-        try{
-            con =  connectToPreparedPgDb(schemaName);
-            preparePgGeomSourceSinkTables(schemaName, con);
-
-            Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder, 
-                    String.format("select ST_AsBinary(geom) as geom from %s.source", schemaName),
-                    "select.sql");
-
-            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
-            TransferSet tSet = new TransferSet(
-                    queryFile.getAbsolutePath(),
-                    schemaName + ".SINK",
-                    true,
-                    new String[]{"geom:wkb:2056"}
-            );
-
-            step.processAllTransferSets(src, sink, Arrays.asList(tSet));
-
-            assertEqualGeomInSourceAndSink(con, schemaName);
-
-            dropSchema(schemaName, con);
-        }
-        finally {
-            if(con != null)
-                con.close();
-        }
-    }
-
-    @Category(DbTest.class)
-    @Test
-    public void canWriteGeomFromWktTest() throws Exception {
-        String schemaName = "GeomFromWktTest";
-
-        Connection con = null;
-
-        try{
-            con = connectToPreparedPgDb(schemaName);
-            preparePgGeomSourceSinkTables(schemaName, con);
-
-
-            Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder, 
-                    String.format("select ST_AsText(geom) as geom from %s.source", schemaName),
-                    "select.sql");
-
-            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
-            TransferSet tSet = new TransferSet(
-                    queryFile.getAbsolutePath(),
-                    schemaName + ".SINK",
-                    true,
-                    new String[]{"geom:wkt:2056"}
-            );
-
-            step.processAllTransferSets(src, sink, Arrays.asList(tSet));
-
-            assertEqualGeomInSourceAndSink(con, schemaName);
-        }
-        finally {
-            dropSchema(schemaName, con);
-
-            if(con != null)
-                con.close();
-        }
-    }
-
-    @Category(DbTest.class)
-    @Test
-    public void canWriteGeomFromGeoJsonTest() throws Exception {
-        String schemaName = "GeomFromGeoJsonTest";
-
-        Connection con = null;
-
-        try{
-            con = connectToPreparedPgDb(schemaName);
-            preparePgGeomSourceSinkTables(schemaName, con);
-
-            Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder, 
-                    String.format("select ST_AsGeoJSON(geom) as geom from %s.source", schemaName),
-                    "select.sql");
-
-            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
-            TransferSet tSet = new TransferSet(
-                    queryFile.getAbsolutePath(),
-                    schemaName + ".SINK",
-                    true,
-                    new String[]{"geom:geojson:2056"}
-            );
-
-            step.processAllTransferSets(src, sink, Arrays.asList(tSet));
-
-            assertEqualGeomInSourceAndSink(con, schemaName);
-        }
-        finally {
-            dropSchema(schemaName, con);
-
-            if(con != null)
-                con.close();
-        }
-    }
-
-    /**
-     * Test's loading several hundred thousand rows from sqlite to postgis.
-     * Loading 300'000 rows should take about 15 seconds
-     */
-    @Category(DbTest.class)
-    @Test
-    public void positiveBulkLoadPostgisTest() throws Exception {
-        int numRows = 300000;
-        String schemaName = "BULKLOAD2POSTGIS";
-
-        Connection srcCon = null;
-        Connection targetCon = null;
-
-        try{
-            File sqliteDb = createTmpDb(schemaName);
-            srcCon = connectSqlite(sqliteDb);
-            createSqliteSrcTable(numRows, srcCon);
-
-            targetCon = connectToPreparedPgDb(schemaName);
-            prepareSinkTable(schemaName, targetCon);
-
-            Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
-
-            Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
-            TransferSet tSet = new TransferSet(
-                    queryFile.getAbsolutePath(),
-                    schemaName + ".DTYPES",
-                    true,
-                    new String[]{"mygeom:wkt:2056"}
-            );
-
-            step.processAllTransferSets(src, sink, Arrays.asList(tSet));
-
-            //Test considered OK if all values are transferred and Geom OK
-            String checkSQL = String.format("SELECT COUNT(*) FROM %s.DTYPES", schemaName);
-
-            Statement checkStmt = targetCon.createStatement();
-            ResultSet rs = checkStmt.executeQuery(checkSQL);
-            rs.next();
-
-            Assert.assertEquals("Check Statement must return exactly " + numRows, numRows, rs.getInt(1));
-        }
-        finally {
-            dropSchema(schemaName, targetCon);
-
-            if(srcCon != null){ srcCon.close(); }
-            if(targetCon != null){ targetCon.close(); }
-        }
-    }
-
-    /**
-     * Tests if the sqlite datatypes and geometry as wkt are transferred
-     * faultfree from sqlite to postgis
-     */
-    @Category(DbTest.class)
-    @Test
-    public void positiveSqlite2PostgisTest() throws Exception {
-        String schemaName = "SQLITE2POSTGIS";
-
-        Connection srcCon = null;
-        Connection targetCon = null;
-
-        try{
-            File sqliteDb = createTmpDb(schemaName);
-            srcCon = connectSqlite(sqliteDb);
-            createSqliteSrcTable(1, srcCon);
-
-            targetCon = connectToPreparedPgDb(schemaName);
-            prepareSinkTable(schemaName, targetCon);
-
-            Db2DbStep step = new Db2DbStep();
-            File queryFile = TestUtil.createFile(folder, "select myint, myfloat, mytext, mywkt as mygeom from dtypes","select.sql");
-
-            Connector src = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
-            Connector sink = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_DMLUSR_USR, TestUtil.PG_DMLUSR_PWD);
-            TransferSet tSet = new TransferSet(
-                    queryFile.getAbsolutePath(),
-                    schemaName + ".DTYPES",
-                    true,
-                    new String[]{"mygeom:wkt:2056"}
-            );
-
-            step.processAllTransferSets(src, sink, Arrays.asList(tSet));
-
-            //Test considered OK if all values are transferred and Geom OK
-            String checkSQLRaw = "SELECT COUNT(*) FROM %s.DTYPES " +
-                    "WHERE MYINT IS NOT NULL AND MYFLOAT IS NOT NULL AND MYTEXT IS NOT NULL AND " +
-                    "ST_Equals(MYGEOM, ST_GeomFromText('%s', 2056)) = True";
-            String checkSql = String.format(checkSQLRaw, schemaName, GEOM_WKT);
-
-            Statement checkStmt = targetCon.createStatement();
-            ResultSet rs = checkStmt.executeQuery(checkSql);
-            rs.next();
-
-            Assert.assertEquals("Check Statement must return exactly one row", 1, rs.getInt(1));
-        }
-        finally {
-            dropSchema(schemaName, targetCon);
-
-            if(srcCon != null){ srcCon.close(); }
-            if(targetCon != null){ targetCon.close(); }
-        }
-    }
-
-    private static void prepareSinkTable(String schemaName, Connection con) throws SQLException{
-        String create = String.format(
-                "CREATE TABLE %s.DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT VARCHAR(50), MYGEOM GEOMETRY(LINESTRING,2056))",
-                schemaName);
-
-        Statement s = con.createStatement();
-        s.addBatch(create);
-
-        String grant = String.format("GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_DMLUSR_USR);
-        s.addBatch(grant);
-        s.executeBatch();
-
-        con.commit();
-    }
-
-    private static void createSqliteSrcTable(int numRows, Connection con) throws SQLException{
-        String create = "CREATE TABLE DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT TEXT, MYWKT TEXT)";
-        Statement sCreate = con.createStatement();
-        sCreate.execute(create);
-
-        Random random = new Random();
-
-        PreparedStatement ps = con.prepareStatement("INSERT INTO DTYPES VALUES(?, ?, ?, ?)");
-        for(int i=0; i<numRows; i++){
-            ps.setInt(1, random.nextInt());
-            ps.setDouble(2,random.nextDouble());
-            ps.setString(3, UUID.randomUUID().toString());
-            ps.setString(4, GEOM_WKT);
-            ps.addBatch();
-        }
-
-        ps.executeBatch();
-        ps.close();
-
-        con.commit();
-    }
-
-    private static void createSqliteTargetTable(Connection con) throws SQLException{
-        String create = "CREATE TABLE DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT TEXT, MYDATE TEXT, MYTIME TEXT, " +
-                "MYUUID TEXT, MYGEOM_WKT TEXT)";
-
-        Statement sCreate = con.createStatement();
-        sCreate.execute(create);
-
-        con.commit();
-    }
-
-    private static File createTmpDb(String name) throws  IOException{
-        Path dir = Files.createTempDirectory(null);
-        Path file = Paths.get(name + ".sqlite");
-
-        Path dbPath = dir.resolve(file);
-        return dbPath.toFile();
-    }
-
-    private static Connection connectSqlite(File dbLocation) throws SQLException{
-        String url = "jdbc:sqlite:" + dbLocation.getAbsolutePath();
-
-        Connection con = DriverManager.getConnection(url);
-        con.setAutoCommit(false);
-
-        return con;
-    }
-
-    /**
-     * Tests if the "special" datatypes (Date, Time, GUID, Geometry, ..) are transferred
-     * faultfree from Postgis to sqlite
-     */
-    @Category(DbTest.class)
-    @Test
-    public void positivePostgis2SqliteTest() throws Exception {
-        String schemaName = "POSTGIS2SQLITE";
-
-        Connection srcCon = null;
-        Connection targetCon = null;
-
-        try{
-            srcCon = connectToPreparedPgDb(schemaName);
-            prepareSrcTable(schemaName, srcCon);
-
-            File sqliteDb = createTmpDb(schemaName);
-            targetCon = connectSqlite(sqliteDb);
-            createSqliteTargetTable(targetCon);
-
-            Db2DbStep step = new Db2DbStep();
-            String select = String.format(
-                    "select myint, myfloat, mytext, mydate, mytime, myuuid, ST_AsText(mygeom) as mygeom_wkt from %s.dtypes",
-                    schemaName
-            );
-            File queryFile = TestUtil.createFile(folder, select,"select.sql");
-
-
-            Connector src = new Connector(TestUtil.PG_CONNECTION_URI, TestUtil.PG_READERUSR_USR, TestUtil.PG_READERUSR_PWD);
-            Connector sink = new Connector("jdbc:sqlite:" + sqliteDb.getAbsolutePath());
-            TransferSet tSet = new TransferSet(
-                    queryFile.getAbsolutePath(),
-                    "dtypes",
-                    true
-            );
-
-            step.processAllTransferSets(src, sink, Arrays.asList(tSet));
-
-            //Test considered OK if all values are transferred and Geom OK
-            String checkSQL = String.format("SELECT COUNT(*) FROM DTYPES WHERE " +
-                    "MYINT IS NOT NULL AND MYFLOAT IS NOT NULL AND MYTEXT IS NOT NULL AND MYDATE IS NOT NULL AND MYTIME IS NOT NULL AND MYUUID IS NOT NULL AND " +
-                    "MYGEOM_WKT = '%s'",
-                    GEOM_WKT);
-
-            Statement checkStmt = targetCon.createStatement();
-            ResultSet rs = checkStmt.executeQuery(checkSQL);
-            rs.next();
-
-            Assert.assertEquals("Check Statement must return exactly one row", 1, rs.getInt(1));
-        }
-        finally {
-            dropSchema(schemaName, srcCon);
-
-            if (srcCon != null) { srcCon.close(); }
-            if (targetCon != null) { targetCon.close(); }
-        }
-    }
-
-
-    //HILFSFUNKTIONEN FÜR DIE TESTS! ////
-
-    private static void prepareSrcTable(String schemaName, Connection con) throws SQLException
-    {
-        Statement s = con.createStatement();
-
-        String rawCreate = "CREATE TABLE %s.DTYPES(MYINT INTEGER, MYFLOAT REAL, MYTEXT VARCHAR(50), MYDATE DATE, MYTIME TIME, " +
-                "MYUUID UUID, MYGEOM GEOMETRY(LINESTRING,2056))";
-        String create = String.format(rawCreate, schemaName);
-        s.addBatch(create);
-
-        String insert = String.format(
-                "INSERT INTO %s.DTYPES VALUES(15, 9.99, 'Hello Db2Db', CURRENT_DATE, CURRENT_TIME, '%s', ST_GeomFromText('%s', 2056))",
-                schemaName,
-                UUID.randomUUID(),
-                GEOM_WKT);
-        s.addBatch(insert);
-
-        String grant = String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_READERUSR_USR);
-        s.addBatch(grant);
-        s.executeBatch();
-
-        con.commit();
-    }
-
-    private static void assertEqualGeomInSourceAndSink(Connection con, String schemaName) throws SQLException {
-        Statement check = con.createStatement();
-        ResultSet rs = check.executeQuery(
-                String.format("select ST_AsText(geom) as geom_text from %s.sink", schemaName));
-        rs.next();
-        String geomRes = rs.getString(1).trim().toUpperCase();
-
-        Assert.assertEquals("The transferred geometry is not equal to the geometry in the source table", GEOM_WKT, geomRes);
-    }
-
-    private static void preparePgGeomSourceSinkTables(String schemaName, Connection con) throws SQLException {
-        Statement prep = con.createStatement();
-        prep.addBatch(String.format("CREATE TABLE %s.SOURCE (geom geometry(LINESTRING,2056) );",schemaName));
-        prep.addBatch(String.format("CREATE TABLE %s.SINK (geom geometry(LINESTRING,2056) );",schemaName));
-        prep.addBatch(String.format("INSERT INTO %s.SOURCE VALUES ( ST_GeomFromText('%s', 2056) )", schemaName, GEOM_WKT));
-
-        prep.addBatch(String.format("GRANT SELECT ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_READERUSR_USR));
-        prep.addBatch(String.format("GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA %s TO %s", schemaName, TestUtil.PG_DMLUSR_USR));
-
-        prep.executeBatch();
-        con.commit();
-    }
-
-    private void dropSchema(String schemaName, Connection con) throws SQLException{
-        if(con == null){ return; }
-
-        Statement s = con.createStatement();
-        s.execute(String.format("drop schema %s cascade", schemaName));
-    }
-
-    private static Connection connectToPreparedPgDb(String schemaName) throws Exception {
-        Driver pgDriver = (Driver)Class.forName("org.postgresql.Driver").newInstance();
-        DriverManager.registerDriver(pgDriver);
-
-        Connection con = DriverManager.getConnection(
-            TestUtil.PG_CONNECTION_URI,
-            TestUtil.PG_DDLUSR_USR,
-            TestUtil.PG_DDLUSR_PWD);
-
-        con.setAutoCommit(false);
-
-        Statement s = con.createStatement();
-        s.addBatch(String.format("drop schema if exists %s cascade", schemaName));
-        s.addBatch("create schema " + schemaName);
-        s.addBatch(String.format("grant usage on schema %s to %s", schemaName, TestUtil.PG_DMLUSR_USR));
-        s.addBatch(String.format("grant usage on schema %s to %s", schemaName, TestUtil.PG_READERUSR_USR));
-        s.executeBatch();
-        con.commit();
-
-        return con;
-    }
-
     private void clearTestDb(Connector sourceDb) throws Exception {
         Connection con = sourceDb.connect();
         con.setAutoCommit(true);
@@ -861,15 +427,12 @@ public class Db2DbStepTest {
         } finally {
             con.close();
         }
-
     }
 
-    private void createTestDb(Connector sourceDb )
-            throws Exception{
+    private void createTestDb(Connector sourceDb) throws Exception{
         Connection con = sourceDb.connect();
         createTableInTestDb(con);
         writeExampleDataInTestDB(con);
-
     }
 
     private void createTableInTestDb(Connection con) throws Exception {
@@ -889,5 +452,4 @@ public class Db2DbStepTest {
         stmt.execute("INSERT INTO colors  VALUES (251,0,0,'rot')");
         stmt.execute("INSERT INTO colors  VALUES (0,0,255,'blau')");
     }
-
 }

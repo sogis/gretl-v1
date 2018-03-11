@@ -29,7 +29,7 @@ public class SqlExecutorTaskTest {
             TestUtilSqlPg.closeCon(con);
 
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
-            TestUtil.runJob("jobs/sqlExecutorTaskChain", gvs);
+            TestUtil.runJob("jobs/SqlExecutorTaskChain", gvs);
 
             //reconnect to check results
             con = TestUtilSqlPg.connect();
@@ -55,7 +55,7 @@ public class SqlExecutorTaskTest {
      */
     @Test
     public void relPathTest() throws Exception {
-        String schemaName = "sqlExecuterRelPath".toLowerCase();
+        String schemaName = "SqlExecuterRelPath".toLowerCase();
         Connection con = null;
         try {
             con = TestUtilSqlPg.connect();
@@ -77,7 +77,7 @@ public class SqlExecutorTaskTest {
                 "title text, artist text, release_date text," +
                 "publisher text, media_type text)";
 
-        try{
+        try {
             //source table
             Statement s1 = con.createStatement();
             System.out.println(String.format(ddlBase, schemaName, "src"));
@@ -90,8 +90,7 @@ public class SqlExecutorTaskTest {
             s2.close();
 
             TestUtilSqlPg.grantDataModsInSchemaToUser(con, schemaName, TestUtilSqlPg.CON_DMLUSER);
-        }
-        catch(SQLException se){
+        } catch(SQLException se){
             throw new RuntimeException(se);
         }
     }

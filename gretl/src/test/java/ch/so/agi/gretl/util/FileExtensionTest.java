@@ -8,7 +8,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 
 /**
- * Tests for FileExtension-Class
+ * Tests for FileExtension class
  */
 public class FileExtensionTest {
     @Rule
