@@ -63,7 +63,7 @@ public class Postgres2SqliteTest {
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/Postgres2SqliteDatatypes", gvs);
 
-            // check
+            // check results
             String checkSQL = "SELECT COUNT(*) FROM target_data WHERE " +
                     "MYINT IS NOT NULL AND MYFLOAT IS NOT NULL AND MYTEXT IS NOT NULL AND MYDATE IS NOT NULL AND MYTIME IS NOT NULL AND MYUUID IS NOT NULL AND " +
                     "MYGEOM_WKT = '"+geomWkt+"'";
@@ -76,8 +76,8 @@ public class Postgres2SqliteTest {
                     1,
                     countDest);
         } finally {
-            if (srcCon != null) { srcCon.close(); }
-            if (targetCon != null) { targetCon.close(); }
+        	    TestUtilSqlPg.closeCon(srcCon);
+        	    TestUtilSqlSqlite.closeCon(targetCon);
             Files.deleteIfExists(new File(sqliteDbFileName).toPath());
         }
     }

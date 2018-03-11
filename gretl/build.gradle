@@ -19,12 +19,12 @@ sourceSets {
 }
 
 gradlePlugin {
-	plugins {
-		gretlPlugin {
-			id = 'ch.so.agi.gretl'
-			implementationClass = 'ch.so.agi.gretl.gradle.GretlPlugin'
-		}
-	}
+    plugins {
+        gretlPlugin {
+            id = 'ch.so.agi.gretl'
+            implementationClass = 'ch.so.agi.gretl.gradle.GretlPlugin'
+        }
+    }
 }
 //////////////////////////////
 
@@ -39,46 +39,37 @@ dependencies {
     compile ioxIliDependency
     compile ehiSqlGenDependency
 
-	runtime postgresqlDependency
+    runtime postgresqlDependency
     compile sqliteJdbcDependency
     compile derbyDependency
     compile oracleDependency
-    	
-	compile apacheCommonsIoDependency
-	
-	//compile gradleApi()
+        
+    compile apacheCommonsIoDependency
+    
+    //compile gradleApi()
 }
 
 // 'gradle publishToMavenLocal' publishes
 // oracle jdbc to local maven repo.
 publishing {
-	publications {
-		maven(MavenPublication) {
-			artifactId "ojdbc7"
-			version "12.1.0.1"
-			groupId "com.oracle"
-			artifact file('./lib/ojdbc7-12.1.0.1.jar')
-		}
-	}
+    publications {
+        maven(MavenPublication) {
+            artifactId "ojdbc7"
+            version "12.1.0.1"
+            groupId "com.oracle"
+            artifact file('./lib/ojdbc7-12.1.0.1.jar')
+        }
+    }
 }
 
 task jardist(type: Copy){
-	delete fileTree('jardist')
-	destinationDir = file('jardist')
-	from jar
-	from configurations.runtimeClasspath
-	// version = '1.0.6'
+    delete fileTree('jardist')
+    destinationDir = file('jardist')
+    from jar
+    from configurations.runtimeClasspath
+    // version = '1.0.6'
 
 }
-
-// Transfer the required configuration variables to the unit test code.
-// (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
-/*
-tasks.withType(Test) {
-    def GRETLTEST_DBURI = 'gretltest_dburi_pg'
-    systemProperty(GRETLTEST_DBURI, findProperty(GRETLTEST_DBURI))
-}
-*/
 
 publishing {
     publications {
@@ -99,38 +90,52 @@ publishing {
 }
 
 //////////////////////////////
-task functionalTest(type: Test) {
-    description = 'Runs the functional tests.'
+task testJar(type: Test) {
+    description = 'Runs the functional tests against the gretl jar.'
     group = 'verification'
-	
-	systemProperty('GRETL_TESTTYPE', 'jar')
-	
-	useJUnit {
-		excludeCategories 'ch.so.agi.gretl.util.DbDriversReachableTest'
-	}
-	
-	// show standard out and standard error of the test JVM(s) on the console
-	testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
+    
+    systemProperty('GRETL_TESTTYPE', 'jar')
+    
+    useJUnit {
+        excludeCategories 'ch.so.agi.gretl.util.DbDriversReachableTest'
+    }
+    
+    // show standard out and standard error of the test JVM(s) on the console
+    testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
 
     testClassesDirs = sourceSets.functionalTest.output.classesDirs
     classpath = sourceSets.functionalTest.runtimeClasspath
-	
+    
     //mustRunAfter test
+}
+
+task testImage(type: Test){
+    group = 'Verification'
+    description = 'Runs integration tests against the docker image.'
+
+    systemProperty('GRETL_TESTTYPE', 'image')
+
+    // show standard out and standard error of the test JVM(s) on the console
+    testLogging.showStandardStreams = System.getenv('TRAVIS')=='true'
+
+    ignoreFailures = Boolean.getBoolean("test.ignoreFailures")
+    testClassesDirs = sourceSets.testIntegration.output.classesDirs
+    classpath = sourceSets.testIntegration.runtimeClasspath
 }
 
 // Transfer the required configuration variables to all test code.
 // (The test code has no access to the -D or -P variables as it is executed in a separate jvm-process)
 tasks.withType(Test) {
-	def GRETLTEST_DBURI_PG = 'gretltest_dburi_pg'
-	systemProperty(GRETLTEST_DBURI_PG, findProperty(GRETLTEST_DBURI_PG))
+    def GRETLTEST_DBURI_PG = 'gretltest_dburi_pg'
+    systemProperty(GRETLTEST_DBURI_PG, findProperty(GRETLTEST_DBURI_PG))
 
-	def GRETLTEST_DBURI_ORA = 'gretltest_dburi_ora'
-	systemProperty(GRETLTEST_DBURI_ORA, findProperty(GRETLTEST_DBURI_ORA))
+    def GRETLTEST_DBURI_ORA = 'gretltest_dburi_ora'
+    systemProperty(GRETLTEST_DBURI_ORA, findProperty(GRETLTEST_DBURI_ORA))
 
-	println 'dburi_pg: ' + getSystemProperties().getAt(GRETLTEST_DBURI_PG)
-	println 'dburi_ora: ' + getSystemProperties().getAt(GRETLTEST_DBURI_ORA)
+    println 'dburi_pg: ' + getSystemProperties().getAt(GRETLTEST_DBURI_PG)
+    println 'dburi_ora: ' + getSystemProperties().getAt(GRETLTEST_DBURI_ORA)
 
-	systemProperty('GRETL_INTTESTFOLDER_ABS_PATH', projectDir)
+    systemProperty('GRETL_INTTESTFOLDER_ABS_PATH', projectDir)
 }
 //////////////////////////////
 

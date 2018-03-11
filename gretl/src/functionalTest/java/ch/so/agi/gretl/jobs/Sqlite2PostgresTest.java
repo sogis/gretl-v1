@@ -91,8 +91,8 @@ public class Sqlite2PostgresTest {
                     numRows,
                     countDest);
         } finally {
-            if(srcCon != null){ srcCon.close(); }
-            if(targetCon != null){ targetCon.close(); }
+    		    TestUtilSqlSqlite.closeCon(srcCon);
+    		    TestUtilSqlPg.closeCon(targetCon);
             Files.deleteIfExists(new File(sqliteDbFileName).toPath());
         }
 	}
@@ -158,7 +158,7 @@ public class Sqlite2PostgresTest {
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/Sqlite2PostgresDatatypes", gvs);
 
-            // check
+            // check results
             String checkSql = "SELECT COUNT(*) FROM "+schemaName+".target_data " +
                     "WHERE MYINT IS NOT NULL AND MYFLOAT IS NOT NULL AND MYTEXT IS NOT NULL AND " +
                     "ST_Equals(MYGEOM, ST_GeomFromText('"+geomWkt+"', 2056)) = True;";
@@ -171,8 +171,8 @@ public class Sqlite2PostgresTest {
                     numRows,
                     countDest);    
         } finally {
-            if(srcCon != null){ srcCon.close(); }
-            if(targetCon != null){ targetCon.close(); }
+        	    TestUtilSqlSqlite.closeCon(srcCon);
+            TestUtilSqlPg.closeCon(targetCon);
             Files.deleteIfExists(new File(sqliteDbFileName).toPath());
         }
     }

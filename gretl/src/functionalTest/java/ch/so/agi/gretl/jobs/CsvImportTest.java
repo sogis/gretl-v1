@@ -19,6 +19,7 @@ public class CsvImportTest {
         String schemaName = "csvimport".toLowerCase();
         Connection con = null;
         try {
+        		// prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
@@ -29,10 +30,11 @@ public class CsvImportTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/CsvImport", gvs);
 
-            //reconnect to check results
+            //check results
             con = TestUtilSqlPg.connect();
 
             Statement s2 = con.createStatement();
@@ -63,6 +65,7 @@ public class CsvImportTest {
         String schemaName = "csvimport".toLowerCase();
         Connection con = null;
         try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
@@ -73,10 +76,11 @@ public class CsvImportTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/CsvImportBatchSize", gvs);
 
-            //reconnect to check results
+            // check results
             con = TestUtilSqlPg.connect();
 
             Statement s2 = con.createStatement();

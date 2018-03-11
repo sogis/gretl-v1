@@ -6,6 +6,8 @@ import ch.so.agi.gretl.util.TestUtilSqlPg;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,6 +23,7 @@ public class SqlExecutorTaskTest {
         String schemaName = "sqlExecuterTaskChain".toLowerCase();
         Connection con = null;
         try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             createSqlExecuterTaskChainTables(con, schemaName);
@@ -28,10 +31,11 @@ public class SqlExecutorTaskTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/SqlExecutorTaskChain", gvs);
 
-            //reconnect to check results
+            // check results
             con = TestUtilSqlPg.connect();
 
             String countSrcSql = String.format("SELECT count(*) FROM %s.albums_src", schemaName);
@@ -58,6 +62,7 @@ public class SqlExecutorTaskTest {
         String schemaName = "SqlExecuterRelPath".toLowerCase();
         Connection con = null;
         try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             createSqlExecuterTaskChainTables(con, schemaName);
@@ -65,6 +70,8 @@ public class SqlExecutorTaskTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
+            // check result happens in TestUtil.runJob()
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/sqlExecutorTaskRelPath", gvs);
         } finally {

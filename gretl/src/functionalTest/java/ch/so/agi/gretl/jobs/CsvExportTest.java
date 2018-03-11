@@ -17,7 +17,8 @@ public class CsvExportTest {
     public void exportOk() throws Exception {
         String schemaName = "csvexport".toLowerCase();
         Connection con = null;
-        try{
+        try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
@@ -30,10 +31,11 @@ public class CsvExportTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/CsvExport", gvs);
 
-            //check results
+            // check results
             System.out.println("cwd "+new File(".").getAbsolutePath());
             java.io.LineNumberReader reader=new java.io.LineNumberReader(new java.io.InputStreamReader(new java.io.FileInputStream(new File("src/functionalTest/jobs/CsvExport/data.csv"))));
             String line=reader.readLine();
@@ -43,8 +45,7 @@ public class CsvExportTest {
             line=reader.readLine();
                assertEquals("\"2\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"", line);
             reader.close();
-        }
-        finally {
+        } finally {
             TestUtilSqlPg.closeCon(con);
         }
     }

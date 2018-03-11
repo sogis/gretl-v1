@@ -1,12 +1,10 @@
 allprojects {
     buildscript {
-
         repositories {
             flatDir {
                 dirs '/home/gradle/libs'
             }
         }
-
         dependencies {
             classpath fileTree(dir: '/home/gradle/libs', include: '*.jar')
         }

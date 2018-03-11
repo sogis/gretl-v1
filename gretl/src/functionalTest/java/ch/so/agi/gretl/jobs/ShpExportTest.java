@@ -27,7 +27,8 @@ public class ShpExportTest {
     public void exportOk() throws Exception {
         String schemaName = "shpexport".toLowerCase();
         Connection con = null;
-        try{
+        try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
@@ -40,13 +41,14 @@ public class ShpExportTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/ShpExport", gvs);
 
-            //check results
+            // check results
             {
                 System.out.println("cwd "+new File(".").getAbsolutePath());
-                //Open the file for reading
+                // Open the file for reading
                 FileDataStore dataStore = FileDataStoreFinder.getDataStore(new File("src/functionalTest/jobs/ShpExport/data.shp"));
                 SimpleFeatureSource featuresSource = dataStore.getFeatureSource();
                 SimpleFeatureIterator featureCollectionIter=featuresSource.getFeatures().features();
@@ -73,8 +75,7 @@ public class ShpExportTest {
                 featureCollectionIter.close();
                 dataStore.dispose();
             }
-        }
-        finally {
+        } finally {
             TestUtilSqlPg.closeCon(con);
         }
     }

@@ -27,6 +27,7 @@ public class Db2DbTaskTest {
         Connection con = null;
         String geomSrc = "LINESTRING(2600000 1200000,2600001 1200001)";
         try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
 
@@ -40,13 +41,14 @@ public class Db2DbTaskTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/Db2DbWkb", gvs);
             
+            // check results
             con = TestUtilSqlPg.connect();
             assertEqualGeomInSourceAndTarget(con, schemaName, "target_data", geomSrc);
-        }
-        finally {
+        } finally {
             TestUtilSqlPg.closeCon(con);
         }
     }
@@ -64,6 +66,7 @@ public class Db2DbTaskTest {
         Connection con = null;
         String geomSrc = "LINESTRING(2600000 1200000,2600001 1200001)";
         try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
 
@@ -77,13 +80,14 @@ public class Db2DbTaskTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/Db2DbWkt", gvs);
             
+            // check results
             con = TestUtilSqlPg.connect();
             assertEqualGeomInSourceAndTarget(con, schemaName, "target_data", geomSrc);
-        }
-        finally {
+        } finally {
             TestUtilSqlPg.closeCon(con);
         }
     }
@@ -101,6 +105,7 @@ public class Db2DbTaskTest {
         Connection con = null;
         String geomSrc = "LINESTRING(2600000 1200000,2600001 1200001)";
         try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
 
@@ -114,13 +119,14 @@ public class Db2DbTaskTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/Db2DbGeoJson", gvs);
             
+            // check results
             con = TestUtilSqlPg.connect();
             assertEqualGeomInSourceAndTarget(con, schemaName, "target_data", geomSrc);
-        }
-        finally {
+        } finally {
             TestUtilSqlPg.closeCon(con);
         }
     }
@@ -135,6 +141,7 @@ public class Db2DbTaskTest {
         String schemaName = "db2dbTaskFetchSize".toLowerCase();
         Connection con = null;
         try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
 
@@ -151,9 +158,11 @@ public class Db2DbTaskTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/Db2DbTaskFetchSize", gvs);
             
+            // check results
             con = TestUtilSqlPg.connect();
             String countDestSql = String.format("select count(*) from %s.target_data", schemaName);
             int countDest = TestUtilSqlPg.execCountQuery(con, countDestSql);
@@ -162,8 +171,7 @@ public class Db2DbTaskTest {
                     "Rowcount in table source_data must be equal to rowcount in table target_data",
                     2,
                     countDest);
-        }
-        finally {
+        } finally {
             TestUtilSqlPg.closeCon(con);
         }
     }
@@ -178,17 +186,20 @@ public class Db2DbTaskTest {
     public void taskChainTest() throws Exception {
         String schemaName = "db2dbTaskChain".toLowerCase();
         Connection con = null;
-        try{
+        try {
+        	    // prepare postgres	
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             int countSrc = prepareDb2DbChainTables(con, schemaName);
+            
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/Db2DbTaskChain", gvs);
 
-            //reconnect to check results
+            // check results
             con = TestUtilSqlPg.connect();
             String countDestSql = String.format("SELECT count(*) FROM %s.albums_dest", schemaName);
             int countDest = TestUtilSqlPg.execCountQuery(con, countDestSql);
@@ -197,8 +208,7 @@ public class Db2DbTaskTest {
                     "Rowcount in table albums_src must be equal to rowcount in table albums_dest",
                     countSrc,
                     countDest);
-        }
-        finally {
+        } finally {
             TestUtilSqlPg.closeCon(con);
         }
     }
@@ -213,7 +223,8 @@ public class Db2DbTaskTest {
     public void relativePathTest() throws Exception{
         String schemaName = "relativePath".toLowerCase();
         Connection con = null;
-        try{
+        try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
 
@@ -221,10 +232,11 @@ public class Db2DbTaskTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/Db2DbTaskRelPath", gvs);
 
-            //reconnect to check results
+            // check results
             con = TestUtilSqlPg.connect();
             String countDestSql = String.format("SELECT count(*) FROM %s.albums_dest", schemaName);
             int countDest = TestUtilSqlPg.execCountQuery(con, countDestSql);
@@ -233,8 +245,7 @@ public class Db2DbTaskTest {
                     "Rowcount in table albums_src must be equal to rowcount in table albums_dest",
                     countSrc,
                     countDest);
-        }
-        finally {
+        } finally {
             TestUtilSqlPg.closeCon(con);
         }
     }
@@ -246,7 +257,8 @@ public class Db2DbTaskTest {
     public void deleteDestTableContent() throws Exception{
         String schemaName = "deleteDestTableContent".toLowerCase();
         Connection con = null;
-        try{
+        try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
 
@@ -256,10 +268,11 @@ public class Db2DbTaskTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/Db2DbTaskDelTable", gvs);
 
-            //reconnect to check results
+            // check results
             con = TestUtilSqlPg.connect();
             String countDestSql = String.format("SELECT count(*) FROM %s.albums_dest", schemaName);
             int countDest = TestUtilSqlPg.execCountQuery(con, countDestSql);

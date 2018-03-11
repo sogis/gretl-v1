@@ -18,7 +18,8 @@ public class ShpImportTest {
     public void importOk() throws Exception {
         String schemaName = "shpimport".toLowerCase();
         Connection con = null;
-        try{
+        try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
@@ -29,15 +30,16 @@ public class ShpImportTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/ShpImport", gvs);
 
-            //reconnect to check results
+            // check results
             con = TestUtilSqlPg.connect();
 
             Statement s2 = con.createStatement();
             ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata WHERE t_id=1"); 
-            if(!rs.next()) {
+            if (!rs.next()) {
                 fail();
             }
             assertEquals(2,rs.getInt(1));
@@ -47,13 +49,12 @@ public class ShpImportTest {
             assertEquals(new java.sql.Date(2013-1900,10-1,21),rs.getDate(5));
             assertEquals(2638000.0,rs.getFloat(6),0.000001);
             assertEquals(1175250.0,rs.getFloat(7),0.000001);
-            if(rs.next()) {
+            if (rs.next()) {
                 fail();
             }
             rs.close();
             s1.close();
-        }
-        finally {
+        } finally {
             TestUtilSqlPg.closeCon(con);
         }
     }
@@ -63,6 +64,7 @@ public class ShpImportTest {
         String schemaName = "shpimport".toLowerCase();
         Connection con = null;
         try {
+        	    // prepare postgres
             con = TestUtilSqlPg.connect();
             TestUtilSqlPg.createOrReplaceSchema(con, schemaName);
             Statement s1 = con.createStatement();
@@ -73,15 +75,16 @@ public class ShpImportTest {
             con.commit();
             TestUtilSqlPg.closeCon(con);
 
+            // run job
             GradleVariable[] gvs = {GradleVariable.newGradleProperty(TestUtilSqlPg.VARNAME_CON_URI, TestUtilSqlPg.CON_URI)};
             TestUtil.runJob("jobs/ShpImportBatchSize", gvs);
 
-            //reconnect to check results
+            // check results
             con = TestUtilSqlPg.connect();
 
             Statement s2 = con.createStatement();
             ResultSet rs=s2.executeQuery("SELECT \"Aint\" , adec, atext, aenum,adate, ST_X(geometrie), ST_Y(geometrie), aextra FROM "+schemaName+".importdata_batchsize WHERE t_id=1"); 
-            if(!rs.next()) {
+            if (!rs.next()) {
                 fail();
             }
             assertEquals(2,rs.getInt(1));
@@ -91,7 +94,7 @@ public class ShpImportTest {
             assertEquals(new java.sql.Date(2013-1900,10-1,21),rs.getDate(5));
             assertEquals(2638000.0,rs.getFloat(6),0.000001);
             assertEquals(1175250.0,rs.getFloat(7),0.000001);
-            if(rs.next()) {
+            if (rs.next()) {
                 fail();
             }
             rs.close();
