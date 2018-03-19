@@ -42,7 +42,79 @@ oc process -f serviceConfig/templates/gretl-is-template.yaml \
 Parameter:
 * GRETL_RUNTIME_IMAGE: Docker image reference of the GRETL runtime.
 
-#### Update GRETL runtime image
+
+### Configure a database connection
+Database connections are configured globally in the OpenShift project.
+Such that the GRETL-Jobs can use the url and credentials.
+
+The url/ip-address is added as environment variable.
+To protect the username and password a OpenShift secret will be used.
+
+#### Add database secret
+There is an example secret definition file to be applied:
+```
+oc apply -fserviceConfig/templates/database-secret.yaml
+```
+The values of *username* and *password* of the section *stringData* will be encripted
+and added to the *data* section.
+
+The label *credential.sync.jenkins.openshift.io* must be added and set to "true".
+With this configuration, the OpenShift secret will be synced to Jenkins as credential.
+The name of the credential is the secret name prefixed by the OpenShift project name.
+
+#### Configure database url and credential name
+Add an environment entry with the OpenShift web console. 
+1. go to the project
+1. select Applications -> Deployments
+1. click on the Deployment with name *jenkins*
+1. select *Edit* on the Actions button
+1. scroll to the *Environment Variables* section
+1. add database url, click: *Add Environment Variable*
+    * Name: *DB1_URL*
+    * Value: *database_host:port* (ip or hostname)
+1. add credential name, click: *Add Environment Variable*
+    * Name: *DB1_CREDENTIAL*
+    * Value: *gretl-system-db1-secret* (secret name prefixed by the OpenShift project name)
+1. Save the changes
+
+A new deplyoment should start after saving the changes. If not, click on deploy.
+
+The new started Jenkins will have that environment variable available.
+
+#### Pipeline example
+How to use the configured database connection.
+
+Read environment configuration from master node. It has the above defined env. entries.
+```
+def dbUrl = ''
+def dbCredentialName = ''
+node ("master") {
+  dbUrl = "${DB1_URL}"
+  dbCredentialName = "${DB1_CREDENTIAL}"
+}
+``` 
+
+The *withCredentials* block reads the Jenkins credential with the name from the above env. entry stored as variable *dbCredentialName*.
+
+Within that block the database user and password are available as *DB_USER* and *DB_PWD*. Those are the values from the OpenShift secret.
+```
+node ("gretl") {
+    ...
+    withCredentials([usernamePassword(credentialsId: "${dbCredentialName}", usernameVariable: 'DB_USER', passwordVariable: 'DB_PWD')]) {
+
+        // do the job
+        sh "gretl task -Pgretltest_dburi_pg=jdbc:postgresql://${dbUrl}/gretl -Pgretltest_dbuser=${DB_USER} -Pgretltest_dbpwd=${DB_PWD}"
+    }
+}
+```
+The database connection string can then be combined with the protocol, url and database name:
+```jdbc:postgresql://${dbUrl}/gretl```
+
+
+## Updates
+Update an existing system.
+
+### Update GRETL runtime image
 There are several ways to change the GRETL runtime image version.
 
 Apply the template from the previous section again with the desired image tag.
@@ -59,3 +131,13 @@ Edit the version manually inside the web console of OpenShift
 1. click on the Image Stream with name *gretl*
 1. select *Edit YAML* on the Actions button
 1. change the image tag name to the desired version and save it. 
+
+### Update Jenkins version
+To update the Jenkins version to 3.7, as example, use the following patch.
+This will update the build configuration to the desired version.
+```
+oc patch bc gretl -p $'spec:\n  strategy:\n    sourceStrategy:\n      from:\n        kind: DockerImage\n        name: registry.access.redhat.com/openshift3/jenkins-2-rhel7:v3.7'
+```
+Start a build. This will do a source-to-image build and use the new Jenkins base Docker image.
+
+When the build is done, a deployment is triggered automatically.
