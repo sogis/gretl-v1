@@ -19,7 +19,7 @@ oc process -f serviceConfig/templates/jenkins-s2i-persistent-template.yaml \
   -p GRETL_JOB_REPO_URL="git://github.com/sogis/gretljobs.git" \
   -p GRETL_JOB_FILE_PATH="**" \
   -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
-  -p VOLUME_CAPACITY="1Gi" \
+  -p VOLUME_CAPACITY="2Gi" \
   | oc apply -f -
 ```
 Parameter:
