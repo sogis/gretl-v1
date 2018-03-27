@@ -31,6 +31,8 @@ docker build \
     --label gretl.created=$build_timestamp --label gretl.git_commit=$githash --label gretl.travis_build=$buildident \
     -f gretl/Dockerfile gretl
 
+docker tag sogis/gretl-runtime:$buildident sogis/gretl-runtime:latest
+
 rm gretl/__jars4image/*
 
 # look into the container:
