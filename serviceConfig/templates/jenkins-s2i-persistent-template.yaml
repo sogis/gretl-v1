@@ -35,6 +35,7 @@ objects:
       template.openshift.io/expose-uri: http://{.spec.host}{.spec.path}
     name: ${JENKINS_SERVICE_NAME}
   spec:
+    host: ${JENKINS_HOSTNAME}
     tls:
       insecureEdgeTerminationPolicy: Redirect
       termination: edge
@@ -254,6 +255,9 @@ parameters:
   displayName: Jenkins configuration Git repo
   name: JENKINS_CONFIGURATION_REPO_URL
   value: https://github.com/sogis/openshift-jenkins.git
+- description: The public hostname for the Jenkins service.
+  displayName: Jenkins hostname
+  name: JENKINS_HOSTNAME
 - description: Url of the Git repo holding the GRETL Job configurations.
   displayName: Git repo containing GRETL jobs
   name: GRETL_JOB_REPO_URL
