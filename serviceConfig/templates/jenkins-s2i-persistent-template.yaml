@@ -258,6 +258,7 @@ parameters:
 - description: The public hostname for the Jenkins service.
   displayName: Jenkins hostname
   name: JENKINS_HOSTNAME
+  value: ''
 - description: Url of the Git repo holding the GRETL Job configurations.
   displayName: Git repo containing GRETL jobs
   name: GRETL_JOB_REPO_URL
