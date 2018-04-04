@@ -20,6 +20,7 @@ oc process -f serviceConfig/templates/jenkins-s2i-persistent-template.yaml \
   -p GRETL_JOB_FILE_PATH="**" \
   -p GRETL_JOB_FILE_NAME="gretl-job.groovy" \
   -p VOLUME_CAPACITY="2Gi" \
+  -p JENKINS_HOSTNAME="gretl.example.org" \
   | oc apply -f -
 ```
 Parameter:
@@ -28,6 +29,7 @@ Parameter:
 * GRETL_JOB_REPO_URL: Repo containing the GRETL jobs.
 * GRETL_JOB_FILE_PATH: Base path to the GRETL job definitions (Ant style)
 * GRETL_JOB_FILE_NAME: Name of the GRETL job configuration file.
+* JENKINS_HOSTNAME: The public hostname for the Jenkins service.
 * VOLUME_CAPACITY: Persistent volume size for Jenkins configuration data, e.g. 512Mi, 2Gi.
 
 ### GRETL runtime
