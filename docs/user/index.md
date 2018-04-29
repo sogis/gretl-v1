@@ -166,13 +166,13 @@ task csvexport(type: CsvExport){
 Parameter | Beschreibung
 ----------|-------------------
 database | Datenbank aus der exportiert werden soll.
-dataFile  | Name der CSV Datei, die erstellt werden soll.
+dataFile  | Name der CSV-Datei, die erstellt werden soll.
 tableName | Name der DB-Tabelle, die exportiert werden soll
 schemaName | Name des DB-Schemas, in dem die DB-Tabelle ist.
 firstLineIsHeader | Definiert, ob eine Headerzeile geschrieben werden soll, oder nicht. Default: true
 valueDelimiter | Zeichen, das am Anfang und Ende jeden Wertes geschrieben werden soll. Default ``"``
 valueSeparator | Zeichen, das als Trennzeichen zwischen den Werten verwendet werden soll. Default: ``,``
-attributes | Spalten der DB-Tabelle, die exportiert werden sollen. Default: alle Spalten
+attributes | Spalten der DB-Tabelle, die exportiert werden sollen. Definiert die Reihenfolge der Spalten in der CSV-Datei. Default: alle Spalten
 encoding | Zeichencodierung der CSV-Datei, z.B. ``"UTF-8"``. Default: Systemeinstellung
 
 Geometriespalten können nicht exportiert werden.
