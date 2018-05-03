@@ -37,6 +37,7 @@ dependencies {
     compile group: 'ch.ehi', name: 'ehisqlgen', version: '1.13.3'
     
     compile "de.undercouch:gradle-download-task:3.4.1"
+    compile "org.hidetake:gradle-ssh-plugin:2.9.0"
 }
 
 // Copies all jars required by gretl to the temp folder __jars4image.
