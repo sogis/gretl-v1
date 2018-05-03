@@ -7,7 +7,8 @@ COPY __jars4image /home/gradle/libs/
 
 COPY init.gradle /home/gradle/
 
-RUN chown -R 1001:0 /home/gradle && \
+RUN mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties \
+    chown -R 1001:0 /home/gradle && \
     chmod -R g+rw /home/gradle && \
     ls -la /usr/local/bin/  && \
     ls -la /home/gradle && \
