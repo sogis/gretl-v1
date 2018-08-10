@@ -79,41 +79,6 @@ oc policy add-role-to-user admin "User Name" PROJECT_NAME
 OpenShift project setup
 -----------------------
 
-### GRETL-Runtime build project
-Project used to build GRETL runtime Docker image.
-
-Prepare an OpenShift build project and use this pipeline: **runtimeImage/pipeline/gretl-runtime-build.groovy**
-
-#### OpenShift project setup
-Create project:
-```
-oc new-project gretl-build
-```
-
-##### Create build configuration by template
-```
-oc process -f runtimeImage/pipeline/templates/gretl-build-template.yaml \
-  | oc apply -f -
-```
-
-###### Manual build configuration
-Not used, when template has been applied.
-```
-oc new-build --name=gretl --strategy=Docker --binary=true
-```
-
-##### Crunchy DB with GIS extension
-Needs to be configured for tests using a database.
-
-Template taken from [CrunchyData](https://github.com/CrunchyData/crunchy-containers).
-```
-oc process -f runtimeImage/pipeline/templates/postgres-gis.json \
-  -p CCP_IMAGE_PREFIX=crunchydata \
-  -p CCP_IMAGE_TAG=centos7-10.1-1.7.0 \
-  -p POSTGRESQL_DATABASE='gretl' \
-  | oc apply -f -
-```
-
 ### OpenShift system test project
 Project used to test GRETL runtime Docker image and push it to dockerhub.
 
