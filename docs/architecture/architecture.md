@@ -101,30 +101,6 @@ Darin werden auch alle abhängenden Libraries abgelegt.
 
 Das Docker Image wird am Schluss in der OpenShift Registry abgelegt und ist über den ImageStream vom Build Projekt verfügbar. 
 
-
-#### Systemtest und Publikation
-Dieses Skript definiert die Systemtest und Docker Hub Push Logik: **runtimeImage/pipeline/gretl-system-test.groovy**
-
-Es wird ein OpenShift Projekt mit dem GRETL-Jenkins und einer PostgreSQL Postgis Datenbank benötigt.
-Das Setup ist im [README_BUILD.md](runtimeImage/pipeline/README_BUILD.md) beschrieben.
-
-Stages der Pipeline:
-![GRETL-Systemtest_stages](images/GRETL-Systemtest_stages.png)
-
-Übersicht:
-![System_Test_Pipeline](images/System_Test_Pipeline.png)
-
-##### System Tests
-Test Vorbereitung und Ausführung:
-* Die Datenbank wird initialisiert. 
-* Mittels Port-Forwarding wird auf den GRETL-Jenkins Pod zugegriffen.
-* Die System Tests werden über Gradle gestartet.
-* Die Steuerung vom Jenkins passiert über eine API-Library.
-
-Bei den Tests werden zuerst alle Jobs, bis auf den Seeder Job, gelöscht.
-Danach wird der Seeder gestartet, welcher die GRETL-Jobs erstellt.
-Diese Jobs werden danach auf eine erfolgreiche Ausführung überprüft.
-
 ### &lt;Gradle&gt;
 TODO
 

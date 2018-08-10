@@ -45,4 +45,4 @@ cd gretl/inttest
 ```
 
 #### Oracle
-At the moment the Oracle database is only used for system tests (see TODO!!!!) and not for (local) integration tests.
+At the moment the Oracle database is only used for integration tests (see TODO!!!!) and not for (local) integration tests.

@@ -31,3 +31,9 @@ Further test scripts use GRETL jobs from the *gretl/inttest/jobs* directory.
 The build automation is done by [Travis CI](https://www.travis-ci.org/) on GitHub.
 
 The pipeline is configured with the [travis.yml](../.travis.yml) file inside the root directory.
+
+### Docker Hub Housekeeping
+In order to keep the amount of tags / Docker Images on Docker Hub small, old Images have to be deleted.
+
+A Jenkins Job based on this pipeline will delete old Docker Images, which are not tagged as a relevant version:
+[pipeline/gretl-runtime-dockerhub-cleanup.groovy](pipeline/gretl-runtime-dockerhub-cleanup.groovy)
