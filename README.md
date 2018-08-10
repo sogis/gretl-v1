@@ -27,6 +27,9 @@ A german user manual can be found here: [docs/user/](docs/user/index.md)
 
 Information about _GRETL_ developing can be found here: [docs/devel/](docs/devel/index.md)
 
+The [tooling/](tooling/) folder contains helper scripts/tools for local development.
+See [tooling/README.md](tooling/README.md) for more informations.
+
 ## Status
 
 _GRETL_  is in development state.
