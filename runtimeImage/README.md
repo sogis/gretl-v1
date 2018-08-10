@@ -28,7 +28,6 @@ Be sure to change the path of the job files according to the location on your ma
 Further test scripts use GRETL jobs from the *gretl/inttest/jobs* directory.
 
 ## Build pipeline
-The pipeline folder contains all scripts and configuration to build and test the GRETL runtime and push it to Docker Hub.
-A Jenkins build server and an OpenShift Docker environment are used.
+The build automation is done by [Travis CI](https://www.travis-ci.org/) on GitHub.
 
-More details on the build: [README_BUILD](runtimeImage/pipeline/README_BUILD.md)
+The pipeline is configured with the [travis.yml](../.travis.yml) file inside the root directory.
