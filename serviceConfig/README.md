@@ -138,8 +138,28 @@ Edit the version manually inside the web console of OpenShift
 To update the Jenkins version to 3.7, as example, use the following patch.
 This will update the build configuration to the desired version.
 ```
-oc patch bc gretl -p $'spec:\n  strategy:\n    sourceStrategy:\n      from:\n        kind: DockerImage\n        name: registry.access.redhat.com/openshift3/jenkins-2-rhel7:v3.7'
+oc patch bc s2i-jenkins-build -p $'spec:\n  strategy:\n    sourceStrategy:\n      from:\n        kind: DockerImage\n        name: registry.access.redhat.com/openshift3/jenkins-2-rhel7:v3.7'
 ```
 Start a build. This will do a source-to-image build and use the new Jenkins base Docker image.
 
 When the build is done, a deployment is triggered automatically.
+
+#### Fallback for errors
+It can be that the actual configuration differs to much. Then the change has to be done by hand.
+
+Edit the version manually inside the web console of OpenShift
+1. go to the project
+1. select Builds -> Builds
+1. click on the Build with name *s2i-jenkins-build*
+1. select *Edit YAML* on the Actions button
+1. change the version inside the strategy to the desired version and save it.
+1. Start a build.
+
+The strategy section has to look like this:
+```
+  strategy:
+    sourceStrategy:
+      from:
+        kind: DockerImage
+        name: 'registry.access.redhat.com/openshift3/jenkins-2-rhel7:v3.7'
+```
