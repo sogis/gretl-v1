@@ -44,6 +44,15 @@ oc process -f serviceConfig/templates/gretl-is-template.yaml \
 Parameter:
 * GRETL_RUNTIME_IMAGE: Docker image reference of the GRETL runtime.
 
+If you need to configure more details of the GRETL pod, then apply the following 
+ConfigMap:
+```
+oc apply -f serviceConfig/templates/gretl-pod-template-configmap.yaml
+```
+After the creation of the *gretl* ConfigMap, update the image URI field (<image/>) of 
+the ConfigMap manually with the information returned by the command 
+```oc get is```, then save the ConfigMap.
+
 
 ### Configure a database connection
 Database connections are configured globally in the OpenShift project.
