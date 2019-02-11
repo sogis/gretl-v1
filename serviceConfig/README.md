@@ -49,9 +49,9 @@ ConfigMap:
 ```
 oc apply -f serviceConfig/templates/gretl-pod-template-configmap.yaml
 ```
-After the creation of the *gretl* ConfigMap, update the image URI field (<image/>) of 
+After the creation of the *gretl* ConfigMap, update the image URI field (`<image/>`) of 
 the ConfigMap manually with the information returned by the command 
-```oc get is```, then save the ConfigMap.
+`oc get is`, then save the ConfigMap.
 
 
 ### Configure a database connection
