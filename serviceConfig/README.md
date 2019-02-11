@@ -53,6 +53,12 @@ After the creation of the *gretl* ConfigMap, update the image URI field (`<image
 the ConfigMap manually with the information returned by the command 
 `oc get is`, then save the ConfigMap.
 
+Be aware that after tagging the image stream (e.g. after doing
+`oc tag --source=docker sogis/gretl-runtime:latest gretl:latest`) the configuration is
+kind of "lost" (the running Jenkins does not re-generate it correctly).
+To work around this, the Jenkins pod needs to be restarted;
+on restart of the pod the configuration is re-generated.
+
 
 ### Configure a database connection
 Database connections are configured globally in the OpenShift project.
